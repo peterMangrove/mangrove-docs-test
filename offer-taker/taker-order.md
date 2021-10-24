@@ -271,13 +271,31 @@ At the end of a Market Order the following is guaranteed to hold:
 
 ### More on market order behavior
 
-Mangrove's market orders are quite configurable using the three parameters `wants`, `gives` and `fillWants`. For instance:
+Mangrove's market orders are quite configurable using the three parameters `wants`, `gives` and `fillWants`.
 
-* You can run a 'classic' market **buy** order by setting `wants` to the amount you want to buy, `gives` to `type(uint160).max`, and `fillWants` to `true`.
-* You can run a 'classic' market **sell** order by setting `wants` to `type(uint160).max`, `gives` to the amount you want to sell, and `fillWants` to `false`.
-* You can run limit orders by setting `gives` and `wants` such that `gives`/`wants` is the volume-weighted price you are willing to pay and `fillWants` to `true` if you want to act as a buyer of **outbound token** or to `false` if you want to act as a seller if **inbound token**.
-  * Note that, contrary to limit orders on regular orderbook-based exchanges, the residual of your order (i.e. the volume you were not able to buy/sell due to hitting your price limit) will _not_ be put on the market as an offer. Instead, the market order will simply end partially filled.
-* You cannot run a limit order with a _maximum price_. For instance, if there are 3 offers with `gives` set to 1, offer #1 has price 1, offer #2 has price 2, and offer #3 has price 3, a regular limit order with `wants` set to 3 and `gives` set to 6 would consume offers until it hits an offer with a price above 2, so it would consume offers #1 and #2 but not #3. A Mangrove order with the same parameters will however consume offers #1, #2 and #3, spend 6, receive 3, and thus pay a volume-weighted price of 2.
+#### Market buy
+You can run a 'classic' market **buy** order by setting `wants` to the amount you want to buy, `gives` to `type(uint160).max`, and `fillWants` to `true`.
+
+#### Market sell
+You can run a 'classic' market **sell** order by setting `wants` to `type(uint160).max`, `gives` to the amount you want to sell, and `fillWants` to `false`.
+
+#### Limit order
+You can run limit orders by setting `gives` and `wants` such that `gives`/`wants` is the volume-weighted price you are willing to pay and `fillWants` to `true` if you want to act as a buyer of **outbound token** or to `false` if you want to act as a seller if **inbound token**.
+
+Note that, contrary to limit orders on regular orderbook-based exchanges, the residual of your order (i.e. the volume you were not able to buy/sell due to hitting your price limit) will _not_ be put on the market as an offer. Instead, the market order will simply end partially filled.
+
+{% hint style="warning" %}
+You cannot run a limit order with a _maximum price_. For instance, consider the following 3 offers:
+| `id`     | `gives`      | price
+| -------- | ------------ | ----------- |
+| 1       | 1          | 1     |
+| 2        | 1            | 2 |
+| 3        | 1            | 3 |
+
+* A regular limit order with `wants` set to 3 and `gives` set to 6 would consume offers until it hits an offer with a price above 2, so it would consume offers #1 and #2, but not offer #3. 
+* A Mangrove order with the same parameters will however consume offers #1, #2 and #3, spend 6, receive 3, and thus pay a volume-weighted price of 2.
+{% endhint %}
+
 
 ## Offer sniping
 
