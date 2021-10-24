@@ -20,17 +20,16 @@ For each function described below, we include the following tabs:
 
 ### Token allowance
 
-{% hint style="danger" %}
-**Token allowance**
-
 Tokens transfers initiated by Mangrove use ERC20's `transferFrom.` If Mangrove's `allowance` on spent tokens for the taker's address is too low, orders revert.
-{% endhint %}
 
-##
+### Activate markets
+
+Every Mangrove [**Offer List**](../data-structures/market) can be either [active or inactive](../data-structures/mangrove-configuration#mgvlib.local), and Mangrove itself can be either [alive or dead](data-structures/mangrove-configuration#mgvlib.global). Taking offers is only possible when Mangrove is alive on **OLs** that are active.
+
 
 ## Market order
 
-A **Market Order** is Mangrove's main liquidity sourcing entrypoint. It is called on a given [Offer List](../data-structures/market.md) with its associated **outbound token **and **inbound token**. The liquidity taker specifies how many **outbound tokens **she _wants _and how many_ _**inbound tokens** she _gives_.
+A **Market Order** is Mangrove's main liquidity sourcing entrypoint. It is called on a given [Offer List](../data-structures/market.md) with its associated **outbound token** and **inbound token**. The liquidity taker specifies how many **outbound tokens** she _wants_ and how many **inbound tokens** she _gives_.
 
 The order is processed by Mangrove's matching engine by consuming the offers of the list, starting from [the best one](../data-structures/market.md#rank). Execution works as follows, where at any point the taker's price is _give / wants._
 
@@ -268,17 +267,6 @@ At the end of a Market Order the following is guaranteed to hold:
 
 * The taker will not spend more than `takerGives`.
 * The average price paid will be maximally close to `takerGives/takerWants:`for each offer taken, the amount paid will be $$\leq$$ the expected amount + 1.
-* Assuming the taker fee for the pair Offer List is $$\phi$$ (for instance 0.1%) and `takerGot`> 0, then:
-
-&#x20;$$(1-\phi)$$\*`takerWants` \*`takerGave >= takerGives`\*`takerGot`
-{% endhint %}
-
-{% hint style="danger" %}
-### Important points
-
-* [x] Caller of the transaction SHOULD approve Mangrove for at least `takerGives` amount of inbound tokens and have a balance of at least `takerGives` amount of inbound tokens.&#x20;
-*
-* [x] `takerWants` and `takerGives` parameters MUST fit in a `uint160`.
 {% endhint %}
 
 ### More on market order behavior
@@ -293,7 +281,7 @@ Mangrove's market orders are quite configurable using the three parameters `want
 
 ## Offer sniping
 
-Instead of running a [Market Order](taker-order.md#market-order) for a specific amount of outbound tokens, it is also possible to target specific offer IDs in the [Offer List](../data-structures/market.md). This is called **Offer Sniping**.
+It is also possible to target specific offer IDs in the [Offer List](../data-structures/market.md). This is called **Offer Sniping**.
 
 {% hint style="info" %}
 Offer sniping can be used by off-chain bots and price aggregators to build their own optimized market order, targeting for instance offers with a higher volume or less gas requirements in order to optimize the gas cost of filling the order.
@@ -498,14 +486,16 @@ await Mangrove.connect(signer).snipes(
 
 * `outbound_tkn` outbound token address (received by the taker)
 * `inbound_tkn` inbound token address (sent by the taker)
-* `targets` an array whose elements `uint[4]` are of the form `[offerId, takerWants, takerGives, gasreq_permitted]` where:
-  * `offerId `is the ID of an [offer](../offer-maker/reactive-offer.md) that should be taken
-  * `takerWants: uint96` the amount of outbound tokens the taker wants from that [offer](../offer-maker/reactive-offer.md).
-  * `takerGives: uint96` the amount of inbound tokens the taker is willing to give to that [offer](../offer-maker/reactive-offer.md).
-* `gasreq_permitted` is the maximum `gasreq` the taker tolerates for that [offer](../offer-maker/reactive-offer.md). I.e. if the `gasreq` required by `offerId` is higher than `gasreq_permitted` the offer will not be sniped. NB: `gasreq_permitted = type(uint).max` is a way to tolerate any gas requirement for the sniped [offer](../offer-maker/reactive-offer.md).
+* `targets` an array of offers to take. Each element of `targets` is a `uint[4]`'s of the form `[offerId, takerWants, takerGives, gasreq_permitted]` where:
+  * `offerId `is the ID of an [offer](../offer-maker/reactive-offer.md) that should be taken.
+  * `takerWants` the amount of outbound tokens the taker wants from that [offer](../offer-maker/reactive-offer.md). **Must fit in a `uint96`.**
+  * `takerGives` the amount of inbound tokens the taker is willing to give to that [offer](../offer-maker/reactive-offer.md). **Must fit in a `uint96`.**
+  * `gasreq_permitted` is the maximum `gasreq` the taker will tolerate for that [offer](../offer-maker/reactive-offer.md). If the offer's `gasreq` is higher than `gasreq_permitted`, the offer will not be sniped. NB: `gasreq_permitted = type(uint).max` is a way to tolerate any gas requirement for the sniped [offer](../offer-maker/reactive-offer.md).
 
 {% hint style="warning" %}
-A snipe target `[offerId, takerWants, takerGives, gasreq] `needs to specify `takerWants` and `takerGives` because the owner of `offerId` might have updated its price before the snipe transaction is mined. Similar reasoning applies to `gasreq`.
+Offers can be updated, so if targets was just an array of `offerId`s, there would be no way to protect against a malicious offer update mined right before a snipe. The offer could suddenly have a worse price, or require a lot more gas. 
+
+If you only want to take offers without any checks on the offer contents, you can simply set `takerWants` to `0`, set `takerGives` to `type(uint96).max`, Thus, those additional  One could A snipe target `[offerId, takerWants, takerGives, gasreq] `needs to specify `takerWants` and `takerGives` because the owner of `offerId` might have updated its price before the snipe transaction is mined. Similar reasoning applies to `gasreq`.
 {% endhint %}
 
 {% hint style="info" %}
