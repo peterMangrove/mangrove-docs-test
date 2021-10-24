@@ -1,32 +1,31 @@
 ---
-description: Developer documentation pertaining to Reactive Offers management.
+description: Reactive offers are liquidity promises
 ---
+
+{% hint style="info" %}
+**Editor's note**
+
+For each function described below, we include the following tabs:
+
+* Signature - the function's Solidity signature
+* Events - possible Mangrove events emitted by calling this function
+* Revert reasons - all possible strings returned after a revert
+* Solidity - Solidity code example
+* ethers.js - Javascript code example using [ethers.js](https://docs.ethers.io/v5/)
+{% endhint %}
 
 # Reactive Offers
 
-## Description
-
-{% hint style="info" %}
 A **Reactive**_ _**Offer**_ _is a promise, posted on a Mangrove (o_utboundToken_, _inboundToken_) [Offer List](../data-structures/market.md), that an underlying [Maker Contract](maker-contract.md) is able to deliver a certain amount of _outbound_ tokens in exchange of specified amount of _inbound_ tokens.&#x20;
-{% endhint %}
-
-## Write functions&#x20;
-
-{% hint style="info" %}
-In the following descriptions, we use a table with tabs to describe Mangrove's functions:
-
-* Function - the name and parameters of the function.
-* Emitted logs - the event(s) emitted to the log by a function call.
-* Revert reasons - reasons a call to this function may revert.
-* Solidity snippet - a snippet of code employing the function in a contract.
-{% endhint %}
 
 ### Posting a new Reactive Offer
 
-Unless one is posting a [Trivial Offer](../offer-making-strategies/basic-offer.md), posting a new offer in a given [Offer List](../data-structures/market.md) should be done _via_ a [Maker Contract](maker-contract.md), since the Mangrove will register `msg.sender` address for the callback function to execute the offer (when matched). The corresponding solidity function is described below (source code is [here](https://github.com/giry-dev/mangrove/blob/552ab35500c34e831f40a68fac81c8b3e6be7f5b/packages/mangrove-solidity/contracts/MgvOfferMaking.sol#L49)).
+New offers should usually be posted by [Maker Contract](maker-contract.md) able to source liquidity when asked to by Mangrove (although it [is possible](../offer-making-strategies/basic-offer.md) to post new offers from an EOA).
+
+The code of `newOffer` is [available here](https://github.com/giry-dev/mangrove/blob/552ab35500c34e831f40a68fac81c8b3e6be7f5b/packages/mangrove-solidity/contracts/MgvOfferMaking.sol#L49)).
 
 {% tabs %}
-{% tab title="Function" %}
+{% tab title="Signature" %}
 ```solidity
 function newOffer(
     address outboundTkn,
@@ -40,7 +39,7 @@ function newOffer(
 ```
 {% endtab %}
 
-{% tab title="Emitted logs" %}
+{% tab title="Events" %}
 ```solidity
 // logging new offer's data 
 event OfferWrite(
@@ -83,7 +82,7 @@ event OfferWrite(
 ```
 {% endtab %}
 
-{% tab title="Solidity snippet" %}
+{% tab title="Solidity" %}
 {% code title="newOffer.sol" %}
 ```solidity
 import "path_to_mangrove/Mangrove.sol";
@@ -121,14 +120,19 @@ Mangrove(MGV).newOffer(
 {% endtab %}
 {% endtabs %}
 
-* `outboundTkn` address of the ERC20 managing the tokens to be delivered (outbound).
-* `inboundTkn` address of the ERC20 managing the expected tokens (inbound).&#x20;
-* `wants: uint96`amount of inbound tokens required for full delivery of outbound tokens (in maximal precision of `inboundToken` ERC20).&#x20;
-* `gives: uint96`amount of outbound tokens (in max precision of `outboundToken` ERC20). MUST be greater than 0.
-* `gasreq: uint24 `amount of gas that will be given to [Maker Contract](maker-contract.md). `gasreq`MUST be less than [gasmax](../data-structures/mangrove-configuration.md#global-parameters) and SHOULD be sufficient to cover all calls to the [Maker Contract](maker-contract.md) ([`makerExecute`](maker-contract.md#offer-execution) and [`makerPosthook`](maker-contract.md#offer-post-hook)).
-* `gasprice: uint16` gas price override used to compute order provision (see [Offer Bounty](offer-bounty.md)). Any value lower than Mangrove's current [gasprice](../data-structures/mangrove-configuration.md#global-parameters) is ignored (thus 0 means use Mangrove's current [gasprice](../data-structures/mangrove-configuration.md#mgvlib-global)).
-* `pivotId: uint24`SHOULD be the id of the closest offer in the [Offer List](../data-structures/market.md). If `pivotId` is not in the OL at the time the transaction is processed, offer will be inserted starting from the first ([best](reactive-offer.md#getting-current-best-offer-of-a-market)) position (resulting in a higher gas cost).&#x20;
-* returns `offerId` > 0 if and only if the offer was posted successfully. `offerid` refers then to the (`outboundToken`, `inboundToken`) [Offer List](../data-structures/market.md).
+## Inputs
+
+* `outbound_tkn` address of the [**outbound token**](../data-structures/market.md#general-structure) (that the offer will provide).
+* `inbound_tkn` address of the [**inbound token**](../data-structures/market.md#general-structure) (that the offer will receive).
+* `wants` amount of **inbound tokens** requested by the offer. **Must fit in a `uint96`**.
+* `gives` amount of **outbound tokens** promised by the offer. **Must fit in a `uint96` and by strictly positive**.
+* `gasreq `amount of gas that will be given to [Maker Contract](maker-contract.md). **Must fit in a `uint24`, be lower than [gasmax](../data-structures/mangrove-configuration.md#global-parameters)**. Should be sufficient to cover all calls to the [Maker Contract](maker-contract.md) ([`makerExecute`](maker-contract.md#offer-execution) and [`makerPosthook`](maker-contract.md#offer-post-hook)).
+* `gasprice` gas price override used to compute order provision (see [Offer Bounty](offer-bounty.md)). Any value lower than Mangrove's current [gasprice](../data-structures/mangrove-configuration.md#global-parameters) will ignored (thus 0 means "use Mangrove's current [gasprice](../data-structures/mangrove-configuration.md#mgvlib-global)"). **Must fit in a `uint16`**.
+* `pivotId: uint24` where to start the insertion process in the offer list. Should be the id of the closest offer in the [Offer List](../data-structures/market.md). If `pivotId` is not in the OL at the time the transaction is processed, offer will be inserted starting from the **OL**'s [best](reactive-offer.md#getting-current-best-offer-of-a-market) offer (possibly resulting in a higher gas cost).
+
+## Outputs
+
+* `offerId` the id of the newly created offer. Note that offer ids are scoped to **[OLs](../data-structures/market.md)**, so many offers can share the same id.
 
 {% hint style="danger" %}
 ### Important points
@@ -144,7 +148,7 @@ Mangrove(MGV).newOffer(
 Updating the parameters of an offer can be done via the `updateOffer` function described below (source code is [here](https://github.com/giry-dev/mangrove/blob/552ab35500c34e831f40a68fac81c8b3e6be7f5b/packages/mangrove-solidity/contracts/MgvOfferMaking.sol#L99)).
 
 {% tabs %}
-{% tab title="Function" %}
+{% tab title="Signature" %}
 ```solidity
 function updateOffer( 
     address outboundToken, 
@@ -159,7 +163,7 @@ function updateOffer(
 ```
 {% endtab %}
 
-{% tab title="Emitted logs" %}
+{% tab title="Events" %}
 ```solidity
 event OfferWrite(
       address outboundToken,
@@ -270,7 +274,7 @@ function myUpdateOffer(
 An offer can be withdrawn from the order book via the `retractOffer` function described below (source code is [here](https://github.com/giry-dev/mangrove/blob/ca281db629119013add03c8e8f40dbba45c5edae/packages/mangrove-solidity/contracts/MgvOfferMaking.sol#L136)).
 
 {% tabs %}
-{% tab title="Function" %}
+{% tab title="Signature" %}
 ```solidity
 function retractOffer(
     address outboundToken,
@@ -281,7 +285,7 @@ function retractOffer(
 ```
 {% endtab %}
 
-{% tab title="Emitted logs" %}
+{% tab title="Events" %}
 ```solidity
 // emitted on all successful retract
 event OfferRetract(
@@ -345,7 +349,7 @@ function myRetractOffer(uint offerId) external {
 ### Getting current best offer of a market
 
 {% tabs %}
-{% tab title="Calling from solidity" %}
+{% tab title="Solidity" %}
 {% code title="bestOffer.sol" %}
 ```solidity
 import "path_to_mangrove/Mangrove.sol";
@@ -361,7 +365,7 @@ uint bestOfferId = Mangrove(MGV).best(outTkn, inbTkn);
 {% endcode %}
 {% endtab %}
 
-{% tab title="From ethers.js" %}
+{% tab title="ethers.js" %}
 {% code title="bestOffer.js" %}
 ```javascript
 const { ethers } = require("ethers");
@@ -389,7 +393,7 @@ const bestOfferId = await Mangrove.best(outTkn, inbTkn);
 The [data structures](../data-structures/offer-data-structures.md) describing the content of an offer are accessible either using a low level access (recommended when calling from a contract) or through a high level view function (that should only be used off chain).
 
 {% tabs %}
-{% tab title="Calling from solidity" %}
+{% tab title="Solidity" %}
 {% code title="getOfferData.sol" %}
 ```solidity
 import "path_to_mangrove/Mangrove.sol";
@@ -421,7 +425,7 @@ uint gasreq = MgvPack.offerDetail_unpack_gasreq(packedOfferDetail);
 {% endcode %}
 {% endtab %}
 
-{% tab title="From ethers.js" %}
+{% tab title="ethers.js" %}
 {% code title="getOfferData.js" %}
 ```javascript
 const { ethers } = require("ethers");
@@ -457,7 +461,7 @@ const gasreq = offerDetail.gasreq;
 An offer  is _live _in a Mangrove given order book_ _if it can be matched during a market order, or sniped by a liquidity taker. One can easily verify whether `offerId` identifies a live offer in a  (`outboundToken`,`inboundToken`) market of Mangrove using the following view function.
 
 {% tabs %}
-{% tab title="Calling from solidity" %}
+{% tab title="Solidity" %}
 {% code title="isLive.sol" %}
 ```solidity
 import "path_to_mangrove/Mangrove.sol";
@@ -475,7 +479,7 @@ bool isLive = Mangrove(MGV).isLive(outTkn,inbTkn,offerId));
 {% endcode %}
 {% endtab %}
 
-{% tab title="From ethers.js" %}
+{% tab title="ethers.js" %}
 {% code title="isLive.js" %}
 ```javascript
 const { ethers } = require("ethers");
