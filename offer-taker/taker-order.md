@@ -1,9 +1,6 @@
 ---
 description: Basic taker side functions
 ---
-
-# Taking offers
-
 {% hint style="info" %}
 **Editor's note**
 
@@ -16,17 +13,17 @@ For each function described below, we include the following tabs:
 * ethers.js - Javascript code example using [ethers.js](https://docs.ethers.io/v5/)
 {% endhint %}
 
-## Generalities
+# Generalities
 
-### Token allowance
+## Token allowance
 
 Tokens transfers initiated by Mangrove use ERC20's `transferFrom.` If Mangrove's `allowance` on spent tokens for the taker's address is too low, orders revert.
 
-### Activate markets
+## Activate markets
 
 Every Mangrove [**Offer List**](../data-structures/market/) can be either [active or inactive](../data-structures/mangrove-configuration/#mgvlib.local), and Mangrove itself can be either [alive or dead](data-structures/mangrove-configuration/#mgvlib.global). Taking offers is only possible when Mangrove is alive on **OLs** that are active.
 
-## Market order
+# Market order
 
 A **Market Order** is Mangrove's main liquidity sourcing entrypoint. It is called on a given [Offer List](../data-structures/market.md) with its associated **outbound token** and **inbound token**. The liquidity taker specifies how many **outbound tokens** she _wants_ and how many **inbound tokens** she _gives_.
 
@@ -219,7 +216,7 @@ await Mangrove.connect(signer).marketOrder(
 {% endtab %}
 {% endtabs %}
 
-### Inputs
+## Inputs
 
 * `outbound_tkn` address of the [**outbound token**](../data-structures/market.md#general-structure) (that the taker will buy).
 * `inbound_tkn` address of the [**inbound token**](../data-structures/market.md#general-structure) (that the taker will spend).
@@ -248,13 +245,14 @@ If a taker calls `marketOrder`on this \*\*OL \*\*with`takerWants=2` and `takerGi
   2. 1.2323 DAI for the remaining 1.22 USDC from offer #2
 {% endhint %}
 
-### Outputs
+## Outputs
 
 * `takerGot` is the net amount of **outbound tokens** the taker has received after applying the [taker fee](../meta-topics/governance.md#taker-fees).
 * `takerGave` is the amount of **inbound tokens** the taker has sent.
 
 {% hint style="success" %}
-#### Specification
+
+## Specification
 
 At the end of a Market Order the following is guaranteed to hold:
 
@@ -262,19 +260,19 @@ At the end of a Market Order the following is guaranteed to hold:
 * The average price paid will be maximally close to `takerGives/takerWants:`for each offer taken, the amount paid will be $$\leq$$ the expected amount + 1.
 {% endhint %}
 
-### More on market order behavior
+## More on market order behavior
 
 Mangrove's market orders are quite configurable using the three parameters `wants`, `gives` and `fillWants`.
 
-#### Market buy
+### Market buy
 
 You can run a 'classic' market **buy** order by setting `wants` to the amount you want to buy, `gives` to `type(uint160).max`, and `fillWants` to `true`.
 
-#### Market sell
+### Market sell
 
 You can run a 'classic' market **sell** order by setting `wants` to `type(uint160).max`, `gives` to the amount you want to sell, and `fillWants` to `false`.
 
-#### Limit order
+### Limit order
 
 You can run limit orders by setting `gives` and `wants` such that `gives`/`wants` is the volume-weighted price you are willing to pay and `fillWants` to `true` if you want to act as a buyer of **outbound token** or to `false` if you want to act as a seller if **inbound token**.
 
@@ -293,7 +291,7 @@ You cannot run a limit order with a _maximum price_. For instance, consider the 
 * A Mangrove order with the same parameters will however consume offers #1, #2 and #3, spend 6, receive 3, and thus pay a volume-weighted price of 2.
 {% endhint %}
 
-## Offer sniping
+# Offer sniping
 
 It is also possible to target specific offer IDs in the [Offer List](../data-structures/market.md). This is called **Offer Sniping**.
 
@@ -495,7 +493,7 @@ await Mangrove.connect(signer).snipes(
 {% endtab %}
 {% endtabs %}
 
-### Inputs
+## Inputs
 
 * `outbound_tkn` outbound token address (received by the taker)
 * `inbound_tkn` inbound token address (sent by the taker)
@@ -514,7 +512,7 @@ Offers can be updated, so if targets was just an array of `offerId`s, there woul
 If you only want to take offers without any checks on the offer contents, you can simply set `takerWants` to `0`, set `takerGives` to `type(uint96).max`, set `gasreq_permitted` to `type(uint).max`, and set `fillWants` to `false`.
 {% endhint %}
 
-### Outputs
+## Outputs
 
 * `successes` is the number of successfully sniped offers.
 * `takerGot` is the [total](../meta-topics/governance.md#taker-fees) amount of **outbound tokens** that were collected by the order.
