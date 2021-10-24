@@ -80,7 +80,7 @@ Gas price that was used to compute the [Offer Bounty](../offer-maker/offer-bount
 
 ## View functions
 
-Retrieving the state of an Offer List can be easily done by a call to the Mangrove's reader contract `MgvReader`(see [deployment addresses](../meta-topics/deployment-addresses.md)) that returns packed or unpacked [offer data structures](offer-data-structures.md).
+Retrieving the state of an Offer List can be easily done by a call to the Mangrove's reader contract `MgvReader`(see [deployment addresses](../meta-topics/deployment-addresses.md)) that returns easy-to-parse[ data structures](offer-data-structures.md). For gas cautious interactions, when calling from a smart contract, developers may also want to use the reader's `packedOffers` getter, which return packed data that can be parsed using `MgvPack.sol` library.
 
 {% tabs %}
 {% tab title="Views" %}
