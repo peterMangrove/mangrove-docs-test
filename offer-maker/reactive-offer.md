@@ -20,7 +20,7 @@ A **Reactive Offer** is a promise, posted on a Mangrove [Offer List](../data-str
 
 New offers should usually be posted by [Maker Contract](maker-contract.md) able to source liquidity when asked to by Mangrove (although it [is possible](../offer-making-strategies/basic-offer.md) to post new offers from an EOA).
 
-The code of `newOffer` is [available here](https://github.com/giry-dev/mangrove/blob/552ab35500c34e831f40a68fac81c8b3e6be7f5b/packages/mangrove-solidity/contracts/MgvOfferMaking.sol#L49)).
+The code of `newOffer` is [available here](https://github.com/giry-dev/mangrove/blob/552ab35500c34e831f40a68fac81c8b3e6be7f5b/packages/mangrove-solidity/contracts/MgvOfferMaking.sol#L49).
 
 {% tabs %}
 {% tab title="Signature" %}
