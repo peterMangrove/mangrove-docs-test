@@ -231,8 +231,8 @@ await Mangrove.connect(signer).marketOrder(
 * `takerWants` raw amount of **outbound token** the taker wants. Must fit on 160 bits.
 * `takerGives` raw amount of **inbound token** the taker gives. Must fit on 160 bits.
 * `fillWants`&#x20;
-  * If true, the market order will stop as soon as `takerWants` **outbound tokens** have been bought. It is conceptually similar to a _buy order_.
-  * If false, the market order will continue until `takerGives` **inbound tokens** have been spent. It is conceptually similar to _sell order_.
+  * If `true`, the market order will stop as soon as `takerWants` **outbound tokens** have been bought. It is conceptually similar to a _buy order_.
+  * If `false`, the market order will continue until `takerGives` **inbound tokens** have been spent. It is conceptually similar to _sell order_.
   * Note that market orders can stop for other reasons, such as the price being too high.
 
 {% hint style="info" %}
@@ -245,10 +245,10 @@ Consider the DAI-USDC **Offer List** with 2 offers:&#x20;
 
 If a taker calls `marketOrder`on this **OL **with`takerWants=2` and `takerGives = 2.2 `she is ready to give away up to 2.2 USDC in order to get 2 DAI.&#x20;
 
-* If `fillWants=true `the market order will provide 2 DAI for 1.97 USDC.
+* If `fillWants` is `true `the market order will provide 2 DAI for 1.97 USDC.
   1. 0.99 from offer #1
   2. 0.98 from offer #2.&#x20;
-* If `fillWants=false` the market order will provide 2.2123 DAI  for 2 USDC.
+* If `fillWants` is `false` the market order will provide 2.2123 DAI  for 2 USDC.
   1. 1 DAI for 0.98 USDC from offer #1
   2. 1.2323 DAI for the remaining 1.22 USDC from offer #2
 {% endhint %}
@@ -273,9 +273,9 @@ At the end of a Market Order the following is guaranteed to hold:
 
 Mangrove's market orders are quite configurable using the three parameters `wants`, `gives` and `fillWants`. For instance:
 
-* You can run a 'classic' market **buy** order by setting `wants` to the amount you want to buy, `gives` to `type(uint160).max`, and `fillWants` to true.
-* You can run a 'classic' market **sell** order by setting `wants` to `type(uint160).max`, `gives` to the amount you want to sell, and `fillWants` to false.
-* You can run limit orders by setting `gives` and `wants` such that `gives`/`wants` is the volume-weighted price you are willing to pay and `fillWants` to true if you want to act as a buyer of **outbound token** or to false if you want to act as a seller if **inbound token**.
+* You can run a 'classic' market **buy** order by setting `wants` to the amount you want to buy, `gives` to `type(uint160).max`, and `fillWants` to `true`.
+* You can run a 'classic' market **sell** order by setting `wants` to `type(uint160).max`, `gives` to the amount you want to sell, and `fillWants` to `false`.
+* You can run limit orders by setting `gives` and `wants` such that `gives`/`wants` is the volume-weighted price you are willing to pay and `fillWants` to `true` if you want to act as a buyer of **outbound token** or to `false` if you want to act as a seller if **inbound token**.
   * Note that, contrary to limit orders on regular orderbook-based exchanges, the residual of your order (i.e. the volume you were not able to buy/sell due to hitting your price limit) will _not_ be put on the market as an offer. Instead, the market order will simply end partially filled.
 * You cannot run a limit order with a _maximum price_. For instance, if there are 3 offers with `gives` set to 1, offer #1 has price 1, offer #2 has price 2, and offer #3 has price 3, a regular limit order with `wants` set to 3 and `gives` set to 6 would consume offers until it hits an offer with a price above 2, so it would consume offers #1 and #2 but not #3. A Mangrove order with the same parameters will however consume offers #1, #2 and #3, spend 6, receive 3, and thus pay a volume-weighted price of 2.
 
@@ -491,26 +491,31 @@ await Mangrove.connect(signer).snipes(
   * `takerWants` the amount of outbound tokens the taker wants from that [offer](../offer-maker/reactive-offer.md). **Must fit in a `uint96`.**
   * `takerGives` the amount of inbound tokens the taker is willing to give to that [offer](../offer-maker/reactive-offer.md). **Must fit in a `uint96`.**
   * `gasreq_permitted` is the maximum `gasreq` the taker will tolerate for that [offer](../offer-maker/reactive-offer.md). If the offer's `gasreq` is higher than `gasreq_permitted`, the offer will not be sniped. NB: `gasreq_permitted = type(uint).max` is a way to tolerate any gas requirement for the sniped [offer](../offer-maker/reactive-offer.md).
+* `fillWants` specifies whether you are acting as a buyer of **outbound tokens**, in which case you will buy at most `takerWants`, or a seller of **inbound tokens**, in which case you will buy as many tokens as possible as long as you don't spend more than `takerGives`. See more extensive discussion of `fillWants` in the [market order section](offer-taker/taker-order#input).
 
 {% hint style="warning" %}
+**Protection against malicious offer updates**
+
 Offers can be updated, so if targets was just an array of `offerId`s, there would be no way to protect against a malicious offer update mined right before a snipe. The offer could suddenly have a worse price, or require a lot more gas. 
 
-If you only want to take offers without any checks on the offer contents, you can simply set `takerWants` to `0`, set `takerGives` to `type(uint96).max`, Thus, those additional  One could A snipe target `[offerId, takerWants, takerGives, gasreq] `needs to specify `takerWants` and `takerGives` because the owner of `offerId` might have updated its price before the snipe transaction is mined. Similar reasoning applies to `gasreq`.
-{% endhint %}
-
-{% hint style="info" %}
-Suppose `offerId` points to an offer of 10 DAIs (outbound token) for 10 USDCs (inbound tokens) on the (DAI, USDC) [Offer List](../data-structures/market.md#general-structure).  Sniping `offerId` for 9 DAIs in exchange of 10 USDC will result in the taker receiving 9 DAIs (minus potential fees) for 9 USDCs.
-
-Sniping the offer for 9 DAIs for 8 USDCs will fail (the offer will not be taken) because the price required by the taker is lower than the price proposed by the maker.
+If you only want to take offers without any checks on the offer contents, you can simply set `takerWants` to `0`, set `takerGives` to `type(uint96).max`, set `gasreq_permitted` to `type(uint).max`, and set `fillWants` to `false`.
 {% endhint %}
 
 ### Outputs
 
-* `fillWants: bool `follows the same principle as a [Market Order](taker-order.md#market-order).
-* `successes: uint` is less or equal to `targets.length `and corresponds to the number of target [offers](../offer-maker/reactive-offer.md) that were successfully sniped.
-* `takerGot` is the [net](../meta-topics/governance.md#taker-fees) amount of outbound tokens that were collected by the snipes order.
-* `takerGave` is the amount of inbound tokens that were sent by the taker to the [Maker Contract](../offer-maker/maker-contract.md) managing the sniped [offers](../offer-maker/reactive-offer.md).
+* `successes: uint` is the number of successfully sniped offers.
+* `takerGot` is the [total](../meta-topics/governance.md#taker-fees) amount of **outbound tokens** that were collected by the order.
+* `takerGave` is the total amount of **inbound tokens** spent by the taker during the snipe.
 
-### fillWants
+{% hint style="info" %}
+**Example**
 
-MUST be set to `true` if the taker wishes her order to terminate when she has received `takerWants` amount of outbound tokens. This flag MUST be set to `false` if the order is considered complete when the taker has given `takerGives` amount of inbound tokens.
+Consider the following offers on the DAI-USDC **OL**:
+| `id`     | `wants`      | `gives` | `gasreq` |
+| -------- | ------------ | ----------- | ------------ |
+| 13       | 10          | 10     | 80_000      |
+| 2        | 1            | 2 | 250_000      |
+
+Setting `targets` to `[[13,8,10,80_000],[2,1,1.1,250_000]]` with `fillWants` set to `true` will successfuly buy 8 DAI from offer #13 (for 8 USDC), and will not attempt to execute offer #2 since 1.1 > 1/2.
+{% endhint %}
+
