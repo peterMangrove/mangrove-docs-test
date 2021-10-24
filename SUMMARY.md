@@ -4,8 +4,6 @@
 
 ## Basic usage
 
-***
-
 * [Seeking liquidity](offer-taker/README.md)
   * [Taking offers](offer-taker/taker-order.md)
   * [Delegate Takers](offer-taker/delegate-takers.md)
