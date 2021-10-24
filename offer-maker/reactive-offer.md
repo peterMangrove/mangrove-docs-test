@@ -14,11 +14,9 @@ For each function described below, we include the following tabs:
 * ethers.js - Javascript code example using [ethers.js](https://docs.ethers.io/v5/)
 {% endhint %}
 
-# Reactive Offers
+A **Reactive Offer** is a promise, posted on a Mangrove [Offer List](../data-structures/market.md), that an address (a [contract](maker-contract.md) or an [EOA](../offer-making-strategies/basic-offer.md)) is able to deliver a certain amount of **outbound tokens** in return for a certain amount of **inbound tokens**.
 
-A **Reactive**_ _**Offer**_ _is a promise, posted on a Mangrove (o_utboundToken_, _inboundToken_) [Offer List](../data-structures/market.md), that an underlying [Maker Contract](maker-contract.md) is able to deliver a certain amount of _outbound_ tokens in exchange of specified amount of _inbound_ tokens.&#x20;
-
-### Posting a new Reactive Offer
+# Posting a new Reactive Offer
 
 New offers should usually be posted by [Maker Contract](maker-contract.md) able to source liquidity when asked to by Mangrove (although it [is possible](../offer-making-strategies/basic-offer.md) to post new offers from an EOA).
 
