@@ -126,7 +126,7 @@ Mangrove(MGV).newOffer(
 * `gives` amount of **outbound tokens** promised by the offer. **Must fit in a `uint96` and be strictly positive**.
 * `gasreq `amount of gas that will be given to the [Maker Contract](maker-contract.md). **Must fit in a `uint24` and be lower than [gasmax](../data-structures/mangrove-configuration.md#global-parameters)**. Should be sufficient to cover all calls to the [Maker Contract](maker-contract.md) ([`makerExecute`](maker-contract.md#offer-execution) and [`makerPosthook`](maker-contract.md#offer-post-hook)).
 * `gasprice` gas price override used to compute the order provision (see [Offer Bounty](offer-bounty.md)). Any value lower than Mangrove's current [gasprice](../data-structures/mangrove-configuration.md#global-parameters) will be ignored (thus 0 means "use Mangrove's current [gasprice](../data-structures/mangrove-configuration.md#mgvlib-global)"). **Must fit in a `uint16`**.
-* `pivotId` where to start the insertion process in the offer list. If `pivotId` is not in the OL at the time the transaction is processed, offer will be inserted starting from the **OL**'s [best](reactive-offer.md#getting-current-best-offer-of-a-market) offer. Should be the id of the existing live offer with the price closest to the price of the offer being posted.
+* `pivotId` where to start the insertion process in the offer list. If `pivotId` is not in the **OL** at the time the transaction is processed, the new offer will be inserted starting from the **OL**'s [best](reactive-offer.md#getting-current-best-offer-of-a-market) offer. Should be the id of the existing live offer with the price closest to the price of the offer being posted.
 
 ## Outputs
 
