@@ -280,9 +280,6 @@ You can run limit orders by setting `gives` and `wants` such that `gives`/`wants
 
 Note that, contrary to limit orders on regular orderbook-based exchanges, the residual of your order (i.e. the volume you were not able to buy/sell due to hitting your price limit) will _not_ be put on the market as an offer. Instead, the market order will simply end partially filled.
 
-{% hint style="warning" %}
-You cannot run a limit order with a _maximum price_. For instance, consider the following 3 offers:
-{% endhint %}
 
 | `id` | `gives` | price |
 | ---- | ------- | ----- |
@@ -290,7 +287,8 @@ You cannot run a limit order with a _maximum price_. For instance, consider the 
 | 2    | 1       | 2     |
 | 3    | 1       | 3     |
 
-{% hint style="warning" %}
+{% hint style="info" %}
+You cannot run a limit order with a _maximum price_. For instance, consider the above 3 offers.
 * A regular limit order with `wants` set to 3 and `gives` set to 6 would consume offers until it hits an offer with a price above 2, so it would consume offers #1 and #2, but not offer #3.
 * A Mangrove order with the same parameters will however consume offers #1, #2 and #3, spend 6, receive 3, and thus pay a volume-weighted price of 2.
 {% endhint %}
@@ -505,7 +503,7 @@ await Mangrove.connect(signer).snipes(
   * `offerId `is the ID of an [offer](../offer-maker/reactive-offer.md) that should be taken.
   * `takerWants` the amount of outbound tokens the taker wants from that [offer](../offer-maker/reactive-offer.md). **Must fit in a `uint96`.**
   * `takerGives` the amount of inbound tokens the taker is willing to give to that [offer](../offer-maker/reactive-offer.md). **Must fit in a `uint96`.**
-  * `gasreq_permitted` is the maximum `gasreq` the taker will tolerate for that [offer](../offer-maker/reactive-offer.md). If the offer's `gasreq` is higher than `gasreq_permitted`, the offer will not be sniped. NB: `gasreq_permitted = type(uint).max` is a way to tolerate any gas requirement for the sniped [offer](../offer-maker/reactive-offer.md).
+  * `gasreq_permitted` is the maximum `gasreq` the taker will tolerate for that [offer](../offer-maker/reactive-offer.md). If the offer's `gasreq` is higher than `gasreq_permitted`, the offer will not be sniped.
 * `fillWants` specifies whether you are acting as a buyer of **outbound tokens**, in which case you will buy at most `takerWants`, or a seller of **inbound tokens**, in which case you will buy as many tokens as possible as long as you don't spend more than `takerGives`. See more extensive discussion of `fillWants` in the [market order section](offer-taker/taker-order/#input).
 
 {% hint style="warning" %}
@@ -518,22 +516,19 @@ If you only want to take offers without any checks on the offer contents, you ca
 
 ### Outputs
 
-* `successes: uint` is the number of successfully sniped offers.
+* `successes` is the number of successfully sniped offers.
 * `takerGot` is the [total](../meta-topics/governance.md#taker-fees) amount of **outbound tokens** that were collected by the order.
 * `takerGave` is the total amount of **inbound tokens** spent by the taker during the snipe.
 
-{% hint style="info" %}
-**Example**
-
-Consider the following offers on the DAI-USDC **OL**:
-{% endhint %}
-
-|      |         |         |          |
-| ---- | ------- | ------- | -------- |
 | `id` | `wants` | `gives` | `gasreq` |
+| ---- | ------- | ------- | -------- |
 | 13   | 10      | 10      | 80\_000  |
 | 2    | 1       | 2       | 250\_000 |
 
 {% hint style="info" %}
+**Example**
+
+Consider the above offers on the DAI-USDC **OL**:
+
 Setting `targets` to `[[13,8,10,80_000],[2,1,1.1,250_000]]` with `fillWants` set to `true` will successfuly buy 8 DAI from offer #13 (for 8 USDC), and will not attempt to execute offer #2 since 1.1 > 1/2.
 {% endhint %}
