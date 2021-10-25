@@ -7,10 +7,10 @@ description: Developer documentation pertaining to writing and managing Maker co
 ## Description
 
 {% hint style="info" %}
-A **Maker Contract** is a smart contract whose address is associated with a [Reactive Offer ](reactive-offer.md)listed on a Mangrove _(Outbound, Inbound)_ [Offer List](../data-structures/market.md#offer-lists). Such contract are expected to comply with the [IMaker interface](https://github.com/giry-dev/mangrove/blob/c4446bbcb0a4dbade4777075eb3e26faebd1c218/contracts/MgvLib.sol#L161). A **Maker Contract** may be associated with several [Reactive Offers](reactive-offer.md) on Mangrove but deals with the realization of them through _the same_ callback function.
+A **Maker Contract** is a smart contract whose address is associated with a [Reactive Offer ](reactive-offer.md)listed on a Mangrove _(Outbound, Inbound)_ [Offer List](broken-reference). Such contract are expected to comply with the [IMaker interface](https://github.com/giry-dev/mangrove/blob/c4446bbcb0a4dbade4777075eb3e26faebd1c218/contracts/MgvLib.sol#L161). A **Maker Contract** may be associated with several [Reactive Offers](reactive-offer.md) on Mangrove but deals with the realization of them through _the same_ callback function.
 {% endhint %}
 
-The aim of a **Maker Contract** being called by Mangrove for a specific [Offer](reactive-offer.md) is to make a certain amount of_ outbound_ tokens available to the Mangrove by the end of the execution of the `makerExecute` function of the contract. This function is called by Mangrove each time an offer managed by the Maker Contract is matched by a [taker order](../offer-taker/taker-order.md).&#x20;
+The aim of a **Maker Contract** being called by Mangrove for a specific [Offer](reactive-offer.md) is to make a certain amount of_ outbound_ tokens available to the Mangrove by the end of the execution of the `makerExecute` function of the contract. This function is called by Mangrove each time an offer managed by the Maker Contract is matched by a [taker order](broken-reference).&#x20;
 
 {% hint style="info" %}
 Suppose that a [Reactive Offer](reactive-offer.md) managed by the Maker Contract `gives` 100 outbound tokens and, in exchange, `wants` 20 inbound tokens. In addition, the offer requires a `gasreq` of 500,000  gas units to execute.
@@ -57,8 +57,8 @@ contract MakerContract is IMaker {
 {% endtab %}
 {% endtabs %}
 
-* `order: MgvLib.SingleOrder calldata` is a [data structure](https://github.com/giry-dev/mangrove/blob/c4446bbcb0a4dbade4777075eb3e26faebd1c218/contracts/MgvLib.sol#L55) that transmits the [Taker Order](../offer-taker/taker-order.md) to the Maker Contract and recalls the [Offer](reactive-offer.md) as it was posted on the Mangrove.&#x20;
-* `makerData:bytes32` is the decision of the Offer Maker with respect the continuation of the trade. Any non empty return value (i.e different from `bytes32("")`) is interpreted by Mangrove as an instruction to renege on trade. As a consequence the offer will be removed from its [Offer List](../data-structures/market.md) and a [bounty](offer-bounty.md#offer-bounty-computation) will be sent to the Offer Taker for compensation.&#x20;
+* `order: MgvLib.SingleOrder calldata` is a [data structure](https://github.com/giry-dev/mangrove/blob/c4446bbcb0a4dbade4777075eb3e26faebd1c218/contracts/MgvLib.sol#L55) that transmits the [Taker Order](broken-reference) to the Maker Contract and recalls the [Offer](reactive-offer.md) as it was posted on the Mangrove.&#x20;
+* `makerData:bytes32` is the decision of the Offer Maker with respect the continuation of the trade. Any non empty return value (i.e different from `bytes32("")`) is interpreted by Mangrove as an instruction to renege on trade. As a consequence the offer will be removed from its [Offer List](broken-reference) and a [bounty](offer-bounty.md#offer-bounty-computation) will be sent to the Offer Taker for compensation.&#x20;
 
 {% hint style="info" %}
 #### Return value
@@ -82,16 +82,16 @@ The [Offer Bounty](offer-bounty.md) that is taken from the Offer Maker's provisi
     * MUST return the empty `bytes32` word (i.e`bytes32("")`) when it wishes to tell Mangrove contract to proceed with the transfer of the outbound tokens.
 
     Failure to comply with the above points will result in Mangrove transferring an ether [Bounty](offer-bounty.md) to the taker.
-* [x] During the execution of `makerExecute`, the [Offer List](../data-structures/market.md) containing the offer being executed is guarded against _write_ reentrancy. **Maker Contract **MUST therefore not attempt to modify or post any offer on this[ Offer List](../data-structures/market.md) during the execution of `makerExecute` and use [`makerPosthook`](maker-contract.md#offer-post-hook) to do so if needed.
+* [x] During the execution of `makerExecute`, the [Offer List](broken-reference) containing the offer being executed is guarded against _write_ reentrancy. **Maker Contract **MUST therefore not attempt to modify or post any offer on this[ Offer List](broken-reference) during the execution of `makerExecute` and use [`makerPosthook`](maker-contract.md#offer-post-hook) to do so if needed.
 {% endhint %}
 
 {% hint style="warning" %}
-At the end of `makerExecute` the consumed offer is retracted from its [Offer List](../data-structures/market.md), even in the case of a partial fill. Should one want to repost the offer, one SHOULD use the `makerPosthook` to do so (see below).
+At the end of `makerExecute` the consumed offer is retracted from its [Offer List](broken-reference), even in the case of a partial fill. Should one want to repost the offer, one SHOULD use the `makerPosthook` to do so (see below).
 {% endhint %}
 
 ## Offer post-hook&#x20;
 
-A **Maker Contract** SHOULD have a `makerPosthook` callback function whenever it requires write access to the [Offer List](../data-structures/market.md) containing the [offer](reactive-offer.md#description) that was executed.
+A **Maker Contract** SHOULD have a `makerPosthook` callback function whenever it requires write access to the [Offer List](broken-reference) containing the [offer](reactive-offer.md#description) that was executed.
 
 {% tabs %}
 {% tab title="Function" %}
@@ -169,7 +169,7 @@ contract MakerContract is IMaker {
 {% hint style="info" %}
 #### Persistent offers
 
-When called back on `makerPosthook`, the **Maker Contract** has full reentrancy power into Mangrove. It particular it has write access to all [Offer Lists](../data-structures/market.md). This feature can be used to repost an [offer](reactive-offer.md), possibly at a different price (see In **Maker Contract tab** in the above code snippet).
+When called back on `makerPosthook`, the **Maker Contract** has full reentrancy power into Mangrove. It particular it has write access to all [Offer Lists](broken-reference). This feature can be used to repost an [offer](reactive-offer.md), possibly at a different price (see In **Maker Contract tab** in the above code snippet).
 {% endhint %}
 
 

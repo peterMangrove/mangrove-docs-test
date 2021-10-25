@@ -21,10 +21,11 @@
 
 ## Around the Mangrove <a href="meta-topics" id="meta-topics"></a>
 
-* [Mangrove Reader](meta-topics/mangrove-reader.md)
-* [Mangrove Monitor](meta-topics/mangrove-monitor.md)
-* [Mangrove Cleaner](meta-topics/mangrove-cleaner.md)
 * [Governance](meta-topics/governance.md)
+* [Mangrove's ecosystem](meta-topics/mangroves-ecosystem/README.md)
+  * [Reader](meta-topics/mangroves-ecosystem/reader.md)
+  * [Monitor](meta-topics/mangroves-ecosystem/monitor.md)
+  * [Cleaner](meta-topics/mangroves-ecosystem/cleaner.md)
 * [Deployment addresses](meta-topics/deployment-addresses.md)
 
 ## Strategies for Maker Contracts <a href="offer-making-strategies" id="offer-making-strategies"></a>

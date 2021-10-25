@@ -78,9 +78,13 @@ The address of the [Maker Contract](../offer-maker/maker-contract.md) managing t
 
 Gas price that was used to compute the [Offer Bounty](../offer-maker/offer-bounty.md). If the offer fails to deliver the promised **outbound tokens**, it will be charged in ETH based on this gasprice.
 
+## Offer List configuration
+
+Several [configuration](mangrove-configuration.md) parameters determine how new offers are inserted. Some are [global](mangrove-configuration.md#mgvlib.global) to Mangrove, some are[ Offer List specifics.](mangrove-configuration.md#mgvlib.local) See [Governance](../meta-topics/governance.md) section for details.
+
 ## View functions
 
-Retrieving the state of an Offer List can be easily done by a call to the Mangrove's [Reader Contract](../meta-topics/mangrove-reader.md) `MgvReader`(see [deployment addresses](../meta-topics/deployment-addresses.md)) that returns easy-to-parse[ data structures](offer-data-structures.md). For gas cautious interactions, when calling from a smart contract, developers may also want to use the reader's `packedOffers` getter, which return packed data that can be parsed using `MgvPack.sol` library.
+Retrieving the state of an Offer List can be easily done by a call to the Mangrove's [Reader Contract](../meta-topics/mangroves-ecosystem/reader.md) `MgvReader`(see [deployment addresses](../meta-topics/deployment-addresses.md)) that returns easy-to-parse[ data structures](offer-data-structures.md). For gas cautious interactions, when calling from a smart contract, developers may also want to use the reader's `packedOffers` getter, which return packed data that can be parsed using `MgvPack.sol` library.
 
 {% tabs %}
 {% tab title="Views" %}
@@ -136,10 +140,10 @@ bytes32 [] memory offerDetailDataList) = MgvReader(mgvr).packedOfferList(
     type(uint).max // retrieve *all* offers of the list
 );
 for (uint i=0; i++; i<offerIds.length){
-    offerIds[i]; // id of the offer that is in position i of the Offer list
-    MgvPack.offer_unpack_wants(offerDataList[i]); // how much this offer wants (in inbTkn)
-    MgvPack.offer_unpack_gives(offerDataList[i]); // how much this offer gives (in outTkn)
-    MgvPack.offerDetail_unpack_gasreq(offerDetailDataList[i]); // how much gas this offer requires
+    uint offerId = offerIds[i]; // id of the offer that is in position i of the Offer list
+    uint wants = MgvPack.offer_unpack_wants(offerDataList[i]); // how much this offer wants (in inbTkn)
+    uint gives = MgvPack.offer_unpack_gives(offerDataList[i]); // how much this offer gives (in outTkn)
+    uint gasreq = MgvPack.offerDetail_unpack_gasreq(offerDetailDataList[i]); // how much gas this offer requires
 }
 ```
 {% endcode %}
@@ -180,6 +184,3 @@ for (let i = 0; i < offerIds.length; i++) {
 {% endtab %}
 {% endtabs %}
 
-{% hint style="warning" %}
-Global and local boolean parameters are packed as integers. Thus for all [Global](mangrove-configuration.md#mgvlib.global) boolean variable `x`packed in `global_data`, use the boolean expression `MgvPack.global_unpack_x(global_data)>0` and for all [Local](mangrove-configuration.md#mgvlib.local) boolean packed in `local_data`, use `MgvPack.local_unpack_x(local_data)>0.`
-{% endhint %}

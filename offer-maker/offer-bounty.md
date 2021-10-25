@@ -39,7 +39,7 @@ An offer bounty is calculated so that, within reasonable gas estimates, taking a
 Posting an offer with a $$G_\mathsf{ofr}>G$$ is a way for the Offer Maker to anticipate future gas price update of the Governance and minimize gas cost of offer reposting.&#x20;
 {% endhint %}
 
-A view function of the [Mangrove Reader](../meta-topics/mangrove-reader.md) contract allows one to obtain easily the necessary bounty to provision, given an offer gas requirement and an offer gas price.
+A view function of the [Mangrove Reader](../meta-topics/mangroves-ecosystem/reader.md) contract allows one to obtain easily the necessary bounty to provision, given an offer gas requirement and an offer gas price.
 
 {% tabs %}
 {% tab title="Function" %}
