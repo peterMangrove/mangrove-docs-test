@@ -418,8 +418,6 @@ bytes32 packedOfferDetail Mangrove(MGV).offerDetails(outTkn,inbTkn,offerId);
 uint wants = MgvPack.offer_unpack_wants(packedOffer);
 uint gives = MgvPack.offer_unpack_gives(packedOffer);
 uint gasreq = MgvPack.offerDetail_unpack_gasreq(packedOfferDetail);
-
-
 ```
 {% endcode %}
 {% endtab %}
