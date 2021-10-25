@@ -6,16 +6,32 @@ description: Developer documentation pertaining to writing and managing Maker co
 
 ## Description
 
+A **Maker Contract** is a smart contract whose address is associated with one or many [Reactive Offers](reactive-offer.md) listed on Mangrove [**Offer List**](broken-reference).
+Maker Contracts should implement the [IMaker interface](https://github.com/giry-dev/mangrove/blob/c4446bbcb0a4dbade4777075eb3e26faebd1c218/contracts/MgvLib.sol#L161). They must at least implement the `makerExecute` function, otherwise they will fail all their offer executions.
+
+Here is the offer lifecycle, with the parts addressed in this section bolded:
+
+1. A contract at address `maker.eth` creates an offer.
+2. Mangrove stores the offer info, including the address `maker.eth`.
+3. An address `user.eth` executes that offer.
+4. Mangrove transfers tokens from `user.eth` to `maker.eth`.
+5. **Mangrove calls the function [`makerExecute`](#offer-execution) of `maker.eth`**.
+6. Mangrove transfers tokens from `maker.eth` to `user.eth`.
+7. **Mangrove calls the function [`postHook`](#offer-post-hook) of `maker.eth`**.
+8. The offer is now out of its Offer List, but may be updated at a later time by `maker.eth`.
+
+
 {% hint style="info" %}
-A **Maker Contract** is a smart contract whose address is associated with a [Reactive Offer ](reactive-offer.md)listed on a Mangrove _(Outbound, Inbound)_ [Offer List](broken-reference). Such contract are expected to comply with the [IMaker interface](https://github.com/giry-dev/mangrove/blob/c4446bbcb0a4dbade4777075eb3e26faebd1c218/contracts/MgvLib.sol#L161). A **Maker Contract** may be associated with several [Reactive Offers](reactive-offer.md) on Mangrove but deals with the realization of them through _the same_ callback function.
+**Multiple offers per address**
+
+A Maker Contract can post more than one offer. When it gets called through `makerExecute`, it will receive the id of the offer being executed as well as additional information.
 {% endhint %}
 
-The aim of a **Maker Contract** being called by Mangrove for a specific [Offer](reactive-offer.md) is to make a certain amount of_ outbound_ tokens available to the Mangrove by the end of the execution of the `makerExecute` function of the contract. This function is called by Mangrove each time an offer managed by the Maker Contract is matched by a [taker order](broken-reference).&#x20;
-
 {% hint style="info" %}
-Suppose that a [Reactive Offer](reactive-offer.md) managed by the Maker Contract `gives` 100 outbound tokens and, in exchange, `wants` 20 inbound tokens. In addition, the offer requires a `gasreq` of 500,000  gas units to execute.
+**Example scenario**
+Suppose that an [offer](reactive-offer.md) managed by the Maker Contract promises 100,000 DAI in exchange for 100,000 USDC.
 
-In order to make the 100 outbound tokens available to Mangrove,  the **Maker Contract** can rely on a [flashswap](https://uniswap.org/blog/uniswap-v2/#flash-swaps) of `wants` inbound tokens and 500,000 gas units, which it may use to source its liquidity (see [Maker Strategies](./)). If at the end of the `makerExecute` call Mangrove is unable to pull 100 outbound tokens from the **Maker Contract**, the trade is reverted (resulting in the inbound tokens being returned to the taker) and an [Offer Bounty](offer-bounty.md) is withdrawn from the **Maker Contract** provision on Mangrove.
+Upon being called, **Maker Contract** has 100,000 USDC available and may source DAI from anywhere on the chain. It needs to end execution with 100,000 available and ready to be transferred by Mangrove through `transferFrom`.
 {% endhint %}
 
 ## Offer execution

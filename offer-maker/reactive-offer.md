@@ -136,9 +136,10 @@ Mangrove(MGV).newOffer(
 
 {% hint style="danger" %}
 **Provisioning**
-Since offers can fail, Mangrove requires each offer to be [provisioned](offer-bounty.md) in ETH. If an offer fails, part of that provision will be sent to the caller that executed the offer.
 
-Make sure that your offer is [well-provisioned](offer-bounty.md#provisioning-offers) before calling `newOffer`, otherwise the call will fail. The easiest way to go is to send a comfortable amount of ETH to Mangrove from your offer-posting contract. Mangrove will remember your ETH balance and use when necessary.
+Since offers can fail, Mangrove requires each offer to be [provisioned](offer-bounty.md) in ETH. If an offer fails, part of that provision will be sent to the caller that executed the offer, as compensation.
+
+Make sure that your offer is [well-provisioned](offer-bounty.md#provisioning-offers) before calling `newOffer`, otherwise the call will fail. The easiest way to go is to send a comfortable amount of ETH to Mangrove from your offer-posting contract. Mangrove will remember your ETH balance and use it when necessary.
 {% endhint %}
 
 {% hint style="danger" %}
@@ -267,6 +268,7 @@ None.
 
 {% hint style="info" %}
 **Offer updater**
+
 An offer can only be updated if the `msg.sender` is the [Maker Contract](maker-contract.md) of the offer.
 {% endhint %}
 
@@ -347,8 +349,6 @@ function myRetractOffer(uint offerId) external {
 {% endtabs %}
 
 ## Inputs
-
-## Inputs
 * `offerId` is the offer id of the offer to be updated.
 * `deprovision` if true, will free the offer's ETH provision so that you can [withdraw](offer-bounty.md#withdrawing) them. Otherwise, will leave the provision in the offer.
 * For the other parameters, see [above](#posting-a-new-reactive-offer).
@@ -384,7 +384,7 @@ const { ethers } = require("ethers");
 let outboundTkn; // address of outbound token ERC20
 let inboundTkn; // address of inbound token ERC20
 let MGV_address;
-let MGV_abi;
+let MGV_abi; // Mangrove contract's abi
 
 const mgv = new ethers.Contract(
     MGV_address, 
