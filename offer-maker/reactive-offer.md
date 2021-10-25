@@ -20,7 +20,7 @@ A **Reactive Offer** is a promise, posted on a Mangrove [Offer List](broken-refe
 
 ## Posting a new Reactive Offer
 
-New offers should usually be posted by [Maker Contract](maker-contract.md) able to source liquidity when asked to by Mangrove (although it [is possible](../offer-making-strategies/basic-offer.md) to post new offers from an EOA).
+New offers should usually be posted by [Maker Contracts](maker-contract.md) able to source liquidity when asked to by Mangrove (although it [is possible](../offer-making-strategies/basic-offer.md) to post new offers from an EOA).
 
 The code of `newOffer` is [available here](https://github.com/giry-dev/mangrove/blob/552ab35500c34e831f40a68fac81c8b3e6be7f5b/packages/mangrove-solidity/contracts/MgvOfferMaking.sol#L49).
 
@@ -135,15 +135,20 @@ Mangrove(MGV).newOffer(
 * `offerId` the id of the newly created offer. Note that offer ids are scoped to [**OLs**](broken-reference), so many offers can share the same id.
 
 {% hint style="danger" %}
-#### Important points
+**Provisioning**
+Since offers can fail, Mangrove requires each offer to be [provisioned](offer-bounty.md) in ETH. If an offer fails, part of that provision will be sent to the caller that executed the offer.
 
-* [x] If a callback to execute the trade is necessary (as for any offer that is not [trivial](../offer-making-strategies/basic-offer.md)), this callback SHOULD be a function of the contract calling `newOffer`as `msg.sender` will be the address used for the callback by Mangrove.
-* [x] `gives` and `gasreq` parameters MUST be sufficient to comply with Mangrove's minimal [density](../data-structures/mangrove-configuration.md#local-parameters) for the (`outboundToken`,`inboundToken`) [Offer List](broken-reference).
-* [x] The [Maker Contract](maker-contract.md) calling `newOffer` MUST have a sufficient ETH provision on the Mangrove to cover the [Offer Bounty](offer-bounty.md) of this offer.
-* [x] `msg.sender` SHOULD approve Mangrove for `outboundToken` ERC transfer, for at least `gives` amount of token each time this offer is to be matched.
+Make sure that your offer is [well-provisioned](offer-bounty.md#provisioning-offers) before calling `newOffer`, otherwise the call will fail. The easiest way to go is to send a comfortable amount of ETH to Mangrove from your offer-posting contract. Mangrove will remember your ETH balance and use when necessary.
 {% endhint %}
 
-#### Updating an existing offer
+{% hint style="danger" %}
+**Offer execution**
+* Your offer-posting contract should implement the [IMaker](maker-contract.md) interface. At the very least, it must have a function with signature [`makerExecute(MgvLib.SingleOrder calldata order)`](maker-contract.md#offer-execution) or it will systematically revert when called by Mangrove. 
+* `gives` and `gasreq` are subject to [density](../data-structures/mangrove-configuration.md#local-parameters) constraints on the amount of **outbound token** provided per gas spent. TODO: link to utility function to get max gas for a `gives` and min gives for a `gas`.
+* Your contract will need to give Mangrove a high enough allowance in **outbound tokens** since Mangrove will use the ERC20 standard's `transferFrom` function to source your tokens.
+{% endhint %}
+
+# Updating an existing offer
 
 Updating the parameters of an offer can be done via the `updateOffer` function described below (source code is [here](https://github.com/giry-dev/mangrove/blob/552ab35500c34e831f40a68fac81c8b3e6be7f5b/packages/mangrove-solidity/contracts/MgvOfferMaking.sol#L99)).
 
@@ -252,24 +257,26 @@ function myUpdateOffer(
 {% endtab %}
 {% endtabs %}
 
-* The following parameters are the same as for `newOffer` (see above for documentation)
-  * `outboundToken`
-  * `inboundToken`
-  * `wants`
-  * `gives`
-  * `gasreq`
-  * `gasprice`
+## Inputs
 * `offerId` is the offer id of the offer to be updated.
-* `pivotId` SHOULD be the id of an offer already in the book and close to the updated offer's eventual position.
-  * You will spend much less gas if you select a `pivotId` close to `offerId`'s eventual position.
-  * `pivotId == offerId` is completely OK.
-  * If `pivotId == 0`, the offer's new position will be searched starting from the book's best offer.
-* An offer can only be updated if the `msg.sender` is the [Maker Contract](maker-contract.md) of the offer.
-* Parameters of `updateOffer` are subject to the same restrictions as `newOffer`(in terms of values and types, see **Revert reasons** tab).
-* It is possible to update an offer that is no longer in the [Offer List](broken-reference) (after it was matched or because it was [retracted](reactive-offer.md#retracting-an-offer)), in which case the offer is reinserted in the book as a consequence of the update.
-  * We recommend updating your offers instead of creating new ones, as it costs much less gas.
+* For the other parameters, see [above](#posting-a-new-reactive-offer).
 
-#### Retracting an offer
+## Outputs
+None.
+
+
+{% hint style="info" %}
+**Offer updater**
+An offer can only be updated if the `msg.sender` is the [Maker Contract](maker-contract.md) of the offer.
+{% endhint %}
+
+{% hint style="warning" %}
+**Reusing offers**
+
+After being executed or [retracted](reactive-offer.md#retracting-an-offer), an offer is moved out of the **Offer List**. It can still be updated and will be reinserted in the offer list. We recommend updating offers instead of creating new ones, as it costs much less gas.
+{% endhint %}
+
+# Retracting an offer
 
 An offer can be withdrawn from the order book via the `retractOffer` function described below (source code is [here](https://github.com/giry-dev/mangrove/blob/ca281db629119013add03c8e8f40dbba45c5edae/packages/mangrove-solidity/contracts/MgvOfferMaking.sol#L136)).
 
@@ -339,28 +346,32 @@ function myRetractOffer(uint offerId) external {
 {% endtab %}
 {% endtabs %}
 
-* `outboundTkn` address of the outbound token ERC20.
-* `inboundTkn` address of the inbound token ERC20.
-* `offerId` the id of the offer to retract from the order book.
-* `deprovision` is `true` if and only if the offer maker wishes to free the offer provision (in order to [withdraw](offer-bounty.md#withdrawing) the corresponding funds for instance).
+## Inputs
 
-### View functions
+## Inputs
+* `offerId` is the offer id of the offer to be updated.
+* `deprovision` if true, will free the offer's ETH provision so that you can [withdraw](offer-bounty.md#withdrawing) them. Otherwise, will leave the provision in the offer.
+* For the other parameters, see [above](#posting-a-new-reactive-offer).
 
-#### Getting current best offer of a market
+## Outputs
+None.
+
+# View functions
+
+## Read the current best offer ID of an **offer list**
 
 {% tabs %}
 {% tab title="Solidity" %}
 {% code title="bestOffer.sol" %}
 ```solidity
-import "path_to_mangrove/Mangrove.sol";
+import "./Mangrove.sol";
 
 // context of the call
-address MGV;
-address outTkn; // address of Offer List's outbound token
-address inbTkn; // address of Offer List's inbound token
+Mangrove mgv;
+address outbound_tkn;
+address inbound_tkn;
 
-// getting best offer of the (outTkn, inbTkn) Offer List
-uint bestOfferId = Mangrove(MGV).best(outTkn, inbTkn); 
+uint best = mgv.best(outbound_tkn, inbound_tkn); 
 ```
 {% endcode %}
 {% endtab %}
@@ -370,19 +381,19 @@ uint bestOfferId = Mangrove(MGV).best(outTkn, inbTkn);
 ```javascript
 const { ethers } = require("ethers");
 // context
-let outTkn; // address of outbound token ERC20
-let inbTkn; // address of inbound token ERC20
-let MGV_address; // address of Mangrove
-let MGV_abi; // Mangrove contract's abi
+let outboundTkn; // address of outbound token ERC20
+let inboundTkn; // address of inbound token ERC20
+let MGV_address;
+let MGV_abi;
 
-const Mangrove = new ethers.Contract(
+const mgv = new ethers.Contract(
     MGV_address, 
     MGV_abi, 
     ethers.provider
     );
 
 // getting best offer of the (outTkn,inbTk) market
-const bestOfferId = await Mangrove.best(outTkn, inbTkn); 
+const best = await mgv.best(outboundTkn, inboundTkn); 
 ```
 {% endcode %}
 {% endtab %}
