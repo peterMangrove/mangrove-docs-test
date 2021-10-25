@@ -86,7 +86,7 @@ Retrieving the state of an Offer List can be easily done by a call to the Mangro
 {% tab title="Views" %}
 ```solidity
 // view function to access Offer Lists off chain.
-function offers(
+function offerList(
     address outboundToken, // outbound token of the Offer List
     address inboundToken, // inbound token of the Offer List
     uint fromId, // retrieve Offer List starting from offer id `fromId`
@@ -99,7 +99,7 @@ function offers(
     );
 
 // view function to access Offer List in a packed format (gas cautious).
-function packedOffers(
+function packedOfferList(
     address outboundToken,
     address inboundToken,
     uint fromId,
@@ -127,8 +127,8 @@ address inbTkn; // address of Offer List's inbound token
 // getting best offer of the (outTkn, inbTkn) Offer List
 (/*nextOfferId*/, 
 uint[] memory offerIds, 
-bytes32[] memory packedOfferList, 
-bytes32 [] memory packedOfferDetailList) = MgvReader(mgvr).packedOffers(
+bytes32[] memory offerDataList, 
+bytes32 [] memory offerDetailDataList) = MgvReader(mgvr).packedOfferList(
     outTkn, 
     inbTkn, 
     0, // starting from best offer
@@ -136,9 +136,9 @@ bytes32 [] memory packedOfferDetailList) = MgvReader(mgvr).packedOffers(
 );
 for (uint i=0; i++; i<offerIds.length){
     offerIds[i]; // id of the offer that is in position i of the Offer list
-    MgvPack.offer_unpack_wants(packedOfferList[i]); // how much this offer wants (in inbTkn)
-    MgvPack.offer_unpack_gives(packedOfferList[i]); // how much this offer gives (in outTkn)
-    MgvPack.offerDetail_unpack_gasreq(packedOfferDetailList[i]); // how much gas this offer requires
+    MgvPack.offer_unpack_wants(offerDataList[i]); // how much this offer wants (in inbTkn)
+    MgvPack.offer_unpack_gives(offerDataList[i]); // how much this offer gives (in outTkn)
+    MgvPack.offerDetail_unpack_gasreq(offerDetailDataList[i]); // how much gas this offer requires
 }
 ```
 {% endcode %}
@@ -162,7 +162,7 @@ const MangroveReader = new ethers.Contract(
 
 // calling Mangrove Readers to get already unpacked data
 let [lastId, offerIds, offerList, offerDetailList] = 
-    await MangroveReader.offers(
+    await MangroveReader.offerList(
         outTkn,
         inbTkn, 
         0, // start retrieving from best offer
