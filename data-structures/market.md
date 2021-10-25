@@ -7,11 +7,11 @@ description: Introducing Mangrove's Offer Lists and markets
 ## General structure
 
 {% hint style="info" %}
-The **Offer List** is the basic Mangrove data structure. It contains offers (created by offer makers) that promise an **outbound token**, and request an **inbound token** in return. Offer takers execute these offers by providing the \*\*inbound token. \*\*They receive **outbound tokens** in return.
+The **Offer List** is the basic Mangrove data structure. It contains offers (created by offer makers) that promise an **outbound token**, and request an **inbound token** in return. Offer takers execute these offers by providing the **inbound token. **They receive **outbound tokens** in return.
 
 For example in a DAI-wETH **OL**, wETH is the outbound token (i.e. sent by the offer) and DAI the inbound token (i.e. received by the offer).
 
-\_Relationship to markets: \_a full market will always feature two Offer Lists. For instance, a wETH/DAI **market** has one DAI-wETH **OL** (where wETH is requested and DAI is offered), and a wETH-DAI **OL** (where DAI is requested and wETH is offered).
+_Relationship to markets: _a full market will always feature two Offer Lists. For instance, a wETH/DAI **market** has one DAI-wETH **OL** (where wETH is requested and DAI is offered), and a wETH-DAI **OL** (where DAI is requested and wETH is offered).
 {% endhint %}
 
 Here's a sample DAI-wETH **OL** with two offers. Only the main characteristics of the offers are shown for clarity (see the [offer data structure](offer-data-structures.md#mgvlib-offer)).
@@ -31,7 +31,7 @@ We display human-readable values here for clarity, but Mangrove stores raw token
 
 ### Rank
 
-Offers are ordered from best to worst. Offers are compared based on _price_, and then on \_gas required \_(see below) if they have the same price.
+Offers are ordered from best to worst. Offers are compared based on _price_, and then on _gas required _(see below) if they have the same price.
 
 {% hint style="info" %}
 **Example**
@@ -41,7 +41,7 @@ The price of offer #42 is 0.0003441298 wETH per DAI while the price of offer #2 
 
 ### ID
 
-The identifier of the offer in the **OL**.
+The identifier of the offer in the **OL**.&#x20;
 
 {% hint style="danger" %}
 **Important**
@@ -51,7 +51,7 @@ Two offers may have the same ID as long as they belong to different **OL**s. For
 
 ### Wants, gives
 
-Taken together, the **wants** and **gives** values define 1) a max volume, 2) a price. The price is p=**wants**/**gives**, and an offer promises delivery of up to **gives **outbound tokens at a price of p tokens delivered per inbound token received.
+Taken together, the **wants **and **gives** values define 1) a max volume, 2) a price. The price is p=**wants**/**gives**, and an offer promises delivery of up to **gives outbound tokens** at a price of p tokens delivered per **inbound token** received.
 
 {% hint style="info" %}
 **Examples**
@@ -62,7 +62,7 @@ Taken together, the **wants** and **gives** values define 1) a max volume, 2) a 
 
 ### Gas required
 
-The maximum amount of gas the [Maker Contract](../offer-maker/maker-contract.md) managing the offer will be allowed to spend if called by the Mangrove.
+The maximum amount of gas the [Maker Contract](../offer-maker/maker-contract.md) managing the offer will be allowed to spend if called by the Mangrove.&#x20;
 
 {% hint style="info" %}
 **Example**
@@ -85,7 +85,6 @@ Retrieving the state of an Offer List can be easily done by a call to the Mangro
 {% tabs %}
 {% tab title="Views" %}
 ```solidity
-// from MgvReader.sol
 // view function to access Offer Lists off chain.
 function offerList(
     address outboundToken, // outbound token of the Offer List

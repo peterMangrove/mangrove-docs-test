@@ -8,7 +8,7 @@ description: >-
 
 ## Offer bounty computation
 
-The computation of the **bounty** $$\beta$$ that should be provisioned when posting a new [offer](reactive-offer.md) on a Mangrove [Offer List](../data-structures/market.md) depends various parameters (follow hyperlinks for more information about their respective meaning).
+The computation of the **bounty** $$\beta$$ that should be provisioned when posting a new [offer](reactive-offer.md) on a Mangrove [Offer List](broken-reference) depends various parameters (follow hyperlinks for more information about their respective meaning).
 
 The price (in WEIs) of an **offer bounty** is meant to compensate takers for the gas used to execute the offer in case of failure. At the time an offer is posted, Mangrove's [gasprice](../meta-topics/governance.md#gas-price-and-oracle) $$\gamma_{\mathsf{mgv}}$$ is used to determine the bounty $$\beta$$​the following way:
 
@@ -39,7 +39,7 @@ An offer bounty is calculated so that, within reasonable gas estimates, taking a
 Posting an offer with a $$G_\mathsf{ofr}>G$$ is a way for the Offer Maker to anticipate future gas price update of the Governance and minimize gas cost of offer reposting.&#x20;
 {% endhint %}
 
-A view function of the [`MgvReader.sol`](../meta-topics/deployment-addresses.md) contract allows one to obtain easily the necessary bounty to provision, given an offer gas requirement and an offer gas price.
+A view function of the [Mangrove Reader](../meta-topics/mangrove-reader.md) contract allows one to obtain easily the necessary bounty to provision, given an offer gas requirement and an offer gas price.
 
 {% tabs %}
 {% tab title="Function" %}
@@ -95,7 +95,7 @@ const bounty = await MangroveReader.getProvision(outTkn, inbTkn, ofr_gasreq,0);
 {% endtab %}
 {% endtabs %}
 
-* `(outbound_tkn, inbound_tkn)` the addresses of the (inbound, outbound) [Offer List](../data-structures/market.md).
+* `(outbound_tkn, inbound_tkn)` the addresses of the (inbound, outbound) [Offer List](broken-reference).
 * `ofr_gasreq` the max amount of gas that is required to execute the [offer](reactive-offer.md).
 * `ofr_gasprice` (in GWei) the gas price the offer maker wishes to compute the **bounty** for (put 0 to use Mangrove's [gas price](../meta-topics/governance.md#gas-price-and-oracle)).
 * `bounty` the amount of WEI Mangrove will require to provision in order to accept a new offer with `ofr_gasreq` and `ofr_gasprice` as parameters.
