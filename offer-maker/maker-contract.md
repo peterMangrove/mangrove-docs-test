@@ -92,12 +92,19 @@ contract MakerContract is IMaker {
 * `order` represents the [Taker Order](broken-reference) and the current Mangrove configuration. `order.gives/order.wants` will closely match the price of the offer that is being executed.
 
 ## Outputs
-* `makerData` may contain information; its content will be transmitted to `makerPosthook` later in the offer lifecycle. If `makerData != bytes32("")` or if the call reverts, Mangrove will consider that execution has failed.
+* `makerData` If `makerData != bytes32("")` or if the call reverts, Mangrove will consider that execution has failed. It is always sent `makerPosthook` later, so you can use it to transfer information to `makerPosthook` after a failure.
+
+{% hint style="danger" %}
+**Security concerns**
+
+Your contract must ensure that unauthorized callers cannot run `makerExecute`. The simplest way is to have a constant `address mgv` and add `require(msg.sender == mgv,"unauthorized")` at the top of your `makerExecute`.
+{% endhint %}
+
 
 {% hint style="info" %}
 **How to succeed**
 
-To successfully execute the offer, the call should return normally and the offer's owner should have `wants` **outbound tokens** available for Mangrove to transfer to the taker.
+To successfully execute the offer, the call should return `bytes32("")` and the offer's owner should have `wants` **outbound tokens** available for Mangrove to transfer to the taker.
 
 **How to fail**
 
@@ -107,15 +114,10 @@ To renege on an offer, you may revert, but a simpler method is to return any val
 
 The [bounty](offer-bounty.md) taken from the offer maker's provision is [proportional](offer-bounty.md#offer-bounty-computation) to the gas consumed by `makerExecute`. To minimize costs, try to fail as early as possible.
 
-**Keep Mangrove interactions for `makerPosthook`**
-When `makerExecute`, the offer list for the **outbound token**/**inbound token** pair is temporarily locked. Its offers cannot be modified in any way. We recommend that you use `makerPosthook` to repost/update your offers, since the offer list will unlocked by then.
-{% endhint %}
+**Don't call Mangrove during `makerExecute`**
 
-{% hint style="danger" %}
-**Security concerns**
-Your contract must ensure that unauthorized callers cannot run `makerExecute`. The simplest way is to have a constant `address mgv` and add `require(msg.sender == mgv,"unauthorized")` at the top of your `makerExecute`.
+The offer list for the **outbound token**/**inbound token** pair is temporarily locked during calls to `makerExecute`. Its offers cannot be modified in any way. We recommend that you use `makerPosthook` to repost/update your offers, since the offer list will unlocked by then.
 {% endhint %}
-
 
 # Offer post-hook&#x20;
 
@@ -124,10 +126,11 @@ A **Maker Contract** may have a `makerPosthook` callback function. Its intended 
 {% tabs %}
 {% tab title="Signature" %}
 ```solidity
-  struct OrderResult {
+struct OrderResult {
     bytes32 makerData; // data returned by `makerExecute`
     bytes32 mgvData; // additional data sent by Mangrove, see below
-  }
+}
+
 function makerPosthook(
     MgvLib.SingleOrder calldata order,
     MgvLib.OrderResult calldata result
@@ -197,14 +200,15 @@ None.
 
 {% hint style="danger" %}
 **Security concerns**
-Your contract must ensure that unauthorized callers cannot run `makerPosthook`. The simplest way is to have a constant `address mgv` and add `require(msg.sender == mgv,"unauthorized")` at the top of your `makerExecute`.
+
+Your contract must ensure that unauthorized callers cannot run `makerPosthook`. The simplest way is to have a constant `address mgv` and add `require(msg.sender == mgv,"unauthorized")` at the top of your `makerPosthook`.
 {% endhint %}
 
 
 {% hint style="info" %}
 **Gas management**
 
-Posthooks get called with the remainder of the executed offer's `gasreq`, after removing the gas used by `makerExecute`. Keep that in mind when posting a new offer and setting its `gasreq`.
+Posthooks are given the executed offer's `gasreq` minus the gas used by `makerExecute`. Keep that in mind when posting a new offer and setting its `gasreq`.
 
 **Updating offers during posthook**
 
