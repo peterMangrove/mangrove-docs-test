@@ -17,7 +17,7 @@ Here is the offer lifecycle, with the parts addressed in this section bolded:
 4. Mangrove transfers tokens from `user.eth` to `maker.eth`.
 5. **Mangrove calls the function [`makerExecute`](#offer-execution) of `maker.eth`**.
 6. Mangrove transfers tokens from `maker.eth` to `user.eth`.
-7. **Mangrove calls the function [`postHook`](#offer-post-hook) of `maker.eth`**.
+7. **Mangrove calls the function [`makerPosthook`](#offer-post-hook) of `maker.eth`**.
 8. The offer is now out of its Offer List, but may be updated at a later time by `maker.eth`.
 
 
@@ -39,23 +39,37 @@ Upon being called, **Maker Contract** has 100,000 USDC available and may source 
 A **Maker Contract** MUST have a `makerExecute` callback functions of the following type:
 
 {% tabs %}
-{% tab title="Function" %}
+{% tab title="Signature" %}
 ```solidity
+
+struct SingleOrder {
+    address outbound_tkn;
+    address inbound_tkn;
+    uint offerId;
+    bytes32 offer; // basic offer info
+    uint wants; // Amount to be received by the taker
+    uint gives; // Amount just received by the maker
+    bytes32 offerDetail; // extra offer info
+    bytes32 global; // mangrove global config info
+    bytes32 local; // mangrove config for the current offer list
+}
+
 function makerExecute(MgvLib.SingleOrder calldata order)
 external returns (bytes32 makerData);
+
 ```
 {% endtab %}
 
 {% tab title="In Maker Contract" %}
 {% code title="MakerContract-0.sol" %}
 ```solidity
-import "path_to_interfaces/ERC20.sol";
-import "path_to_mangrove/MgvLib.sol";
+import "./ERC20.sol";
+import "./MgvLib.sol";
 
 contract MakerContract is IMaker {
     address MGV; // address of the Mangrove contract
 
-    // an example of offer execution that simply verifies that `this` contracgt has enough outbound tokens to satisfy the taker Order.
+    // an example of offer execution that simply verifies that `this` contract has enough outbound tokens to satisfy the taker Order.
     function makerExecute(MgvLib.SingleOrder calldata order) 
     external returns (bytes32 makerData){
         require(msg.sender == MGV, "Only mangrove can call me");
@@ -73,45 +87,47 @@ contract MakerContract is IMaker {
 {% endtab %}
 {% endtabs %}
 
-* `order: MgvLib.SingleOrder calldata` is a [data structure](https://github.com/giry-dev/mangrove/blob/c4446bbcb0a4dbade4777075eb3e26faebd1c218/contracts/MgvLib.sol#L55) that transmits the [Taker Order](broken-reference) to the Maker Contract and recalls the [Offer](reactive-offer.md) as it was posted on the Mangrove.&#x20;
-* `makerData:bytes32` is the decision of the Offer Maker with respect the continuation of the trade. Any non empty return value (i.e different from `bytes32("")`) is interpreted by Mangrove as an instruction to renege on trade. As a consequence the offer will be removed from its [Offer List](broken-reference) and a [bounty](offer-bounty.md#offer-bounty-computation) will be sent to the Offer Taker for compensation.&#x20;
+## Inputs
+
+* `order` represents the [Taker Order](broken-reference) and the current Mangrove configuration. `order.gives/order.wants` will closely match the price of the offer that is being executed.
+
+## Outputs
+* `makerData` may contain information; its content will be transmitted to `makerPosthook` later in the offer lifecycle. If `makerData != bytes32("")` or if the call reverts, Mangrove will consider that execution has failed.
 
 {% hint style="info" %}
-#### Return value
+**How to succeed**
 
-The `makerExecute` function SHOULD not revert in order to be able to log messages for introspection and monitoring by the offer maker. The intended clean way to renege on trade is rather to return a non empty `bytes32` word. This return value will be later on passed to the [`makerPosthook`](maker-contract.md#offer-post-hook) callback function under the `result.makerData `argument.&#x20;
+To successfully execute the offer, the call should return normally and the offer's owner should have `wants` **outbound tokens** available for Mangrove to transfer to the taker.
 
-#### Better fail early!
+**How to fail**
 
-The [Offer Bounty](offer-bounty.md) that is taken from the Offer Maker's provision is [proportional ](offer-bounty.md#offer-bounty-computation)to the gas consumed by `makerExecute`. It is therefore wise to renege on trade early in the execution of `makerExecute` in order to minimize costs related to offer management.
+To renege on an offer, you may revert, but a simpler method is to return any value other than `bytes32("")`. This way your logs will be preserved. Either way, `makerData` will be [sent back](#offer-post-hook) by Mangrove to your `makerPosthook` function.
+
+**Better fail early!**
+
+The [bounty](offer-bounty.md) taken from the offer maker's provision is [proportional](offer-bounty.md#offer-bounty-computation) to the gas consumed by `makerExecute`. To minimize costs, try to fail as early as possible.
+
+**Keep Mangrove interactions for `makerPosthook`**
+When `makerExecute`, the offer list for the **outbound token**/**inbound token** pair is temporarily locked. Its offers cannot be modified in any way. We recommend that you use `makerPosthook` to repost/update your offers, since the offer list will unlocked by then.
 {% endhint %}
 
 {% hint style="danger" %}
-**Important points**
-
-* [x] **Maker Contract** MUST verify that the caller (`msg.sender`) of `makerExecute` is the Mangrove otherwise the price of the `order` can be arbitrary.
-*   [x] By the end of the execution of this function, when the Offer Maker** **wishes to proceed with the outbound token transfer required by the order, the **Maker Contract**:
-
-    * MUST have at least `order.wants` amount of outbound tokens in its balance.
-    * MUST _not_ have reverted.
-    * MUST have approved the outbound token ERC20 contract for Mangrove's transfer of `order.wants` tokens
-    * MUST return the empty `bytes32` word (i.e`bytes32("")`) when it wishes to tell Mangrove contract to proceed with the transfer of the outbound tokens.
-
-    Failure to comply with the above points will result in Mangrove transferring an ether [Bounty](offer-bounty.md) to the taker.
-* [x] During the execution of `makerExecute`, the [Offer List](broken-reference) containing the offer being executed is guarded against _write_ reentrancy. **Maker Contract **MUST therefore not attempt to modify or post any offer on this[ Offer List](broken-reference) during the execution of `makerExecute` and use [`makerPosthook`](maker-contract.md#offer-post-hook) to do so if needed.
+**Security concerns**
+Your contract must ensure that unauthorized callers cannot run `makerExecute`. The simplest way is to have a constant `address mgv` and add `require(msg.sender == mgv,"unauthorized")` at the top of your `makerExecute`.
 {% endhint %}
 
-{% hint style="warning" %}
-At the end of `makerExecute` the consumed offer is retracted from its [Offer List](broken-reference), even in the case of a partial fill. Should one want to repost the offer, one SHOULD use the `makerPosthook` to do so (see below).
-{% endhint %}
 
-## Offer post-hook&#x20;
+# Offer post-hook&#x20;
 
-A **Maker Contract** SHOULD have a `makerPosthook` callback function whenever it requires write access to the [Offer List](broken-reference) containing the [offer](reactive-offer.md#description) that was executed.
+A **Maker Contract** may have a `makerPosthook` callback function. Its intended use is to update offers in the [Offer List](broken-reference) containing the [offer](reactive-offer.md#description) that was just executed.
 
 {% tabs %}
-{% tab title="Function" %}
+{% tab title="Signature" %}
 ```solidity
+  struct OrderResult {
+    bytes32 makerData; // data returned by `makerExecute`
+    bytes32 mgvData; // additional data sent by Mangrove, see below
+  }
 function makerPosthook(
     MgvLib.SingleOrder calldata order,
     MgvLib.OrderResult calldata result
@@ -169,24 +185,36 @@ contract MakerContract is IMaker {
 {% endtab %}
 {% endtabs %}
 
-* `order: MgvLib.SingleOrder calldata` A [struct](../data-structures/offer-data-structures.md#mgvlib-singleorder) containing the data of the Taker Order and a recap of the [Offer](../data-structures/offer-data-structures.md#mgvlib-offer) data as initially posted by the Maker Contract.
-* `result: MgvLib.OrderResult calldata` A [struct](../data-structures/offer-data-structures.md#mgvlib-orderresult) gathering data generated during the execution of the offer.
+
+## Inputs
+* `order` same as in `makerExecute`.
+* `result` A [struct](../data-structures/offer-data-structures.md#mgvlib-orderresult) containing:
+  * the return value of `makerExecute`
+  * additional data sent by Mangrove, more info [available here](../data-structures/offer-data-structures.md#mgvlib.orderresult).
+
+## Outputs
+None.
 
 {% hint style="danger" %}
-**Important points**
-
-* [x] **Maker Contract** MUST verify that the caller of `makerPosthook` is Mangrove (msg.sender).
-* [x] An **offer post-hook**  is called by Mangrove with the remainder of the gas allocated to the offer after its execution. Hence, the `gasreq` parameter SHOULD cover both the execution of the offer and its post-hook (cf. [posting a new offer](reactive-offer.md#write-functions)).
-* [x] Reverting in an offer post-hook (e.g for being out of gas) does not revert the offer execution.
+**Security concerns**
+Your contract must ensure that unauthorized callers cannot run `makerPosthook`. The simplest way is to have a constant `address mgv` and add `require(msg.sender == mgv,"unauthorized")` at the top of your `makerExecute`.
 {% endhint %}
-
 
 
 {% hint style="info" %}
-#### Persistent offers
+**Gas management**
 
-When called back on `makerPosthook`, the **Maker Contract** has full reentrancy power into Mangrove. It particular it has write access to all [Offer Lists](broken-reference). This feature can be used to repost an [offer](reactive-offer.md), possibly at a different price (see In **Maker Contract tab** in the above code snippet).
+Posthooks get called with the remainder of the executed offer's `gasreq`, after removing the gas used by `makerExecute`. Keep that in mind when posting a new offer and setting its `gasreq`.
+
+**Updating offers during posthook**
+
+During the execution of a posthook, the executed offer's list is unlocked. This feature can be used to repost an [offer](reactive-offer.md) (even the one that was just executed), possibly at a different price (see the **Maker Contract tab** in the above code snippet).
 {% endhint %}
 
+{% hint style="success" %}
+**Reverting in posthooks**
+
+Reverting in a posthook never undoes the offer execution.
+{% endhint %}
 
 
