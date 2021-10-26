@@ -9,8 +9,8 @@
   * [Delegate Takers](offer-taker/delegate-takers.md)
   * [Cleaning an offer](offer-taker/cleaning-an-offer.md)
 * [Sourcing liquidity](offer-maker/README.md)
-  * [Reactive Offers](offer-maker/reactive-offer.md)
-  * [Maker contract](offer-maker/maker-contract.md)
+  * [Offer creation/update](offer-maker/reactive-offer.md)
+  * [Offer execution](offer-maker/maker-contract.md)
   * [Offer Bounty](offer-maker/offer-bounty.md)
 
 ## Data Structures
