@@ -50,8 +50,8 @@ struct SingleOrder {
     uint wants; // Amount to be received by the taker
     uint gives; // Amount just received by the maker
     bytes32 offerDetail; // extra offer info
-    bytes32 global; // mangrove global config info
-    bytes32 local; // mangrove config for the current offer list
+    bytes32 global; // packed version of mangrove global config info
+    bytes32 local; // packed version of mangrove config for the current offer list
 }
 
 function makerExecute(MgvLib.SingleOrder calldata order)
@@ -89,7 +89,16 @@ contract MakerContract is IMaker {
 
 ## Inputs
 
-* `order` represents the [Taker Order](broken-reference) and the current Mangrove configuration. `order.gives/order.wants` will closely match the price of the offer that is being executed.
+* `order` represents the [Taker Order](broken-reference) and the current Mangrove configuration. `order.gives/order.wants` will closely match the price of the offer that is being executed. It contains the following fields:
+  * `addresss outbound_tkn` the **outbound token**. `wants` is denominated in `outbound_tkn`.
+  *  `address inbound_tkn` the **inbound token**. `gives` is denominated in `inbound_tkn`.
+  *  `uint offerId` id of the offer being executed.
+  *  `uint offer` packed info about the offer. Use [MgvLib](TODO) to unpack.
+  *  `uint wants` amount to be received by the taker
+  *  `uint gives` amount just received by the maker
+  *  `bytes32 offerDetail` packed details about the offer. Use [MgvLib](TODO) to unpack.
+  *  `bytes32 global` packed version of mangrove global config info. Use [MgvLib](TODO) to unpack.
+  *  `bytes32 local` packed version of mangrove config for the current offer list. Use [MgvLib](TODO) to unpack.
 
 ## Outputs
 * `makerData` If `makerData != bytes32("")` or if the call reverts, Mangrove will consider that execution has failed. It is always sent `makerPosthook` later, so you can use it to transfer information to `makerPosthook` after a failure.
