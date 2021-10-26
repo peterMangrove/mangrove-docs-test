@@ -19,6 +19,7 @@
 * [Configuration](data-structures/mangrove-configuration.md)
 * [Offers, orders and execution results](data-structures/offer-data-structures.md)
 * [Reading offers](data-structures/reading-offers.md)
+* [Read data](data-structures/read-data.md)
 
 ## Around the Mangrove <a href="meta-topics" id="meta-topics"></a>
 
