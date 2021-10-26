@@ -2,7 +2,7 @@
 description: Developer documentation pertaining to writing and managing Maker contracts.
 ---
 
-# Maker contract
+# Offer execution
 
 ## Description
 
