@@ -117,7 +117,12 @@ function fund(address maker) public payable;
 event Credit(address maker, uint amount);
 ```
 {% endtab %}
-
+{% tab title="Revert strings" %}
+```solidity
+// Funding on a dead Mangrove
+"mgv/dead"
+```
+{% endtab %}
 {% tab title="Solidity" %}
 {% code title="fund.sol" %}
 ```solidity
