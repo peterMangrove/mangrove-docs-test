@@ -14,7 +14,7 @@ This documentation is targeted at readers who want to interact with the on-chain
 
 There are 3 types of actors in play:
 
-* Offer makers [add _liquidity promises_ ](offer-taker/)to Mangrove. They own offers in [offer lists](data-structures/market.md) and must manage contracts that react to [offer execution](data-structures/offer-data-structures.md).
+* Offer makers [add _liquidity promises_ ](offer-taker/)to Mangrove. They own offers in [offer lists](broken-reference) and must manage contracts that react to [offer execution](data-structures/offer-data-structures.md).
 * Takers go to Mangrove to [_find liquidity _](offer-maker/)by executing offers already in Mangrove.
 * [Governance](meta-topics/governance.md#offer-list-specific-governance-parameters) adjusts Mangrove parameters, opens new pairs, sets fees, etc.
 

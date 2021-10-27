@@ -9,8 +9,8 @@
   * [Delegate Takers](offer-taker/delegate-takers.md)
   * [Cleaning an offer](offer-taker/cleaning-an-offer.md)
 * [Sourcing liquidity](offer-maker/README.md)
-  * [Reactive Offers](offer-maker/reactive-offer.md)
-  * [Maker contract](offer-maker/maker-contract.md)
+  * [Offer creation/update](offer-maker/reactive-offer.md)
+  * [Offer execution](offer-maker/maker-contract.md)
   * [Offer Bounty](offer-maker/offer-bounty.md)
 
 ## Data Structures
@@ -18,10 +18,16 @@
 * [Offer Lists](data-structures/market.md)
 * [Configuration](data-structures/mangrove-configuration.md)
 * [Offers, orders and execution results](data-structures/offer-data-structures.md)
+* [Reading offers](data-structures/reading-offers.md)
+* [Read data](data-structures/read-data.md)
 
 ## Around the Mangrove <a href="meta-topics" id="meta-topics"></a>
 
 * [Governance](meta-topics/governance.md)
+* [Mangrove's ecosystem](meta-topics/mangroves-ecosystem/README.md)
+  * [Reader](meta-topics/mangroves-ecosystem/reader.md)
+  * [Monitor](meta-topics/mangroves-ecosystem/monitor.md)
+  * [Cleaner](meta-topics/mangroves-ecosystem/cleaner.md)
 * [Deployment addresses](meta-topics/deployment-addresses.md)
 
 ## Strategies for Maker Contracts <a href="offer-making-strategies" id="offer-making-strategies"></a>
