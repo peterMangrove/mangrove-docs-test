@@ -155,10 +155,6 @@ await Mangrove["fund(address)"](maker_contract_address, overrides);
 ```
 {% endcode %}
 {% endtab %}
-
-{% tab title="Source code" %}
-{% embed url="https://github.com/giry-dev/mangrove/blob/8b423318179f1b4193feac326f18c9687413818f/packages/mangrove-solidity/contracts/MgvOfferMaking.sol#L191" %}
-{% endtab %}
 {% endtabs %}
 
 * `maker` address of the maker contract one is willing to fund.&#x20;
