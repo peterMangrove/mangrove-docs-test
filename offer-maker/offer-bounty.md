@@ -8,7 +8,7 @@ description: >-
 
 ## Offer bounty computation
 
-The computation of the **bounty** $$\beta$$ that should be provisioned when posting a new [offer](reactive-offer.md) on a Mangrove [Offer List](broken-reference) depends various parameters (follow hyperlinks for more information about their respective meaning).
+The computation of the **bounty** $$\beta$$ that should be provisioned when posting a new [offer](reactive-offer.md) on a Mangrove [Offer List](broken-reference/) depends various parameters (follow hyperlinks for more information about their respective meaning).
 
 The price (in WEIs) of an **offer bounty** is meant to compensate takers for the gas used to execute the offer in case of failure. At the time an offer is posted, Mangrove's [gasprice](../meta-topics/governance.md#gas-price-and-oracle) $$\gamma_{\mathsf{mgv}}$$ is used to determine the bounty $$\beta$$​the following way:
 
@@ -26,9 +26,9 @@ Mangrove requires to provision (in WEI): $$\beta = \hbox{max}(G, G_\mathsf{ofr})
 where $$\gamma_\mathsf{req}$$is the gas required by the offer, $$K_0$$is the [gas overhead](../meta-topics/governance.md#global-governance-parameters) constant (the amount of gas necessary to call an offer) and $$K(O,I)$$​
 
 {% hint style="warning" %}
-#### Applied bounty
+**Applied bounty**
 
-Suppose an offer requires $$g_{\mathsf{ofr}}$$​ gas units to execute. As explained above, Mangrove will require the Offer Maker to provision $$\beta$$ WEI. Suppose the offer is executed during a Taker Order and fails after $$g_{\mathsf{used}}$$gas units ($$g_\mathsf{used}<g_\mathsf{ofr}$$). The portion of the Offer Maker bounty that will be transferred to the Offer Taker's account is $$\dot G*(\dot g_0+\dot g_1+g_\mathsf{used})$$ where $$\dot G$$​, $$\dot g_0$$ and $$\dot g_1$$are respectively the [`global.gasprice`](../meta-topics/governance.md#global-parameters), [`local.overhead_gasbase`](../meta-topics/governance.md#offer-list-specific-governance-parameters) and the [`local.offer_gasbase`](../meta-topics/governance.md#offer-list-specific-governance-parameters) values _at the time the offer is taken _(which may differ from their values at the time the offer was posted, as a consequence of some parameter changes by the governance).
+Suppose an offer requires $$g_{\mathsf{ofr}}$$​ gas units to execute. As explained above, Mangrove will require the Offer Maker to provision $$\beta$$ WEI. Suppose the offer is executed during a Taker Order and fails after $$g_{\mathsf{used}}$$gas units ($$g_\mathsf{used}<g_\mathsf{ofr}$$). The portion of the Offer Maker bounty that will be transferred to the Offer Taker's account is $$\dot G*(\dot g_0+\dot g_1+g_\mathsf{used})$$ where $$\dot G$$​, $$\dot g_0$$ and $$\dot g_1$$are respectively the [`global.gasprice`](../meta-topics/governance.md#global-parameters), [`local.overhead_gasbase`](../meta-topics/governance.md#offer-list-specific-governance-parameters) and the [`local.offer_gasbase`](../meta-topics/governance.md#offer-list-specific-governance-parameters) values \_at the time the offer is taken \_(which may differ from their values at the time the offer was posted, as a consequence of some parameter changes by the governance).
 {% endhint %}
 
 {% hint style="info" %}
@@ -36,7 +36,7 @@ An offer bounty is calculated so that, within reasonable gas estimates, taking a
 {% endhint %}
 
 {% hint style="info" %}
-Posting an offer with a $$G_\mathsf{ofr}>G$$ is a way for the Offer Maker to anticipate future gas price update of the Governance and minimize gas cost of offer reposting.&#x20;
+Posting an offer with a $$G_\mathsf{ofr}>G$$ is a way for the Offer Maker to anticipate future gas price update of the Governance and minimize gas cost of offer reposting.
 {% endhint %}
 
 A view function of the [Mangrove Reader](../meta-topics/mangroves-ecosystem/reader.md) contract allows one to obtain easily the necessary bounty to provision, given an offer gas requirement and an offer gas price.
@@ -85,17 +85,12 @@ const MangroveReader = new ethers.Contract(
 
 const ofr_gasreq = ethers.parseUnits("1",5); //100,000 gas units
 const bounty = await MangroveReader.getProvision(outTkn, inbTkn, ofr_gasreq,0);
-
 ```
 {% endcode %}
 {% endtab %}
-
-{% tab title="Source code" %}
-
-{% endtab %}
 {% endtabs %}
 
-* `(outbound_tkn, inbound_tkn)` the addresses of the (inbound, outbound) [Offer List](broken-reference).
+* `(outbound_tkn, inbound_tkn)` the addresses of the (inbound, outbound) [Offer List](broken-reference/).
 * `ofr_gasreq` the max amount of gas that is required to execute the [offer](reactive-offer.md).
 * `ofr_gasprice` (in GWei) the gas price the offer maker wishes to compute the **bounty** for (put 0 to use Mangrove's [gas price](../meta-topics/governance.md#gas-price-and-oracle)).
 * `bounty` the amount of WEI Mangrove will require to provision in order to accept a new offer with `ofr_gasreq` and `ofr_gasprice` as parameters.
@@ -117,12 +112,7 @@ function fund(address maker) public payable;
 event Credit(address maker, uint amount);
 ```
 {% endtab %}
-{% tab title="Revert strings" %}
-```solidity
-// Funding on a dead Mangrove
-"mgv/dead"
-```
-{% endtab %}
+
 {% tab title="Solidity" %}
 {% code title="fund.sol" %}
 ```solidity
@@ -162,7 +152,7 @@ await Mangrove["fund(address)"](maker_contract_address, overrides);
 {% endtab %}
 {% endtabs %}
 
-* `maker` address of the maker contract one is willing to fund.&#x20;
+* `maker` address of the maker contract one is willing to fund.
 
 ## Withdrawing provisions
 
@@ -228,9 +218,9 @@ if (await Mangrove.callstatic.withdraw(wei_balance)) {
 * `amount` the amount in WEI one wishes to withdraw from Mangrove's provisions.
 
 {% hint style="danger" %}
-#### Important points
+**Important points**
 
 * Caller of `withdraw` MUST be the Maker Contract owning the funds on Mangrove
 * `amount` to be withdrawn MUST be less or equal than the balance of `msg.sender` on Mangrove (see checking balances below).
-* Provisions that are attached to an offer (see [updating](reactive-offer.md#updating-an-existing-offer) or [posting](reactive-offer.md#posting-a-new-reactive-offer) new offers) are locked and not available for withdrawing until offer is deprovisioned (see [retracting offers](reactive-offer.md#retracting-an-offer)).&#x20;
+* Provisions that are attached to an offer (see [updating](reactive-offer.md#updating-an-existing-offer) or [posting](reactive-offer.md#posting-a-new-reactive-offer) new offers) are locked and not available for withdrawing until offer is deprovisioned (see [retracting offers](reactive-offer.md#retracting-an-offer)).
 {% endhint %}
