@@ -109,14 +109,14 @@ event OrderComplete(
 ```solidity
 // Gatekeeping
 "mgv/dead" // Trying to take offers on a terminated Mangrove
-"mgv/inactive" // Trying to take offers on an inactive Offer List
+"mgv/inactive" // Trying to take offers on an inactive offer list
 
 // Overflow
 "mgv/mOrder/takerWants/160bits" // taker wants too much of a market Order
 "mgv/mOrder/takerGives/160bits" // taker gives too much in the market order
 
 // Panic reverts
-"mgv/sendPenaltyReverted" // Mangrove could not send Offer Bounty to taker
+"mgv/sendPenaltyReverted" // Mangrove could not send the offer bounty to taker
 "mgv/feeTransferFail" // Mangrove could not collect fees from the taker
 "mgv/MgvFailToPayTaker" // Mangrove was unable to transfer outbound_tkn to taker (Taker blacklisted?)
 ```
@@ -275,24 +275,20 @@ Contrary to limit orders on regular orderbook-based exchanges, the residual of y
 
 Consider the following A-B offer list:
 
-| Offer Id | Wants (B) | Gives (A) | Price (B per A) |
+|      ID  | Wants (B) | Gives (A) | Price (B per A) |
 | -------- | --------- | --------- | --------------- |
 | 1        | 1         | 1         | 1               |
 | 2        | 2         | 1         | 2               |
 | 3        | 6         | 2         | 3               |
 
-{% hint style="info" %}
-**Example**
 
+A regular limit order with `takerWants` set to 3 A and `takerGives` set to 6 B would consume offers until it hits an offer with a price above 2, so it would consume offers #1 and #2, but not offer #3.
 
-
-* A regular limit order with `takerWants` set to 3 A and `takerGives` set to 6 B would consume offers until it hits an offer with a price above 2, so it would consume offers #1 and #2, but not offer #3.
-* In Mangrove, a "market order" with the same parameters will however consume offers #1 and #2 completely and #3 partially (for 3 Bs only), and result in the taker spending 6 (1+2+6/2) and receiving (1+1+2/2), which corresponds to a volume-weighted price of 2, complying with the Taker Order.
-{% endhint %}
+In Mangrove, a "market order" with the same parameters will however consume offers #1 and #2 completely and #3 partially (for 3 Bs only), and result in the taker spending 6 (1+2+6/2) and receiving (1+1+2/2), which corresponds to a volume-weighted price of 2, complying with the Taker Order.
 
 ## Offer sniping
 
-It is also possible to target specific offer IDs in the [Offer List](broken-reference/). This is called **Offer Sniping**.
+It is also possible to target specific offer IDs in the [offer list](broken-reference/). This is called **Offer Sniping**.
 
 {% hint style="info" %}
 Offer sniping can be used by off-chain bots and price aggregators to build their own optimized market order, targeting for instance offers with a higher volume or less gas requirements in order to optimize the gas cost of filling the order.
@@ -326,7 +322,7 @@ event OfferSuccess(
     address indexed outbound_tkn,
     address indexed inbound_tkn,
     uint id, // offer Id
-    address taker, // address of the market order call
+    address taker, // address of the market order caller
     uint takerWants, // original wants of the order
     uint takerGives // original gives of the order
   );
@@ -371,7 +367,7 @@ event OrderComplete(
 ```javascript
 // Gatekeeping
 "mgv/dead" // Trying to take offers on a terminated Mangrove
-"mgv/inactive" // Trying to take offers on an inactive Offer List
+"mgv/inactive" // Trying to take offers on an inactive offer list
 
 // Overflow
 "mgv/snipes/takerWants/96bits" // takerWants for snipe overflows
@@ -506,9 +502,13 @@ await Mangrove.connect(signer).snipes(
 {% hint style="warning" %}
 **Protection against malicious offer updates**
 
-Offers can be updated, so if targets was just an array of `offerId`s, there would be no way to protect against a malicious offer update mined right before a snipe. The offer could suddenly have a worse price, or require a lot more gas.
+Offers can be updated, so if `targets` was just an array of `offerId`s, there would be no way to protect against a malicious offer update mined right before a snipe. The offer could suddenly have a worse price, or require a lot more gas.
 
-If you only want to take offers without any checks on the offer contents, you can simply set `takerWants` to `0`, set `takerGives` to `type(uint96).max`, set `gasreq_permitted` to `type(uint).max`, and set `fillWants` to `false`.
+If you only want to take offers without any checks on the offer contents, you can simply:
+* Set `takerWants` to `0`, 
+* Set `takerGives` to `type(uint96).max`, 
+* Set `gasreq_permitted` to `type(uint).max`, and 
+* Set `fillWants` to `false`.
 {% endhint %}
 
 ### Outputs
@@ -519,18 +519,15 @@ If you only want to take offers without any checks on the offer contents, you ca
 
 #### Example
 
-Consider the following (A,B) Offer List:
-
-|      |         |         |          |
-| ---- | ------- | ------- | -------- |
-| `id` | `wants` | `gives` | `gasreq` |
-| 13   | 10      | 10      | 80\_000  |
-| 2    | 1       | 2       | 250\_000 |
+|  ID  | Wants     | Gives     | Gas required |
+| ---- | --------- | --------- | ------------ |
+| 13   | 10        | 10        | 80\_000      |
+| 2    | 1         | 2         | 250\_000     |
 
 {% hint style="info" %}
 **Example**
 
-Consider the above offers on the DAI-USDC **OL**:
+Consider the above offers on the DAI-USDC offer list:
 
 Setting `targets` to `[[13,8,10,80_000],[2,1,1.1,250_000]]` with `fillWants` set to `true` will successfuly buy 8 DAI from offer #13 (for 8 USDC), and will not attempt to execute offer #2 since 1.1 > 1/2.
 {% endhint %}
