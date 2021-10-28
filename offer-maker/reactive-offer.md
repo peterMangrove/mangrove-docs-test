@@ -1,5 +1,5 @@
 ---
-description: -
+description: How to write offers on Mangrove
 ---
 
 {% hint style="info" %}
