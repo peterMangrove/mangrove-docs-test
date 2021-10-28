@@ -1,13 +1,14 @@
 ---
-description: Developer documentation pertaining to writing and managing Maker contracts.
+description: Developer documentation pertaining to writing and managing offer logic
 ---
 
 # Offer execution
 
 ## Description
 
-A **Maker Contract** is a smart contract whose address is associated with one or many [Reactive Offers](reactive-offer.md) listed on Mangrove [**Offer List**](broken-reference).
-Maker Contracts should implement the [IMaker interface](https://github.com/giry-dev/mangrove/blob/c4446bbcb0a4dbade4777075eb3e26faebd1c218/contracts/MgvLib.sol#L161). They must at least implement the `makerExecute` function, otherwise they will fail all their offer executions.
+[Offers](reactive-offer.md) are created with an associated account (contract or EOA) and listed on Mangrove [offer lists](broken-reference).
+* If the account is an EOA, no logic will be associated to the offer
+* If the account is a contract, it should implement the offer logic through the [IMaker interface](https://github.com/giry-dev/mangrove/blob/c4446bbcb0a4dbade4777075eb3e26faebd1c218/contracts/MgvLib.sol#L161). It must at least implement the `makerExecute` function, otherwise all their offer executions will fail.
 
 Here is the offer lifecycle, with the parts addressed in this section bolded:
 
@@ -24,19 +25,19 @@ Here is the offer lifecycle, with the parts addressed in this section bolded:
 {% hint style="info" %}
 **Multiple offers per address**
 
-A Maker Contract can post more than one offer. When it gets called through `makerExecute`, it will receive the id of the offer being executed as well as additional information.
+An account can post more than one offer. When it gets called through `makerExecute`, it will receive the id of the offer being executed as well as additional information.
 {% endhint %}
 
 {% hint style="info" %}
 **Example scenario**
-Suppose that an [offer](reactive-offer.md) managed by the Maker Contract promises 100,000 DAI in exchange for 100,000 USDC.
+Suppose that an [offer](reactive-offer.md) managed by a contract promises 100,000 DAI in exchange for 100,000 USDC.
 
-Upon being called, **Maker Contract** has 100,000 USDC available and may source DAI from anywhere on the chain. It needs to end execution with 100,000 available and ready to be transferred by Mangrove through `transferFrom`.
+Upon being called, the contract has 100,000 USDC available (just given to it by Mangrove) and may source DAI from anywhere on the chain. It needs to end execution with 100,000 available and ready to be transferred by Mangrove through `transferFrom`.
 {% endhint %}
 
 ## Offer execution
 
-A **Maker Contract** MUST have a `makerExecute` callback functions of the following type:
+The logic associated with an offer MUST be implemented through a `makerExecute` callback functions of the following type:
 
 {% tabs %}
 {% tab title="Signature" %}
@@ -60,14 +61,14 @@ external returns (bytes32 makerData);
 ```
 {% endtab %}
 
-{% tab title="In Maker Contract" %}
+{% tab title="Offer logic" %}
 {% code title="MakerContract-0.sol" %}
 ```solidity
 import "./ERC20.sol";
 import "./MgvLib.sol";
 
 contract MakerContract is IMaker {
-    address MGV; // address of the Mangrove contract
+    address MGV; // address of Mangrove
 
     // an example of offer execution that simply verifies that `this` contract has enough outbound tokens to satisfy the taker Order.
     function makerExecute(MgvLib.SingleOrder calldata order) 
@@ -89,7 +90,7 @@ contract MakerContract is IMaker {
 
 ## Inputs
 
-* `order` represents the [Taker Order](broken-reference) and the current Mangrove configuration. `order.gives/order.wants` will closely match the price of the offer that is being executed. It contains the following fields:
+* `order` represents the [order](broken-reference) currently executing the offer and the current Mangrove configuration. `order.gives/order.wants` will match the price of the offer that is being executed up to a small precision. It contains the following fields:
   * `addresss outbound_tkn` the **outbound token**. `wants` is denominated in `outbound_tkn`.
   *  `address inbound_tkn` the **inbound token**. `gives` is denominated in `inbound_tkn`.
   *  `uint offerId` id of the offer being executed.
@@ -130,7 +131,7 @@ The offer list for the **outbound token**/**inbound token** pair is temporarily 
 
 # Offer post-hook&#x20;
 
-A **Maker Contract** may have a `makerPosthook` callback function. Its intended use is to update offers in the [Offer List](broken-reference) containing the [offer](reactive-offer.md#description) that was just executed.
+The logic associated with an offer may include a `makerPosthook` callback function. Its intended use is to update offers in the [Offer List](broken-reference) containing the [offer](reactive-offer.md#description) that was just executed.
 
 {% tabs %}
 {% tab title="Signature" %}
@@ -147,7 +148,7 @@ function makerPosthook(
 ```
 {% endtab %}
 
-{% tab title="In Maker Contract" %}
+{% tab title="Offer logic" %}
 {% code title="MakerContract-1.sol" %}
 ```solidity
 import "path_to_interfaces/ERC20.sol";
@@ -221,7 +222,7 @@ Posthooks are given the executed offer's `gasreq` minus the gas used by `makerEx
 
 **Updating offers during posthook**
 
-During the execution of a posthook, the executed offer's list is unlocked. This feature can be used to repost an [offer](reactive-offer.md) (even the one that was just executed), possibly at a different price (see the **Maker Contract tab** in the above code snippet).
+During the execution of a posthook, the executed offer's list is unlocked. This feature can be used to repost an [offer](reactive-offer.md) (even the one that was just executed), possibly at a different price (see the **Offer logic** in the above code snippet).
 {% endhint %}
 
 {% hint style="success" %}

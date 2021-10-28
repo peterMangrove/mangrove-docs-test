@@ -58,7 +58,7 @@ function getProvision(
 ```solidity
 import "./path_to_periphery/MgvReader.sol";
 //context 
-MgvReader mgvr; // MgvReader contract
+MgvReader mgvr; // MgvReader contract address
 address outTk; // outbound token address
 address inbTk; // inbound token address
 
@@ -100,13 +100,13 @@ const bounty = await MangroveReader.getProvision(outTkn, inbTkn, ofr_gasreq,0);
 Provisioning Mangrove for offer bounties is done via the following payable function:
 
 {% tabs %}
-{% tab title="Function" %}
+{% tab title="Signature" %}
 ```solidity
 function fund(address maker) public payable;
 ```
 {% endtab %}
 
-{% tab title="Emitted logs" %}
+{% tab title="Events" %}
 ```solidity
 // Offer Maker at address `maker` has been credited of `amount` WEIs
 event Credit(address maker, uint amount);
@@ -118,7 +118,7 @@ event Credit(address maker, uint amount);
 ```solidity
 import "./path_to_mangrove/Mangrove.sol";
 //context 
-Mangrove mgv; // Mangrove contract
+Mangrove mgv; // Mangrove contract address
 address maker_contract; // address of the maker contract one is willing to provision
 // funding maker_contract
 mgv.fund{value: 0.1 ether}(maker_contract);

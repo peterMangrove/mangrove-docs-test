@@ -32,9 +32,9 @@ A **Market Order** is Mangrove's main liquidity sourcing entrypoint. It is calle
 
 The order is processed by Mangrove's matching engine by consuming the offers of the list, starting from [the best one](broken-reference/). Execution works as follows, where at any point the taker's price is _give / wants._
 
-1. Mangrove checks that the current offer's [price](broken-reference/) is at least as good as the taker's price. Otherwise execution stops there.
-2. Mangrove sends \*\*inbound tokens \*\*to the current offer's [Maker Contract](../offer-maker/maker-contract.md).
-3. Mangrove then calls that Maker Contract.
+1. Mangrove checks that the current offer's [price](broken-reference) is at least as good as the taker's price. Otherwise execution stops there.
+2. Mangrove sends \*\*inbound tokens \*\*to the current offer's associated account(../offer-maker/maker-contract.md).
+3. Mangrove then executes the offer logic.
 4. If the call is successful, Mangrove sends **outbound tokens** to the taker. If the call or the transfer fail, Mangrove reverts the effects of steps 2. and 3.
 5. The taker's _wants_ and \_gives \_are reduced.
 6. If the taker's _wants_ has not been completely fulfilled, Mangrove moves back to step 1.
@@ -56,7 +56,7 @@ function marketOrder(
 
 {% tab title="Events" %}
 ```solidity
-// Since the Maker Contracts that are called during the order may be partly reentrant, more logs could be emitted by Mangrove.
+// Since the contracts that are called during the order may be partly reentrant, more logs could be emitted by Mangrove.
 // we list here only the main expected logs.
 
 // For each succesful offer taken during the market order:
@@ -79,7 +79,7 @@ event OfferFail(
     uint takerGives,
     // `statusCode` may only be `"mgv/makerAbort"`, `"mgv/makerRevert"`, `"mgv/makerTransferFail"` or `"mgv/makerReceiveFail"`
     bytes32 statusCode,
-    // revert data sent by the Maker Contract
+    // revert data sent by the offer's associated account
     bytes32 makerData
   );
   
@@ -323,7 +323,7 @@ function snipes(
 
 {% tab title="Events" %}
 ```solidity
-// Since the Maker Contracts that are called during the order may be partly reentrant, more logs could be emitted by Mangrove.
+// Since the contracts that are called during the order may be partly reentrant, more logs could be emitted by Mangrove.
 // we list here only the main expected logs.
 
 // For each offer successfully sniped:
@@ -346,7 +346,7 @@ event OfferFail(
     uint takerGives,
     // `statusCode` may only be `"mgv/makerAbort"`, `"mgv/makerRevert"`, `"mgv/makerTransferFail"` or `"mgv/makerReceiveFail"`
     bytes32 statusCode,
-    // revert data sent by the Maker Contract
+    // revert data sent by offer's associated account
     bytes32 makerData
   );
   

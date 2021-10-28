@@ -2,10 +2,13 @@
 description: Reactive offers are liquidity promises
 ---
 
+<<<<<<< HEAD
 # Offer creation/update
 
 ## Offer update
 
+=======
+>>>>>>> 6bc4ab1 (multiple edit)
 {% hint style="info" %}
 **Editor's note**
 
@@ -18,11 +21,17 @@ For each function described below, we include the following tabs:
 * ethers.js - Javascript code example using [ethers.js](https://docs.ethers.io/v5/)
 {% endhint %}
 
+<<<<<<< HEAD
 A **Reactive Offer** is a promise, posted on a Mangrove [Offer List](broken-reference/), that an address (a [contract](maker-contract.md) or an [EOA](../offer-making-strategies/basic-offer.md)) is able to deliver a certain amount of **outbound tokens** in return for a certain amount of **inbound tokens**.
 
 ### Posting a new Reactive Offer
+=======
+On Mangrove, an offer is an element of an [Offer List](broken-reference), and a promise that an account (a [contract](maker-contract.md) or an [EOA](../offer-making-strategies/basic-offer.md)) is able to deliver a certain amount of **outbound tokens**, in return for a certain amount of **inbound tokens**, given a certain amount of gas.
 
-New offers should usually be posted by [Maker Contracts](maker-contract.md) able to source liquidity when asked to by Mangrove (although it [is possible](../offer-making-strategies/basic-offer.md) to post new offers from an EOA).
+## Posting a new offer
+>>>>>>> 6bc4ab1 (multiple edit)
+
+New offers should mostly posted by [contracts](maker-contract.md) able to source liquidity when asked to by Mangrove (although it [is possible](../offer-making-strategies/basic-offer.md) to post new offers from an EOA).
 
 The code of `newOffer` is [available here](https://github.com/giry-dev/mangrove/blob/552ab35500c34e831f40a68fac81c8b3e6be7f5b/packages/mangrove-solidity/contracts/MgvOfferMaking.sol#L49).
 
@@ -47,7 +56,7 @@ function newOffer(
 event OfferWrite(
       address outboundTkn,
       address inboundTkn,
-      address maker, // address of the Maker Contract for the callback function
+      address maker, // account that created the offer, will be called upon execution
       uint wants,
       uint gives,
       uint gasprice, // gasprice that was used to compute the offer bounty
@@ -97,7 +106,7 @@ address inbTkn; // address of offer's inbound token
 address admin; // admin address of this contract
 uint pivotId; // offer id whose price is the closest to this new offer (observed offchain)
 
-// the following is a snippet of the Maker Contract that will manage the new offer
+// the following is a snippet of the contract that will manage the new offer
 // i.e this contract SHOULD have the makerExecute() callback function somewhere.
 
 // Approve Mangrove for outbound token transfer if not done already
@@ -128,8 +137,13 @@ Mangrove(MGV).newOffer(
 * `inbound_tkn` address of the [**inbound token**](broken-reference/) (that the offer will receive).
 * `wants` amount of **inbound tokens** requested by the offer. **Must fit in a `uint96`**.
 * `gives` amount of **outbound tokens** promised by the offer. **Must fit in a `uint96` and be strictly positive**.
+<<<<<<< HEAD
 * `gasreq `amount of gas that will be given to the [Maker Contract](maker-contract.md). **Must fit in a uint24 and be lower than** [**gasmax**](../data-structures/mangrove-configuration.md#global-parameters). Should be sufficient to cover all calls to the [Maker Contract](maker-contract.md) ([`makerExecute`](maker-contract.md#offer-execution) and [`makerPosthook`](maker-contract.md#offer-post-hook)).
 * `gasprice` gas price override used to compute the order provision (see [Offer Bounty](offer-bounty.md)). Any value lower than Mangrove's current [gasprice](../data-structures/mangrove-configuration.md#global-parameters) will be ignored (thus 0 means "use Mangrove's current [gasprice](../data-structures/mangrove-configuration.md#mgvlib-global)"). **Must fit in a `uint16`**.
+=======
+* `gasreq `amount of gas that will be given to the offer's [account](maker-contract.md). **Must fit in a `uint24` and be lower than **[**gasmax**](../data-structures/mangrove-configuration.md#global-parameters). Should be sufficient to cover all calls to the [account](maker-contract.md) ([`makerExecute`](maker-contract.md#offer-execution) and [`makerPosthook`](maker-contract.md#offer-post-hook)).
+* `gasprice` gas price override used to compute the order provision (see [offer bounties](offer-bounty.md)). Any value lower than Mangrove's current [gasprice](../data-structures/mangrove-configuration.md#global-parameters) will be ignored (thus 0 means "use Mangrove's current [gasprice](../data-structures/mangrove-configuration.md#mgvlib-global)"). **Must fit in a `uint16`**.
+>>>>>>> 6bc4ab1 (multiple edit)
 * `pivotId` where to start the insertion process in the offer list. If `pivotId` is not in the **OL** at the time the transaction is processed, the new offer will be inserted starting from the **OL**'s [best](reactive-offer.md#getting-current-best-offer-of-a-market) offer. Should be the id of the existing live offer with the price closest to the price of the offer being posted.
 
 #### Outputs
@@ -146,10 +160,14 @@ Make sure that your offer is [well-provisioned](offer-bounty.md#provisioning-off
 
 {% hint style="danger" %}
 **Offer execution**
+<<<<<<< HEAD
 
 * Your offer-posting contract should implement (or be the proxy of a contract implementing) the [IMaker](maker-contract.md) interface. At the very least, it must have a function with signature [`makerExecute(MgvLib.SingleOrder calldata order)`](maker-contract.md#offer-execution) or it will systematically revert when called by Mangrove.
+=======
+* If the offer account is a contract, it should implement the [IMaker](maker-contract.md) interface. At the very least, it must have a function with signature [`makerExecute(MgvLib.SingleOrder calldata order)`](maker-contract.md#offer-execution) or it will systematically revert when called by Mangrove. 
+>>>>>>> 6bc4ab1 (multiple edit)
 * `gives` and `gasreq` are subject to [density](../data-structures/mangrove-configuration.md#local-parameters) constraints on the amount of **outbound token** provided per gas spent. TODO: link to utility function to get max gas for a `gives` and min gives for a `gas`.
-* Your contract will need to give Mangrove a high enough allowance in **outbound tokens** since Mangrove will use the ERC20 standard's `transferFrom` function to source your tokens.
+* The offer account will need to give Mangrove a high enough allowance in **outbound tokens** since Mangrove will use the ERC20 standard's `transferFrom` function to source your tokens.
 {% endhint %}
 
 ## Updating an existing offer
@@ -177,7 +195,7 @@ function updateOffer(
 event OfferWrite(
       address outboundToken,
       address inboundToken,
-      address maker, // address of the Maker Contract for the callback function
+      address maker, // account that created the offer, will be called upon execution
       uint wants,
       uint gives,
       uint gasprice, // gasprice that was used to compute the offer bounty
@@ -214,7 +232,7 @@ event CreditWei(address maker, uint amount);
 "mgv/writeOffer/density/tooLow" // wants / (gasreq + overhead) < density
 
 // Invalid caller
-"mgv/updateOffer/unauthorized" // caller must be the Maker Contract of the offer
+"mgv/updateOffer/unauthorized" // caller must be the account that created the offer
 
 // Insufficient provision
 "mgv/insufficientProvision" // provision of caller no longer covers the offer bounty
@@ -273,7 +291,7 @@ None.
 {% hint style="info" %}
 **Offer updater**
 
-An offer can only be updated if the `msg.sender` is the [Maker Contract](maker-contract.md) of the offer.
+An offer can only be updated if the `msg.sender` is the [account](maker-contract.md) that created the offer.
 {% endhint %}
 
 {% hint style="warning" %}
@@ -309,8 +327,8 @@ event OfferRetract(
 
 // emitted if offer is deprovisioned
 event Credit(
-    address maker, // address of the Maker Contract account to be credited
-    uint amount // amount (in WEI) that are made available for the Maker Contract
+    address maker, // account being credited
+    uint amount // amount (in wei) being credited to the account
 ); 
 ```
 {% endtab %}

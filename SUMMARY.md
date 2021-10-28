@@ -4,21 +4,20 @@
 
 ## Basic usage
 
-* [Seeking liquidity](offer-taker/README.md)
+* [Taking liquidity](offer-taker/README.md)
   * [Taking offers](offer-taker/taker-order.md)
-  * [Delegate Takers](offer-taker/delegate-takers.md)
-  * [Cleaning an offer](offer-taker/cleaning-an-offer.md)
-* [Sourcing liquidity](offer-maker/README.md)
-  * [Offer creation/update](offer-maker/reactive-offer.md)
-  * [Offer execution](offer-maker/maker-contract.md)
-  * [Offer Bounty](offer-maker/offer-bounty.md)
+  * [Cleaning offers](offer-taker/cleaning-an-offer.md)
+  * [Delegation](offer-taker/delegate-takers.md)
+* [Making liquidity](offer-maker/README.md)
+  * [Creating&Updating offers](offer-maker/reactive-offer.md)
+  * [Executing offers](offer-maker/maker-contract.md)
+  * [Offer bounties](offer-maker/offer-bounty.md)
 
 ## Data Structures
 
 * [Offer Lists](data-structures/market.md)
 * [Configuration](data-structures/mangrove-configuration.md)
 * [Offers, orders and execution results](data-structures/offer-data-structures.md)
-* [Reading offers](data-structures/reading-offers.md)
 * [Read data](data-structures/read-data.md)
 
 ## Around the Mangrove <a href="meta-topics" id="meta-topics"></a>
