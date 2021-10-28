@@ -121,8 +121,8 @@ function packedOfferList(
 {% tab title="Calling from solidity" %}
 {% code title="offerList.sol" %}
 ```solidity
-import "path_to_mangrove_periphery/MgvReader.sol";
-import "path_to_mangrove/MgvPack.sol";
+import "./MgvReader.sol";
+import "./MgvPack.sol";
 
 // context of the call
 address mgvr; // address of Mangrove Reader contract

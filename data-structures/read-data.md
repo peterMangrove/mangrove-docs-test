@@ -49,9 +49,9 @@ The [data structures](../data-structures/offer-data-structures.md) describing th
 {% tab title="Solidity" %}
 {% code title="getOfferData.sol" %}
 ```solidity
-import "path_to_mangrove/Mangrove.sol";
-import "path_to_mangrove/MgvLib.sol";
-import "path_to_mangrove/MgvPack.sol";
+import "./Mangrove.sol";
+import "./MgvLib.sol";
+import "./MgvPack.sol";
 
 // context of the call
 address MGV;
@@ -111,7 +111,7 @@ An offer is **live** in a given [Offer Lists](../data-structures/market.md) if i
 {% tab title="Solidity" %}
 {% code title="isLive.sol" %}
 ```solidity
-import "path_to_mangrove/Mangrove.sol";
+import "./Mangrove.sol";
 
 // context of the call
 address MGV;

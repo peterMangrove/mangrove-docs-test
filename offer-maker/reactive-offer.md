@@ -14,7 +14,7 @@ For each function described below, we include the following tabs:
 * ethers.js - Javascript code example using [ethers.js](https://docs.ethers.io/v5/)
 {% endhint %}
 
-On Mangrove, an offer is an element of an [Offer List](broken-reference), and a promise that an account (a [contract](maker-contract.md) or an [EOA](../offer-making-strategies/basic-offer.md)) is able to deliver a certain amount of **outbound tokens**, in return for a certain amount of **inbound tokens**, given a certain amount of gas.
+On Mangrove, an offer is an element of an [offer list](broken-reference), and a promise that an account (a [contract](maker-contract.md) or an [EOA](../offer-making-strategies/basic-offer.md)) is able to deliver a certain amount of **outbound tokens**, in return for a certain amount of **inbound tokens** when given a certain amount of gas.
 
 ## Posting a new offer
 
@@ -83,8 +83,8 @@ event OfferWrite(
 {% tab title="Solidity" %}
 {% code title="newOffer.sol" %}
 ```solidity
-import "path_to_mangrove/Mangrove.sol";
-import "path_to_interfaces/ERC20.sol";
+import "./Mangrove.sol";
+import "./ERC20.sol";
 
 // context of the call
 address MGV;
@@ -124,13 +124,13 @@ Mangrove(MGV).newOffer(
 * `inbound_tkn` address of the [**inbound token**](broken-reference/) (that the offer will receive).
 * `wants` amount of **inbound tokens** requested by the offer. **Must fit in a `uint96`**.
 * `gives` amount of **outbound tokens** promised by the offer. **Must fit in a `uint96` and be strictly positive**.
-* `gasreq `amount of gas that will be given to the offer's [account](maker-contract.md). **Must fit in a `uint24` and be lower than **[**gasmax**](../data-structures/mangrove-configuration.md#global-parameters). Should be sufficient to cover all calls to the [account](maker-contract.md) ([`makerExecute`](maker-contract.md#offer-execution) and [`makerPosthook`](maker-contract.md#offer-post-hook)).
+* `gasreq `amount of gas that will be given to the offer's [account](maker-contract.md). **Must fit in a `uint24` and be lower than [gasmax](../data-structures/mangrove-configuration.md#global-parameters)**. Should be sufficient to cover all calls to the [account](maker-contract.md) ([`makerExecute`](maker-contract.md#offer-execution) and [`makerPosthook`](maker-contract.md#offer-post-hook)).
 * `gasprice` gas price override used to compute the order provision (see [offer bounties](offer-bounty.md)). Any value lower than Mangrove's current [gasprice](../data-structures/mangrove-configuration.md#global-parameters) will be ignored (thus 0 means "use Mangrove's current [gasprice](../data-structures/mangrove-configuration.md#mgvlib-global)"). **Must fit in a `uint16`**.
-* `pivotId` where to start the insertion process in the offer list. If `pivotId` is not in the **OL** at the time the transaction is processed, the new offer will be inserted starting from the **OL**'s [best](reactive-offer.md#getting-current-best-offer-of-a-market) offer. Should be the id of the existing live offer with the price closest to the price of the offer being posted.
+* `pivotId` where to start the insertion process in the offer list. If `pivotId` is not in the offer list at the time the transaction is processed, the new offer will be inserted starting from the offer list's [best](reactive-offer.md#getting-current-best-offer-of-a-market) offer. Should be the id of the existing live offer with the price closest to the price of the offer being posted.
 
 #### Outputs
 
-* `offerId` the id of the newly created offer. Note that offer ids are scoped to [**OLs**](broken-reference/), so many offers can share the same id.
+* `offerId` the id of the newly created offer. Note that offer ids are scoped to [offer lists](broken-reference/), so many offers can share the same id.
 
 {% hint style="danger" %}
 **Provisioning**
@@ -149,7 +149,7 @@ Make sure that your offer is [well-provisioned](offer-bounty.md#provisioning-off
 
 ## Updating an existing offer
 
-Updating the parameters of an offer can be done via the `updateOffer` function described below (source code is [here](https://github.com/giry-dev/mangrove/blob/552ab35500c34e831f40a68fac81c8b3e6be7f5b/packages/mangrove-solidity/contracts/MgvOfferMaking.sol#L99)).
+Offers are updated through the aptly-named `updateOffer` function described below (source code is [here](https://github.com/giry-dev/mangrove/blob/552ab35500c34e831f40a68fac81c8b3e6be7f5b/packages/mangrove-solidity/contracts/MgvOfferMaking.sol#L99)).
 
 {% tabs %}
 {% tab title="Signature" %}
@@ -219,7 +219,7 @@ event CreditWei(address maker, uint amount);
 {% tab title="Solidity" %}
 {% code title="updateOffer.sol" %}
 ```solidity
-import "path_to_mangrove/Mangrove.sol";
+import "./Mangrove.sol";
 
 // context of the call
 address MGV;
@@ -268,13 +268,13 @@ None.
 {% hint style="info" %}
 **Offer updater**
 
-An offer can only be updated if the `msg.sender` is the [account](maker-contract.md) that created the offer.
+An offer can only be updated if `msg.sender` is the [account](maker-contract.md) that created the offer.
 {% endhint %}
 
 {% hint style="warning" %}
 **Reusing offers**
 
-After being executed or [retracted](reactive-offer.md#retracting-an-offer), an offer is moved out of the **Offer List**. It can still be updated and reinserted in the offer list. We recommend updating offers instead of creating new ones, as it costs much less gas.
+After being executed or [retracted](reactive-offer.md#retracting-an-offer), an offer is moved out of the offer list. It can still be updated and reinserted in the offer list. We recommend updating offers instead of creating new ones, as it costs much less gas.
 {% endhint %}
 
 ## Retracting an offer
@@ -295,11 +295,11 @@ function retractOffer(
 
 {% tab title="Events" %}
 ```solidity
-// emitted on all successful retract
+// emitted on all successful retractions
 event OfferRetract(
     address outboundToken, // address of the outbound token ERC of the offer
     address inboundToken, // address of the inbound token ERC of the offer
-    uint offerId // the id of the offer that has been removed from the Offer List
+    uint offerId // the id of the offer that has been removed from the offer list
     );
 
 // emitted if offer is deprovisioned
@@ -319,7 +319,7 @@ event Credit(
 {% tab title="Solidity" %}
 {% code title="retractOffer.sol" %}
 ```solidity
-import "path_to_mangrove/Mangrove.sol";
+import "./Mangrove.sol";
 
 // context of the call
 address MGV;

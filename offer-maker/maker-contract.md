@@ -1,25 +1,23 @@
 ---
-description: Developer documentation pertaining to writing and managing offer logic
+description: How to write offer execution logic
 ---
 
 # Offer execution
 
-## Description
-
-[Offers](reactive-offer.md) are created with an associated account (contract or EOA) and listed on Mangrove [offer lists](broken-reference).
-* If the account is an EOA, no logic will be associated to the offer
+[Offers](reactive-offer.md) are [created](./reactive-offer.md) with an associated account (contract or EOA) and listed on Mangrove [offer lists](broken-reference).
+* If the account is an EOA, no logic will be associated to the offer.
 * If the account is a contract, it should implement the offer logic through the [IMaker interface](https://github.com/giry-dev/mangrove/blob/c4446bbcb0a4dbade4777075eb3e26faebd1c218/contracts/MgvLib.sol#L161). It must at least implement the `makerExecute` function, otherwise all their offer executions will fail.
 
 Here is the offer lifecycle, with the parts addressed in this section bolded:
 
-1. A contract at address `maker.eth` creates an offer.
+1. A contract `maker.eth` creates an offer.
 2. Mangrove stores the offer info, including the address `maker.eth`.
-3. An address `user.eth` executes that offer.
+3. Account `user.eth` executes that offer.
 4. Mangrove transfers tokens from `user.eth` to `maker.eth`.
 5. **Mangrove calls the function [`makerExecute`](#offer-execution) of `maker.eth`**.
 6. Mangrove transfers tokens from `maker.eth` to `user.eth`.
 7. **Mangrove calls the function [`makerPosthook`](#offer-post-hook) of `maker.eth`**.
-8. The offer is now out of its Offer List, but may be updated at a later time by `maker.eth`.
+8. The offer is now out of its offer list, but may be updated at a later time by `maker.eth`.
 
 
 {% hint style="info" %}
@@ -32,10 +30,8 @@ An account can post more than one offer. When it gets called through `makerExecu
 **Example scenario**
 Suppose that an [offer](reactive-offer.md) managed by a contract promises 100,000 DAI in exchange for 100,000 USDC.
 
-Upon being called, the contract has 100,000 USDC available (just given to it by Mangrove) and may source DAI from anywhere on the chain. It needs to end execution with 100,000 available and ready to be transferred by Mangrove through `transferFrom`.
+Upon being called, the contract has 100,000 USDC available (just given to it by Mangrove) and may source DAI from anywhere on the chain. It needs to end execution with 100,000 DAI available and ready to be transferred by Mangrove through `transferFrom`.
 {% endhint %}
-
-## Offer execution
 
 The logic associated with an offer MUST be implemented through a `makerExecute` callback functions of the following type:
 
@@ -91,18 +87,25 @@ contract MakerContract is IMaker {
 ## Inputs
 
 * `order` represents the [order](broken-reference) currently executing the offer and the current Mangrove configuration. `order.gives/order.wants` will match the price of the offer that is being executed up to a small precision. It contains the following fields:
-  * `addresss outbound_tkn` the **outbound token**. `wants` is denominated in `outbound_tkn`.
-  *  `address inbound_tkn` the **inbound token**. `gives` is denominated in `inbound_tkn`.
+  * `addresss outbound_tkn` the **outbound token**.
+  *  `address inbound_tkn` the **inbound token**.
   *  `uint offerId` id of the offer being executed.
-  *  `uint offer` packed info about the offer. Use [MgvLib](TODO) to unpack.
-  *  `uint wants` amount to be received by the taker
-  *  `uint gives` amount just received by the maker
-  *  `bytes32 offerDetail` packed details about the offer. Use [MgvLib](TODO) to unpack.
-  *  `bytes32 global` packed version of mangrove global config info. Use [MgvLib](TODO) to unpack.
-  *  `bytes32 local` packed version of mangrove config for the current offer list. Use [MgvLib](TODO) to unpack.
+  *  `bytes32 offer` packed info about the offer.
+  *  `uint wants` amount (in **outbound tokens**) to be made available to the taker
+  *  `uint gives` amount (in **inbound tokens**) just received by the maker
+  *  `bytes32 offerDetail` packed details about the offer.
+  *  `bytes32 global` packed version of mangrove global config info.
+  *  `bytes32 local` packed version of mangrove config for the current offer list.
+
+
+{% hint style="success" %}
+**Packed fields**
+
+The fields `offer`, `offerDetail`, `global` and `local` contain packed information about the offer and Mangrove's config. In most cases you will not need those values; `wants` and `gives` should be enough. Otherwise, utility functions in [MgvLib](TODO) will help you safely unpack the fields.
+{% endhint %}
 
 ## Outputs
-* `makerData` If `makerData != bytes32("")` or if the call reverts, Mangrove will consider that execution has failed. It is always sent `makerPosthook` later, so you can use it to transfer information to `makerPosthook` after a failure.
+* `makerData` If `makerData != bytes32("")` or if the call reverts, Mangrove will consider that execution has failed. `makerData` is always sent to `makerPosthook` later, so you can use it to transfer information to `makerPosthook` after a failure.
 
 {% hint style="danger" %}
 **Security concerns**
@@ -131,7 +134,7 @@ The offer list for the **outbound token**/**inbound token** pair is temporarily 
 
 # Offer post-hook&#x20;
 
-The logic associated with an offer may include a `makerPosthook` callback function. Its intended use is to update offers in the [Offer List](broken-reference) containing the [offer](reactive-offer.md#description) that was just executed.
+The logic associated with an offer may include a `makerPosthook` callback function. Its intended use is to update offers in the [offer list](broken-reference) containing the [offer](reactive-offer.md#description) that was just executed.
 
 {% tabs %}
 {% tab title="Signature" %}
@@ -151,9 +154,9 @@ function makerPosthook(
 {% tab title="Offer logic" %}
 {% code title="MakerContract-1.sol" %}
 ```solidity
-import "path_to_interfaces/ERC20.sol";
-import "path_to_mangrove/MgvLib.sol";
-import "path_to_mangrove/MgvPack.sol";
+import "./ERC20.sol";
+import "./MgvLib.sol";
+import "./MgvPack.sol";
 
 contract MakerContract is IMaker {
     // context 
@@ -183,7 +186,7 @@ contract MakerContract is IMaker {
             // * the residual/(GASREQ+offer_gasbase) is below Mangrove's minimal density
             // NB : a reverting posthook does not revert the offer execution
             Mangrove(MGV).updateOffer(
-                order.outbound_tkn, // same Offer List
+                order.outbound_tkn, // same offer List
                 order.inbound_tkn,
                 offer.wants - order.gives, // what the offer wanted, minus what the taker order gave 
                 offer.gives - order.wants, // what the offer was giving, minus what the taker took

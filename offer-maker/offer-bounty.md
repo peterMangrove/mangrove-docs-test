@@ -1,6 +1,6 @@
 ---
 description: >-
-  An Offer maker provisions a bounty to compensate takers for the gas used when
+  An offer maker provisions a bounty to compensate takers for the gas used when
   her offer fails.
 ---
 
@@ -8,13 +8,13 @@ description: >-
 
 ## Offer bounty computation
 
-The computation of the **bounty** $$\beta$$ that should be provisioned when posting a new [offer](reactive-offer.md) on a Mangrove [Offer List](broken-reference/) depends various parameters (follow hyperlinks for more information about their respective meaning).
+The computation of the **bounty** $$\beta$$ that should be provisioned when posting a new [offer](reactive-offer.md) on a Mangrove [offer list](broken-reference/) depends various parameters (follow hyperlinks for more information about their respective meaning).
 
 The price (in WEIs) of an **offer bounty** is meant to compensate takers for the gas used to execute the offer in case of failure. At the time an offer is posted, Mangrove's [gasprice](../meta-topics/governance.md#gas-price-and-oracle) $$\gamma_{\mathsf{mgv}}$$ is used to determine the bounty $$\beta$$​the following way:
 
 * [Global](../meta-topics/governance.md#global-governance-parameters) parameters:
   * `global.gasprice `$$G$$`​`
-* [Offer List specific](../meta-topics/governance.md#offer-list-specific-governance-parameters) parameters:
+* [Offer list specific](../meta-topics/governance.md#offer-list-specific-governance-parameters) parameters:
   * `local.overhead_gasbase `$$g_0$$`​`
   * `local.offer_gasbase` $$g_1$$
 * Offer specific [data](../data-structures/offer-data-structures.md#mgvlib.offer) :
@@ -28,7 +28,7 @@ where $$\gamma_\mathsf{req}$$is the gas required by the offer, $$K_0$$is the [ga
 {% hint style="warning" %}
 **Applied bounty**
 
-Suppose an offer requires $$g_{\mathsf{ofr}}$$​ gas units to execute. As explained above, Mangrove will require the Offer Maker to provision $$\beta$$ WEI. Suppose the offer is executed during a Taker Order and fails after $$g_{\mathsf{used}}$$gas units ($$g_\mathsf{used}<g_\mathsf{ofr}$$). The portion of the Offer Maker bounty that will be transferred to the Offer Taker's account is $$\dot G*(\dot g_0+\dot g_1+g_\mathsf{used})$$ where $$\dot G$$​, $$\dot g_0$$ and $$\dot g_1$$are respectively the [`global.gasprice`](../meta-topics/governance.md#global-parameters), [`local.overhead_gasbase`](../meta-topics/governance.md#offer-list-specific-governance-parameters) and the [`local.offer_gasbase`](../meta-topics/governance.md#offer-list-specific-governance-parameters) values \_at the time the offer is taken \_(which may differ from their values at the time the offer was posted, as a consequence of some parameter changes by the governance).
+Suppose an offer requires $$g_{\mathsf{ofr}}$$​ gas units to execute. As explained above, Mangrove will require the offer's associated account to provision $$\beta$$ WEI. Suppose the offer is executed during a Taker Order and fails after $$g_{\mathsf{used}}$$gas units ($$g_\mathsf{used}<g_\mathsf{ofr}$$). The portion of the bounty that will be transferred to the Offer Taker's account is $$\dot G*(\dot g_0+\dot g_1+g_\mathsf{used})$$ where $$\dot G$$​, $$\dot g_0$$ and $$\dot g_1$$are respectively the [`global.gasprice`](../meta-topics/governance.md#global-parameters), [`local.overhead_gasbase`](../meta-topics/governance.md#offer-list-specific-governance-parameters) and the [`local.offer_gasbase`](../meta-topics/governance.md#offer-list-specific-governance-parameters) values \_at the time the offer is taken \_(which may differ from their values at the time the offer was posted, as a consequence of some parameter changes by the governance).
 {% endhint %}
 
 {% hint style="info" %}
@@ -56,7 +56,7 @@ function getProvision(
 {% tab title="Solidity snippet" %}
 {% code title="getProvision.sol" %}
 ```solidity
-import "./path_to_periphery/MgvReader.sol";
+import "./MgvReader.sol";
 //context 
 MgvReader mgvr; // MgvReader contract address
 address outTk; // outbound token address
@@ -116,7 +116,7 @@ event Credit(address maker, uint amount);
 {% tab title="Solidity" %}
 {% code title="fund.sol" %}
 ```solidity
-import "./path_to_mangrove/Mangrove.sol";
+import "./Mangrove.sol";
 //context 
 Mangrove mgv; // Mangrove contract address
 address maker_contract; // address of the maker contract one is willing to provision
@@ -180,7 +180,7 @@ event Debit(address maker, uint amount);
 
 {% tab title="Solidity" %}
 ```solidity
-import "./path_to_mangrove/Mangrove.sol";
+import "./Mangrove.sol";
 //context 
 Mangrove mgv; // Mangrove contract
 

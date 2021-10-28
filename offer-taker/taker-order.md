@@ -125,8 +125,8 @@ event OrderComplete(
 {% tab title="Solidity" %}
 {% code title="marketOrder.sol" %}
 ```solidity
-import "path_to_mangrove/Mangrove.sol";
-import "path_to_interfaces/ERC20.sol";
+import "./Mangrove.sol";
+import "./ERC20.sol";
 
 // context of the call
 address MGV;
@@ -383,8 +383,8 @@ event OrderComplete(
 {% tab title="Solidity" %}
 {% code title="snipes.sol" %}
 ```solidity
-import "path_to_mangrove/Mangrove.sol";
-import "path_to_interfaces/ERC20.sol";
+import "./Mangrove.sol";
+import "./ERC20.sol";
 
 // context of the call
 address MGV;

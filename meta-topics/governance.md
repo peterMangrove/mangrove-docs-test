@@ -23,8 +23,8 @@ description: >-
 {% tabs %}
 {% tab title="Calling from solidity" %}
 ```solidity
-import "path_to_mangrove/Mangrove.sol"; // main contract
-import "path_to_mangrove/MgvPack.sol"; // unpacking functions
+import "./Mangrove.sol"; // main contract
+import "./MgvPack.sol"; // unpacking functions
 
 // context 
 address outbound_tkn ; // address of the ERC20 managing the outbound tokens
