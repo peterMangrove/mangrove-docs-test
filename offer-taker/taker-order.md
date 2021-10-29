@@ -39,7 +39,7 @@ When an order is processed by Mangrove's matching engine, it consumes the offers
 5. The taker's _wants_ and _gives_ are reduced.
 6. If the taker's _wants_ has not been completely fulfilled, Mangrove moves back to step 1.
 
-Any failed [offer](../offer-maker/reactive-offer.md) execution results in a [bounty](../offer-maker/offer-bounty.md) being sent to the caller as compensation for the wasted gas.
+Any failed [offer](../offer-maker/reactive-offer.md) execution results in a [bounty](../offer-maker/offer-provision.md) being sent to the caller as compensation for the wasted gas.
 
 {% tabs %}
 {% tab title="Signature" %}

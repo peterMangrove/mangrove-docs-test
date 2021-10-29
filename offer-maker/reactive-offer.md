@@ -125,7 +125,7 @@ Mangrove(MGV).newOffer(
 * `wants` amount of **inbound tokens** requested by the offer. **Must fit in a `uint96`**.
 * `gives` amount of **outbound tokens** promised by the offer. **Must fit in a `uint96` and be strictly positive**.
 * `gasreq `amount of gas that will be given to the offer's [account](maker-contract.md). **Must fit in a `uint24` and be lower than [gasmax](../data-structures/mangrove-configuration.md#global-parameters)**. Should be sufficient to cover all calls to the [account](maker-contract.md) ([`makerExecute`](maker-contract.md#offer-execution) and [`makerPosthook`](maker-contract.md#offer-post-hook)).
-* `gasprice` gas price override used to compute the order provision (see [offer bounties](offer-bounty.md)). Any value lower than Mangrove's current [gasprice](../data-structures/mangrove-configuration.md#global-parameters) will be ignored (thus 0 means "use Mangrove's current [gasprice](../data-structures/mangrove-configuration.md#mgvlib-global)"). **Must fit in a `uint16`**.
+* `gasprice` gas price override used to compute the order provision (see [offer bounties](offer-provision.md)). Any value lower than Mangrove's current [gasprice](../data-structures/mangrove-configuration.md#global-parameters) will be ignored (thus 0 means "use Mangrove's current [gasprice](../data-structures/mangrove-configuration.md#mgvlib-global)"). **Must fit in a `uint16`**.
 * `pivotId` where to start the insertion process in the offer list. If `pivotId` is not in the offer list at the time the transaction is processed, the new offer will be inserted starting from the offer list's [best](reactive-offer.md#getting-current-best-offer-of-a-market) offer. Should be the id of the existing live offer with the price closest to the price of the offer being posted.
 
 #### Outputs
@@ -135,9 +135,9 @@ Mangrove(MGV).newOffer(
 {% hint style="danger" %}
 **Provisioning**
 
-Since offers can fail, Mangrove requires each offer to be [provisioned](offer-bounty.md) in ETH. If an offer fails, part of that provision will be sent to the caller that executed the offer, as compensation.
+Since offers can fail, Mangrove requires each offer to be [provisioned](offer-provision.md) in ETH. If an offer fails, part of that provision will be sent to the caller that executed the offer, as compensation.
 
-Make sure that your offer is [well-provisioned](offer-bounty.md#provisioning-offers) before calling `newOffer`, otherwise the call will fail. The easiest way to go is to send a comfortable amount of ETH to Mangrove from your offer-posting contract. Mangrove will remember your ETH balance and use it when necessary.
+Make sure that your offer is [well-provisioned](offer-provision.md#provisioning-offers) before calling `newOffer`, otherwise the call will fail. The easiest way to go is to send a comfortable amount of ETH to Mangrove from your offer-posting contract. Mangrove will remember your ETH balance and use it when necessary.
 {% endhint %}
 
 {% hint style="danger" %}
@@ -350,7 +350,7 @@ function myRetractOffer(uint offerId) external {
 ### Inputs
 
 * `offerId` is the offer id of the offer to be updated.
-* `deprovision` if true, will free the offer's ETH provision so that you can [withdraw](offer-bounty.md#withdrawing) them. Otherwise, will leave the provision in the offer.
+* `deprovision` if true, will free the offer's ETH provision so that you can [withdraw](offer-provision.md#withdrawing) them. Otherwise, will leave the provision in the offer.
 * For the other parameters, see [above](reactive-offer.md#posting-a-new-reactive-offer).
 
 ### Outputs

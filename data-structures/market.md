@@ -76,7 +76,7 @@ The address of the [Maker Contract](../offer-maker/maker-contract.md) managing t
 
 ### Gas Price
 
-Gas price that was used to compute the [Offer Bounty](../offer-maker/offer-bounty.md). If the offer fails to deliver the promised **outbound tokens**, it will be charged in ETH based on this gasprice.
+Gas price that was used to compute the [offer provision](../offer-maker/offer-provision.md). If the offer fails to deliver the promised **outbound tokens**, it will be charged in ETH based on this gasprice.
 
 ## Offer List configuration
 

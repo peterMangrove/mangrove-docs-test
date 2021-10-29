@@ -76,7 +76,7 @@ const density = local.density;
 ### Gas price and oracle
 
 {% hint style="info" %}
-**Gas price** (given is GWEI units) is a key parameter of Mangrove that [determines the remuneration](../offer-maker/offer-bounty.md#offer-bounty-computation) of Offer Cleaners. In order to make sure takers are consistently over-compensated for the gas used in consuming a failing offer, it should be kept by the Governance above average `tx.gasprice`.
+**Gas price** (given is GWEI units) is a key parameter of Mangrove that [determines the remuneration](../offer-maker/offer-provision.md#offer-bounty-computation) of Offer Cleaners. In order to make sure takers are consistently over-compensated for the gas used in consuming a failing offer, it should be kept by the Governance above average `tx.gasprice`.
 {% endhint %}
 
 **Gas price** can be read from an outside [Monitoring Contract](mangroves-ecosystem/monitor.md). When the governance wishes to do so, it MUST enable this feature by letting [Monitoring Contract](mangroves-ecosystem/monitor.md) (if any) act as a gas price oracle. This can be done using the governance restricted function `setUseOracle` of Mangrove.

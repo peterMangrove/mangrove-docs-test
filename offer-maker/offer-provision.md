@@ -2,7 +2,7 @@
 description: How taker compensation for failing offers works.
 ---
 
-# Offer bounties
+# Offer provisions
 
 ## Summary
 

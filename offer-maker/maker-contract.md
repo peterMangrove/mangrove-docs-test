@@ -125,7 +125,7 @@ To renege on an offer, you may revert, but a simpler method is to return any val
 
 **Better fail early!**
 
-The [bounty](offer-bounty.md) taken from the offer maker's provision is [proportional](offer-bounty.md#offer-bounty-computation) to the gas consumed by `makerExecute`. To minimize costs, try to fail as early as possible.
+The [bounty](offer-provision.md) taken from the offer maker's provision is [proportional](offer-provision.md#offer-bounty-computation) to the gas consumed by `makerExecute`. To minimize costs, try to fail as early as possible.
 
 **Don't call Mangrove during `makerExecute`**
 
