@@ -8,8 +8,8 @@ description: How taker compensation for failing offers works.
 
 When an offer fails, the caller has wasted some gas. To compensate the caller, Mangrove gives them a bounty. An offer must provision enough ethers to maximize the chances that Mangrove can compensate the caller. In more details:
 * Every account can have a balance (in ethers) held by Mangrove. They are free to fund this balance or withdraw from it at any time.
-* Whenever an account creates or updates an offer, their balance is adjusted and some ethers are locked in that offer's provision. That provision can only be withdrawn back to the offer's account balance if the offer is retracted.
-* When an offer fail, part or all of the offer provision is sent as a bounty to the caller. The rest of the provision is credited back to the offer's account balance.
+* Whenever an account creates or updates an offer, their balance is adjusted and some ethers are locked in that offer's provision. That provision can only be credited back to the offer's account balance if the offer is retracted.
+* When an offer fails, part or all of the offer provision is sent as a bounty to the caller. The rest of the provision is credited back to the offer's account balance.
 
 ## Balance funding & withdrawal
 
@@ -94,10 +94,10 @@ function balanceOf(address who) external view returns (uint balance);
 ```
 {% endtab %}
 
-### Inputs
+#### Inputs
 * `who` The account of which you want to read the balance.
 
-### Outputs
+#### Outputs
 * `balance` The available balance of `who`.
 
 ### Withdrawing
