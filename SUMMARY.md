@@ -11,7 +11,7 @@
 * [Making liquidity](offer-maker/README.md)
   * [Creating & Updating offers](offer-maker/reactive-offer.md)
   * [Executing offers](offer-maker/maker-contract.md)
-  * [Offer bounties](offer-maker/offer-bounty.md)
+  * [Offer provisions](offer-maker/offer-provision.md)
 
 ## Data Structures
 
