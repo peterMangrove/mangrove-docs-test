@@ -1,12 +1,12 @@
 ---
-description: >-
-  An offer maker provisions a bounty to compensate takers for the gas used when
-  her offer fails.
+description: How taker compensation for failing offers works.
 ---
 
 # Offer bounties
 
-When an offer fails, a bounty is sent to the caller to compensate them for the wasted gas. That bounty is taken from a provision associated with the failing offer. In turn, that provision was taken from the offer's associated account. In more detail:
+## Summary
+
+When an offer fails, the caller has wasted some gas. To compensate the caller, Mangrove gives them a bounty. An offer must provision enough ethers to maximize the chances that Mangrove can compensate the caller. In more details:
 * Every account can have a balance (in ethers) held by Mangrove. They are free to fund this balance or withdraw from it at any time.
 * Whenever an account creates or updates an offer, their balance is adjusted and some ethers are locked in that offer's provision. That provision can only be withdrawn back to the offer's account balance if the offer is retracted.
 * When an offer fail, part or all of the offer provision is sent as a bounty to the caller. The rest of the provision is credited back to the offer's account balance.
