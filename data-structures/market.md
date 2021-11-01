@@ -1,25 +1,25 @@
 ---
-description: Introducing Mangrove's Offer Lists and markets
+description: Introducing Mangrove's offer lists and markets
 ---
 
-# Offer Lists
+# Offer lists
 
 ## General structure
 
 {% hint style="info" %}
-The **Offer List** is the basic Mangrove data structure. It contains offers (created by offer makers) that promise an **outbound token**, and request an **inbound token** in return. Offer takers execute these offers by providing the \*\*inbound token. \*\*They receive **outbound tokens** in return.
+The offer list is the basic Mangrove data structure. It contains offers (created by offer makers) that promise an **outbound token**, and request an **inbound token** in return (offer takers execute these offers by providing the **inbound token.**, and receive **outbound tokens** in return).
 
-For example in a DAI-wETH **OL**, wETH is the outbound token (i.e. sent by the offer) and DAI the inbound token (i.e. received by the offer).
+For example in a DAI-wETH offer list, wETH is the outbound token (i.e. sent by the offer) and DAI the inbound token (i.e. received by the offer).
 
-\_Relationship to markets: \_a full market will always feature two Offer Lists. For instance, a wETH/DAI **market** has one DAI-wETH **OL** (where wETH is requested and DAI is offered), and a wETH-DAI **OL** (where DAI is requested and wETH is offered).
+\_Relationship to markets: \_a full market will always feature two offer lists. For instance, a wETH/DAI **market** has one DAI-wETH offer list (where wETH is requested and DAI is offered), and a wETH-DAI offer list (where DAI is requested and wETH is offered).
 {% endhint %}
 
-Here's a sample DAI-wETH **OL** with two offers. Only the main characteristics of the offers are shown for clarity (see the [offer data structure](offer-data-structures.md#mgvlib-offer)).
+Here's a sample DAI-wETH offer list with two offers. Only the main characteristics of the offers are shown (see the [offer data structure](offer-data-structures.md#mgvlib-offer)).
 
 {% hint style="warning" %}
 **Decimals**
 
-We display human-readable values here for clarity, but Mangrove stores raw token values and never uses the `decimals` field of a token.
+We display human-readable values here, but Mangrove stores raw token values and never uses the `decimals` field of a token.
 {% endhint %}
 
 | Rank | Offer ID | Wants (wETH) | Gives (DAI) | Gas required | Maker Contract | Offer Gas Price |
@@ -27,31 +27,31 @@ We display human-readable values here for clarity, but Mangrove stores raw token
 | #1   | 42       | 0.3          | 871.764     | 300,000      | 0x1234abc      | 200             |
 | #2   | 2        | 1            | 2 925.26    | 250,000      | 0x5678def      | 150             |
 
-## Offer List fields
+## Offer list fields
 
 ### Rank
 
-Offers are ordered from best to worst. Offers are compared based on _price_, and then on \_gas required \_(see below) if they have the same price.
+Offers are ordered from best to worst. Offers are compared based on _price_, and then on _gas required_ (see below) if they have the same price.
 
 {% hint style="info" %}
 **Example**
 
-The price of offer #42 is 0.0003441298 wETH per DAI while the price of offer #2 is 0.00034185 wETH per DAI. Offer #42 is therefore the best offer of this **OL**, and is ranked first.
+The price of offer #42 is 0.0003441298 wETH per DAI while the price of offer #2 is 0.00034185 wETH per DAI. Offer #42 is therefore the best offer of this offer list, and is ranked first.
 {% endhint %}
 
 ### ID
 
-The identifier of the offer in the **OL**.
+The identifier of the offer in the offer list.
 
 {% hint style="danger" %}
 **Important**
 
-Two offers may have the same ID as long as they belong to different **OL**s. For instance, there may be an offer #42 on the wETH-DAI **OL** with different volumes, gas required, maker contract, etc. than offer #42 in the DAI-wETH **OL** shown above.
+Two offers may have the same ID as long as they belong to different offer lists. For instance, there may be an offer #42 on the wETH-DAI offer list with different volumes, gas required, maker contract, etc. than offer #42 in the DAI-wETH offer list shown above.
 {% endhint %}
 
 ### Wants, gives
 
-Taken together, the **wants** and **gives** values define 1) a max volume, 2) a price. The price is p=**wants**/**gives**, and an offer promises delivery of up to **gives **outbound tokens at a price of p tokens delivered per inbound token received.
+Taken together, the **wants** and **gives** values define 1) a max volume, 2) a price. The price is p=**wants**/**gives**, and an offer promises delivery of up to **gives** outbound tokens at a price of p tokens delivered per inbound token received.
 
 {% hint style="info" %}
 **Examples**
@@ -78,32 +78,32 @@ The address of the [Maker Contract](../offer-maker/maker-contract.md) managing t
 
 Gas price that was used to compute the [offer provision](../offer-maker/offer-provision.md). If the offer fails to deliver the promised **outbound tokens**, it will be charged in ETH based on this gasprice.
 
-## Offer List configuration
+## Offer list configuration
 
-Several [configuration](mangrove-configuration.md) parameters determine how new offers are inserted. Some are [global](mangrove-configuration.md#mgvlib.global) to Mangrove, some are[ Offer List specifics.](mangrove-configuration.md#mgvlib.local) See [Governance](../meta-topics/governance.md) section for details.
+Several [configuration](mangrove-configuration.md) parameters determine how new offers are inserted. Some are [global](mangrove-configuration.md#mgvlib.global) to Mangrove, some are [offer list specifics.](mangrove-configuration.md#mgvlib.local) See [Governance](../meta-topics/governance.md) section for details.
 
 ## View functions
 
-Retrieving the state of an Offer List can be easily done by a call to the Mangrove's [Reader Contract](../meta-topics/mangroves-ecosystem/reader.md) `MgvReader`(see [deployment addresses](../meta-topics/deployment-addresses.md)) that returns easy-to-parse[ data structures](offer-data-structures.md). For gas cautious interactions, when calling from a smart contract, developers may also want to use the reader's `packedOffers` getter, which return packed data that can be parsed using `MgvPack.sol` library.
+Retrieving the state of an offer list can be easily done by a call to the Mangrove's [Reader Contract](../meta-topics/mangroves-ecosystem/reader.md) `MgvReader`(see [deployment addresses](../meta-topics/deployment-addresses.md)) that returns easy-to-parse[ data structures](offer-data-structures.md). For gas cautious interactions, when calling from a smart contract, developers may also want to use the reader's `packedOffers` getter, which return packed data that can be parsed using `MgvPack.sol` library.
 
 {% tabs %}
 {% tab title="Views" %}
 ```solidity
 // from MgvReader.sol
-// view function to access Offer Lists off chain.
+// view function to access offer lists off chain.
 function offerList(
-    address outboundToken, // outbound token of the Offer List
-    address inboundToken, // inbound token of the Offer List
-    uint fromId, // retrieve Offer List starting from offer id `fromId`
+    address outboundToken, // outbound token of the offer List
+    address inboundToken, // inbound token of the offer List
+    uint fromId, // retrieve offer list starting from offer id `fromId`
     uint maxOffers // stop after retrieving `maxOffers`
     ) public view returns (
-      uint currentId, // last offer Id of the returned Offer List
+      uint currentId, // last offer Id of the returned offer list
       uint[] memory offerIds, // offer Ids of the list 
       ML.Offer[] memory offerList, // offers
       ML.OfferDetail[] memory offerDetailList // offer details
     );
 
-// view function to access Offer List in a packed format (gas cautious).
+// view function to access offer list in a packed format (gas cautious).
 function packedOfferList(
     address outboundToken,
     address inboundToken,
@@ -126,10 +126,10 @@ import "./MgvPack.sol";
 
 // context of the call
 address mgvr; // address of Mangrove Reader contract
-address outTkn; // address of Offer List's outbound token
-address inbTkn; // address of Offer List's inbound token
+address outTkn; // address of offer list's outbound token
+address inbTkn; // address of offer list's inbound token
 
-// getting best offer of the (outTkn, inbTkn) Offer List
+// getting best offer of the (outTkn, inbTkn) offer list
 (/*nextOfferId*/, 
 uint[] memory offerIds, 
 bytes32[] memory offerDataList, 
@@ -140,7 +140,7 @@ bytes32 [] memory offerDetailDataList) = MgvReader(mgvr).packedOfferList(
     type(uint).max // retrieve *all* offers of the list
 );
 for (uint i=0; i++; i<offerIds.length){
-    uint offerId = offerIds[i]; // id of the offer that is in position i of the Offer list
+    uint offerId = offerIds[i]; // id of the offer that is in position i of the offer list
     uint wants = MgvPack.offer_unpack_wants(offerDataList[i]); // how much this offer wants (in inbTkn)
     uint gives = MgvPack.offer_unpack_gives(offerDataList[i]); // how much this offer gives (in outTkn)
     uint gasreq = MgvPack.offerDetail_unpack_gasreq(offerDetailDataList[i]); // how much gas this offer requires
