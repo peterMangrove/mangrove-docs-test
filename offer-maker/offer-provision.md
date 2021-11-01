@@ -6,10 +6,11 @@ description: How taker compensation for failing offers works.
 
 ## Summary
 
-When an offer fails, the caller has wasted some gas. To compensate the caller, Mangrove gives them a bounty. An offer must provision enough ethers to maximize the chances that Mangrove can compensate the caller. In more details:
-* Every account can have a balance (in ethers) held by Mangrove. They are free to fund this balance or withdraw from it at any time.
-* Whenever an account creates or updates an offer, their balance is adjusted and some ethers are locked in that offer's provision. That provision can only be credited back to the offer's account balance if the offer is retracted.
-* When an offer fails, part or all of the offer provision is sent as a bounty to the caller. The rest of the provision is credited back to the offer's account balance.
+When an offer fails, the caller has wasted some gas. To compensate the caller, Mangrove gives them a bounty in ethers. Offers must provision enough ethers to maximize the chances that Mangrove can compensate the caller. In more details:
+* Every account has a balance in ethers held by Mangrove. Funds can be freely added to or withdrawn from the balance.
+* Whenever an account creates or updates an offer, their balance is adjusted so that enough ethers are locked as the offer's provision. 
+  * If the offer is retracted that provision is credited back to the offer's account balance.
+  * If the offer is executed and fails, part or all of the provision is sent as compensation, to the caller. We call that the bounty. The rest of the provision is credited back to the offer's account balance.
 
 ## Balance funding & withdrawal
 
@@ -24,7 +25,7 @@ function fund(address maker) public payable;
 
 {% tab title="Events" %}
 ```solidity
-// Offer Maker at address `maker` has been credited of `amount` WEIs
+// Offer Maker at address `maker` has been credited of `amount` wei
 event Credit(address maker, uint amount);
 ```
 {% endtab %}
@@ -162,7 +163,7 @@ if (await Mangrove.callstatic.withdraw(wei_balance)) {
 {% endtabs %}
 
 #### Inputs
-* `amount` the amount in WEI one wishes to withdraw from Mangrove's provisions.
+* `amount` the amount of ethers (in wei) one wishes to withdraw from Mangrove's provisions.
 
 #### Outputs
 * `noRevert` whether the ether transfer was successful.
@@ -177,14 +178,14 @@ if (await Mangrove.callstatic.withdraw(wei_balance)) {
 
 ## Balance adjustment when creating/updating offers
 
-Whenever an offer is created or updated, Mangrove applies to following formula to get the offer's required provision:
+Whenever an offer is created or updated, Mangrove applies to following formula to get the offer's required provision in wei:
 
-$$\textrm{provision} = \max(\textrm{gasprice}_{\textrm{mgv}},\textrm{gasprice}_{\textrm{ofr}}) \times (\textrm{gasreq} + \textrm{gasoverhead})$$ (in wei)
+$$\textrm{provision} = \max(\textrm{gasprice}_{\textrm{mgv}},\textrm{gasprice}_{\textrm{ofr}}) \times (\textrm{gasreq} + \textrm{gasoverhead}) \ times 10^9$$
 
 * $$\textrm{gasprice}_{\textrm{mgv}}$$ is [Mangrove's internal `gasprice` estimate](../meta-topics/governance.md#global-governance-parameters).
 * $$\textrm{gasprice}_{\textrm{ofr}}$$ is the `gasprice` argument of the function being called ([`newOffer`](../offer-maker/reactive-offer.md#posting-a-new-offer) or [`updateOffer`](../offer-maker/reactive-offer.md#updating-an-existing-offer)).
 * $$\textrm{gasreq}$$ is the `gasreq` argument of the function being called.
-* $$\textrm{gasoverhead}$$ is the sum of two [Mangrove's internal gas overhead estimators](../data-structures/offer-data-structures.md#mgvlib.offer)
+* $$\textrm{gasoverhead}$$ is the sum of two [Mangrove-internal gas overhead estimators](../data-structures/offer-data-structures.md#mgvlib.offer)
 
 Mangrove will adjust the balance of the caller to ensure that $$\textrm{provision}$$ wei are available as bounty if the offer fails. If the offer was _already_ provisioned, the adjustment may be small, and the balance may actually increase -- for instance, if the `gasprice` dropped recently.
 
@@ -194,7 +195,7 @@ Mangrove will adjust the balance of the caller to ensure that $$\textrm{provisio
 Provisions are calculated so that, within reasonable gas estimates, taking a failing offer should be profitable for the taker.
 {% endhint %}
 
-{% hint style="info" %}
+{% hint style="success" %}
 **Gas optimization**
 
 If you frequently update your offers, we recommend using a consistent, high `gasprice` argument, above the actual expected gas prices. Not changing `gasprice` when you call `updateOffer` will make the call cheaper (you save one `SSTORE`).
@@ -258,7 +259,7 @@ const bounty = await MangroveReader.getProvision(outTkn, inbTkn, ofr_gasreq,0);
 * `inbound_tkn` the **inbound_tkn** of the offer you want to create/update
 * `ofr_gasreq` the `gasreq` you will use in your call to `newOffer`/`updateOffer`.
 * `ofr_gasprice` the gas price, in **gwei/gas**, that you will use when calling `newOffer`/`updateOffer`.
-  * Set to 0 to use Mangrove's [gas price](../meta-topics/governance.md#gas-price-and-oracle)).
+  * Set to 0 to use Mangrove's [gas price](../meta-topics/governance.md#gas-price-and-oracle).
 
 ### Outputs
 * `provision` the amount of wei Mangrove will require to provision in order to accept a new offer with the given parameters.
@@ -267,5 +268,5 @@ const bounty = await MangroveReader.getProvision(outTkn, inbTkn, ofr_gasreq,0);
 {% hint style="warning" %}
 **Applied bounty**
 
-Suppose an offer requires $$g_{\mathsf{ofr}}$$​ gas units to execute. As explained above, Mangrove will require the offer's associated account to provision $$\beta$$ WEI. Suppose the offer is executed during a Taker Order and fails after $$g_{\mathsf{used}}$$gas units ($$g_\mathsf{used}<g_\mathsf{ofr}$$). The portion of the bounty that will be transferred to the Offer Taker's account is $$\dot G*(\dot g_0+\dot g_1+g_\mathsf{used})$$ where $$\dot G$$​, $$\dot g_0$$ and $$\dot g_1$$are respectively the [`global.gasprice`](../meta-topics/governance.md#global-parameters), [`local.overhead_gasbase`](../meta-topics/governance.md#offer-list-specific-governance-parameters) and the [`local.offer_gasbase`](../meta-topics/governance.md#offer-list-specific-governance-parameters) values \_at the time the offer is taken \_(which may differ from their values at the time the offer was posted, as a consequence of some parameter changes by the governance).
+Suppose an offer requires $$g_{\mathsf{ofr}}$$​ gas units to execute. As explained above, Mangrove will require the offer's associated account to provision $$\beta$$ WEI. Suppose the offer is executed during a Taker Order and fails after $$g_{\mathsf{used}}$$gas units ($$g_\mathsf{used}<g_\mathsf{ofr}$$). The portion of the bounty that will be transferred to the Offer Taker's account is $$\dot G*(\dot g_0/n+\dot g_1+g_\mathsf{used})$$ where $$\dot G$$​, $$\dot g_0$$, $$n$$ and $$\dot g_1$$are respectively the [`global.gasprice`](../meta-topics/governance.md#global-parameters), [`local.overhead_gasbase`](../meta-topics/governance.md#offer-list-specific-governance-parameters), the number of offers executed during the take order, and the [`local.offer_gasbase`](../meta-topics/governance.md#offer-list-specific-governance-parameters) values _at the time the offer is taken_ (which may differ from their values at the time the offer was posted, as a consequence of some parameter changes by the governance).
 {% endhint %}
