@@ -4,11 +4,11 @@
 
 ## Basic usage
 
-* [Taking liquidity](offer-taker/README.md)
+* [Taking available liquidity](offer-taker/README.md)
   * [Taking offers](offer-taker/taker-order.md)
   * [Cleaning offers](offer-taker/cleaning-an-offer.md)
   * [Delegation](offer-taker/delegate-takers.md)
-* [Making liquidity](offer-maker/README.md)
+* [Making liquidity available](offer-maker/README.md)
   * [Creating & Updating offers](offer-maker/reactive-offer.md)
   * [Executing offers](offer-maker/maker-contract.md)
   * [Offer provisions](offer-maker/offer-provision.md)
