@@ -6,9 +6,10 @@ description: How taker compensation for failing offers works.
 
 ## Summary
 
-When an offer fails, the caller has wasted some gas. To compensate the caller, Mangrove gives them a bounty in ethers. Offers must provision enough ethers to maximize the chances that Mangrove can compensate the caller. In more details:
+When an offer fails, the caller has wasted some gas. To compensate the caller, Mangrove gives them a _bounty_ in ethers. Offers must provision enough ethers to maximize the chances that Mangrove can compensate the caller. In more details:
+
 * Every account has a balance in ethers held by Mangrove. Funds can be freely added to or withdrawn from the balance.
-* Whenever an account creates or updates an offer, their balance is adjusted so that enough ethers are locked as the offer's provision. 
+* Whenever an account creates or updates an offer, their balance is adjusted so that enough ethers are locked as the offer's provision.
   * If the offer is retracted that provision is credited back to the offer's account balance.
   * If the offer is executed and fails, part or all of the provision is sent as compensation, to the caller. We call that the bounty. The rest of the provision is credited back to the offer's account balance.
 
@@ -88,17 +89,17 @@ Upon receiving funds, Mangrove will credit the amount sent to `maker` (or `msg.s
 {% endhint %}
 
 ### Checking an account balance
-{% tabs %}
-{% tab title="Signature" %}
+
 ```solidity
 function balanceOf(address who) external view returns (uint balance);
 ```
-{% endtab %}
 
 #### Inputs
+
 * `who` The account of which you want to read the balance.
 
 #### Outputs
+
 * `balance` The available balance of `who`.
 
 ### Withdrawing
@@ -163,11 +164,12 @@ if (await Mangrove.callstatic.withdraw(wei_balance)) {
 {% endtabs %}
 
 #### Inputs
+
 * `amount` the amount of ethers (in wei) one wishes to withdraw from Mangrove's provisions.
 
 #### Outputs
-* `noRevert` whether the ether transfer was successful.
 
+* `noRevert` whether the ether transfer was successful.
 
 {% hint style="danger" %}
 **Important points**
@@ -183,7 +185,7 @@ Whenever an offer is created or updated, Mangrove applies to following formula t
 $$\textrm{provision} = \max(\textrm{gasprice}_{\textrm{mgv}},\textrm{gasprice}_{\textrm{ofr}}) \times (\textrm{gasreq} + \textrm{gasoverhead}) \ times 10^9$$
 
 * $$\textrm{gasprice}_{\textrm{mgv}}$$ is [Mangrove's internal `gasprice` estimate](../meta-topics/governance.md#global-governance-parameters).
-* $$\textrm{gasprice}_{\textrm{ofr}}$$ is the `gasprice` argument of the function being called ([`newOffer`](../offer-maker/reactive-offer.md#posting-a-new-offer) or [`updateOffer`](../offer-maker/reactive-offer.md#updating-an-existing-offer)).
+* $$\textrm{gasprice}_{\textrm{ofr}}$$ is the `gasprice` argument of the function being called ([`newOffer`](reactive-offer.md#posting-a-new-offer) or [`updateOffer`](reactive-offer.md#updating-an-existing-offer)).
 * $$\textrm{gasreq}$$ is the `gasreq` argument of the function being called.
 * $$\textrm{gasoverhead}$$ is the sum of two [Mangrove-internal gas overhead estimators](../data-structures/offer-data-structures.md#mgvlib.offer)
 
@@ -201,7 +203,8 @@ Provisions are calculated so that, within reasonable gas estimates, taking a fai
 If you frequently update your offers, we recommend using a consistent, high `gasprice` argument, above the actual expected gas prices. Not changing `gasprice` when you call `updateOffer` will make the call cheaper (you save one `SSTORE`).
 {% endhint %}
 
-## Computing the provision
+## Computing the provision and offer bounty
+
 A view function of the [Mangrove Reader](../meta-topics/mangroves-ecosystem/reader.md) contract will compute offer provisions for you. This is useful for e.g. testing that your balance is large enough before posting multiple offers.
 
 {% tabs %}
@@ -256,14 +259,14 @@ const bounty = await MangroveReader.getProvision(outTkn, inbTkn, ofr_gasreq,0);
 ### Inputs
 
 * `outbound_tkn` the **outbound token** of the offer you want to create/update
-* `inbound_tkn` the **inbound_tkn** of the offer you want to create/update
+* `inbound_tkn` the **inbound\_tkn** of the offer you want to create/update
 * `ofr_gasreq` the `gasreq` you will use in your call to `newOffer`/`updateOffer`.
 * `ofr_gasprice` the gas price, in **gwei/gas**, that you will use when calling `newOffer`/`updateOffer`.
   * Set to 0 to use Mangrove's [gas price](../meta-topics/governance.md#gas-price-and-oracle).
 
 ### Outputs
-* `provision` the amount of wei Mangrove will require to provision in order to accept a new offer with the given parameters.
 
+* `provision` the amount of wei Mangrove will require to provision in order to accept a new offer with the given parameters.
 
 {% hint style="warning" %}
 **Applied bounty**

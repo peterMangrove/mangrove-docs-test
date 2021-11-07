@@ -24,22 +24,22 @@ ERC20 tokens transfers are initiated by Mangrove using `transferFrom`. If Mangro
 
 ### Active markets
 
-Every Mangrove [**offer list**](../data-structures/market/) can be either [active or inactive](../data-structures/mangrove-configuration/#mgvlib.local), and Mangrove itself can be either [alive or dead](data-structures/mangrove-configuration/#mgvlib.global). Taking offers is only possible when Mangrove is alive on offer lists that are active.
+Every Mangrove[ offer list ](../data-structures/market.md)can be either [active or inactive](../meta-topics/governance.md#de-activating-an-offer-list), and Mangrove itself can be either [alive or dead](../meta-topics/governance.md#shutting-down-mangrove). Taking offers is only possible when Mangrove is alive on offer lists that are active.
 
 ## Market order
 
-A **Market Order** is Mangrove's main liquidity sourcing entrypoint. It is called on a given [offer list](broken-reference/) with its associated **outbound token** (tokens that flow out of Mangrove) and \*\*inbound token \*\*(tokens that flow into Mangrove). The liquidity taker specifies how many **outbound tokens** she _wants_ and how many **inbound tokens** she _gives_.
+A **Market Order** is Mangrove's main liquidity sourcing entrypoint. It is called on a given [offer list](../data-structures/market.md) with its associated _outbound_ token (tokens that flow out of Mangrove) and _inbound_ token (tokens that flow into Mangrove). The liquidity taker specifies how many _outbound_ tokens she _wants_ and how many** **_inbound_ tokens she _gives_.
 
-When an order is processed by Mangrove's matching engine, it consumes the offers on the selected ofer list, starting from [the best one](broken-reference/). Execution works as follows, where at any point the taker's price is _give / wants._
+When an order is processed by Mangrove's matching engine, it consumes the offers on the selected [offer list](../data-structures/market.md), starting from the [best](../data-structures/read-data.md#read-the-current-best-offer-id-of-an-offer-list) one. Execution works as follows, where at any point the taker's price is _give / wants._
 
-1. Mangrove checks that the current offer's [price](broken-reference/) is at least as good as the taker's price. Otherwise execution stops there.
-2. Mangrove sends **inbound tokens** to the current offer's associated [account](../offer-maker/maker-contract.md).
+1. Mangrove checks that the current offer's [price](taker-order.md#generalities) is at least as good as the taker's price. Otherwise execution stops there.
+2. Mangrove sends _inbound_ tokens to the current offer's associated [account](../offer-maker/maker-contract.md).
 3. Mangrove then executes the offer logic.
-4. If the call is successful, Mangrove sends **outbound tokens** to the taker. If the call or the transfer fail, Mangrove reverts the effects of steps 2. and 3.
+4. If the call is successful, Mangrove sends _outbound_ tokens to the taker. If the call or the transfer fail, Mangrove reverts the effects of steps 2. and 3.
 5. The taker's _wants_ and _gives_ are reduced.
 6. If the taker's _wants_ has not been completely fulfilled, Mangrove moves back to step 1.
 
-Any failed [offer](../offer-maker/reactive-offer.md) execution results in a [bounty](../offer-maker/offer-provision.md) being sent to the caller as compensation for the wasted gas.
+Any failed [offer](../offer-maker/reactive-offer.md) execution results in a [bounty](../offer-maker/offer-provision.md#computing-the-provision-and-offer-bounty) being sent to the caller as compensation for the wasted gas.
 
 {% tabs %}
 {% tab title="Signature" %}
@@ -216,19 +216,19 @@ await Mangrove.connect(signer).marketOrder(
 
 ### Inputs
 
-* `outbound_tkn` address of the [**outbound token**](broken-reference/) (that the taker will buy).
-* `inbound_tkn` address of the [**inbound token**](broken-reference/) (that the taker will spend).
-* `takerWants` raw amount of **outbound token** the taker wants. Must fit on 160 bits.
-* `takerGives` raw amount of **inbound token** the taker gives. Must fit on 160 bits.
+* `outbound_tkn` address of the _outbound_ token (that the taker will buy).
+* `inbound_tkn` address of the _inbound_ token (that the taker will spend).
+* `takerWants` raw amount of outbound token the taker wants. Must fit on 160 bits.
+* `takerGives` raw amount of _inbound_ token the taker gives. Must fit on 160 bits.
 * `fillWants`
-  * If `true`, the market order will stop as soon as `takerWants` **outbound tokens** have been bought. It is conceptually similar to a _buy order_.
-  * If `false`, the market order will continue until `takerGives` **inbound tokens** have been spent. It is conceptually similar to _sell order_.
+  * If `true`, the market order will stop as soon as `takerWants` _outbound_ tokens have been bought. It is conceptually similar to a _buy order_.
+  * If `false`, the market order will continue until `takerGives` _inbound_ tokens have been spent. It is conceptually similar to _sell order_.
   * Note that market orders can stop for other reasons, such as the price being too high.
 
 ### Outputs
 
-* `takerGot` is the net amount of **outbound tokens** the taker has received after applying the [taker fee](../meta-topics/governance.md#taker-fees).
-* `takerGave` is the amount of **inbound tokens** the taker has sent.
+* `takerGot` is the net amount of _outbound_ tokens the taker has received after applying the [taker fee](../meta-topics/governance.md#taker-fees).
+* `takerGave` is the amount of _inbound_ tokens the taker has sent.
 
 {% hint style="success" %}
 **Specification**
@@ -263,12 +263,12 @@ Mangrove's market orders are quite configurable using the three parameters `take
 
 * **Market buy:** You can run a 'classic' market **buy** order by setting `takerWants` to the amount you want to buy, `takerGives` to `type(uint160).max`, and `fillWants` to `true`.
 * **Market sell:** You can run a 'classic' market **sell** order by setting `takerWants` to `type(uint160).max`, `takerGives` to the amount you want to sell, and `fillWants` to `false`.
-* **Limit order**: You can run limit orders by setting `takerGives` and `takerWants` such that `takerGives`/`takerWants` is the volume-weighted price you are willing to pay and `fillWants` to `true` if you want to act as a buyer of **outbound token** or to `false` if you want to act as a seller if **inbound token**.
+* **Limit order**: You can run limit orders by setting `takerGives` and `takerWants` such that `takerGives`/`takerWants` is the volume-weighted price you are willing to pay and `fillWants` to `true` if you want to act as a buyer of _outbound_ token or to `false` if you want to act as a seller if _inbound _token.
 
 {% hint style="warning" %}
 **On order residuals**
 
-Contrary to limit orders on regular orderbook-based exchanges, the residual of your order (i.e. the volume you were not able to buy/sell due to hitting your price limit) will _not_ be put on the market as an offer. Instead, the market order will simply end partially filled.
+Contrary to limit orders on regular [orderbook](https://www.investopedia.com/terms/o/order-book.asp)-based exchanges, the residual of your order (i.e. the volume you were not able to buy/sell due to hitting your price limit) will _not_ be put on the market as an offer. Instead, the market order will simply end partially filled.
 {% endhint %}
 
 ### Market order prices are volume-weighted
@@ -287,7 +287,7 @@ In Mangrove, a "market order" with the same parameters will however consume offe
 
 ## Offer sniping
 
-It is also possible to target specific offer IDs in the [offer list](broken-reference/). This is called **Offer Sniping**.
+It is also possible to target specific offer IDs in the [offer list](../data-structures/market.md). This is called **Offer Sniping**.
 
 {% hint style="info" %}
 Offer sniping can be used by off-chain bots and price aggregators to build their own optimized market order, targeting for instance offers with a higher volume or less gas requirements in order to optimize the gas cost of filling the order.
@@ -489,8 +489,8 @@ await Mangrove.connect(signer).snipes(
 
 ### Inputs
 
-* `outbound_tkn` outbound token address (received by the taker)
-* `inbound_tkn` inbound token address (sent by the taker)
+* `outbound_tkn` _outbound_ token address (received by the taker)
+* `inbound_tkn` _inbound_ token address (sent by the taker)
 * `targets` an array of offers to take. Each element of `targets` is a `uint[4]`'s of the form `[offerId, takerWants, takerGives, gasreq_permitted]` where:
   * `offerId `is the ID of an [offer](../offer-maker/reactive-offer.md) that should be taken.
   * `takerWants` the amount of outbound tokens the taker wants from that [offer](../offer-maker/reactive-offer.md). **Must fit in a `uint96`.**
@@ -514,8 +514,8 @@ If you only want to take offers without any checks on the offer contents, you ca
 ### Outputs
 
 * `successes` is the number of successfully sniped offers.
-* `takerGot` is the [total](../meta-topics/governance.md#taker-fees) amount of **outbound tokens** that were collected by the order.
-* `takerGave` is the total amount of **inbound tokens** spent by the taker during the snipe.
+* `takerGot` is the [total](../meta-topics/governance.md#taker-fees) amount of _outbound_ tokens that were collected by the order.
+* `takerGave` is the total amount of _inbound_ tokens spent by the taker during the snipe.
 
 #### Example
 
@@ -529,5 +529,5 @@ If you only want to take offers without any checks on the offer contents, you ca
 
 Consider the above offers on the DAI-USDC offer list:
 
-Setting `targets` to `[[13,8,10,80_000],[2,1,1.1,250_000]]` with `fillWants` set to `true` will successfuly buy 8 DAI from offer #13 (for 8 USDC), and will not attempt to execute offer #2 since 1.1 > 1/2.
+Setting `targets` to `[[13,8,10,80_000],[2,1,1.1,250_000]]` with `fillWants` set to `true` will successfully buy 8 DAI from offer #13 (for 8 USDC), and will not attempt to execute offer #2 since 1.1 > 1/2.
 {% endhint %}
