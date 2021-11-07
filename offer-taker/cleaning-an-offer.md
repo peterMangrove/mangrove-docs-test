@@ -2,7 +2,7 @@
 description: Getting paid to clean Mangrove offer lists.
 ---
 
-# Cleaning an offer
+# Cleaning offers
 
 ## Cleaning an offer
 
@@ -22,26 +22,20 @@ Mangrove provides a [cleaner contract ](../meta-topics/mangroves-ecosystem/clean
 **Example scenario**
 
 1. Your bot has 900 DAI tokens, has given Mangrove an allowance to spend its DAI, and has given the cleaner contract an [allowance](delegate-takers.md) to use its DAI on Mangrove.
-
 2. You detect that offer #708, which `wants` 800DAI and `gives` 800 USDC on the USDT-DAI offer list, fails on your local fork of mainnet, so you call the cleaner contract with `targets` [set to](taker-order.md#offer-sniping) `[[708,type(uint96).max,0,type(uint).max]]`, and `fillWants` set to `false`.
-
 3. Mangrove will use your DAI to execute offer #708 and revert after noticing that the offer fails. It will then transfer the offer bounty to you.
-
 4. If the offer does not fail, the cleaner contract will revert.
 {% endhint %}
 
 ### Delegation
 
-Cleaning can also use Mangrove's [delegation mechanism](delegate-takers.md), which means you only need Mangrove to have an allowance on any address that that has enough **inbound tokens** of the offer list you are targeting. The cleaner contract will use those funds to execute the cleaning.
+Cleaning can also use Mangrove's [delegation mechanism](delegate-takers.md), which means you only need Mangrove to have an allowance on any address that that has enough _inbound_ tokens of the [offer list](../data-structures/market.md) you are targeting. The cleaner contract will use those funds to execute the cleaning.
 
 {% hint style="info" %}
 **Example scenario**
 
 1. The address `funder.eth` has 900 DAI tokens and given Mangrove an allowance to spend its DAI. Offer #708 is still failing.
-
 2. You call the cleaner contract with the same `targets` as above, and `taker` set to `funder.eth`.
-
 3. Mangrove will use `funder.eth`'s DAI to execute offer #708 and revert after noticing that the offer fails. It will then transfer the offer bounty to you.
-
 4. If the offer succeeds, Mangrove will notice that you had no allowance to use `funder.eth`'s DAI on Mangrove and revert (if you did have a high enough allowance, and the sniping succeeds, the cleaner contract will revert anyway).
 {% endhint %}

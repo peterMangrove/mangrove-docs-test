@@ -182,7 +182,7 @@ if (await Mangrove.callstatic.withdraw(wei_balance)) {
 
 Whenever an offer is created or updated, Mangrove applies to following formula to get the offer's required provision in wei:
 
-$$\textrm{provision} = \max(\textrm{gasprice}_{\textrm{mgv}},\textrm{gasprice}_{\textrm{ofr}}) \times (\textrm{gasreq} + \textrm{gasoverhead}) \ times 10^9$$
+$$\textrm{provision} = \max(\textrm{gasprice}_{\textrm{mgv}},\textrm{gasprice}_{\textrm{ofr}}) \times (\textrm{gasreq} + \textrm{gasoverhead}) \times 10^9$$
 
 * $$\textrm{gasprice}_{\textrm{mgv}}$$ is [Mangrove's internal `gasprice` estimate](../meta-topics/governance.md#global-governance-parameters).
 * $$\textrm{gasprice}_{\textrm{ofr}}$$ is the `gasprice` argument of the function being called ([`newOffer`](reactive-offer.md#posting-a-new-offer) or [`updateOffer`](reactive-offer.md#updating-an-existing-offer)).

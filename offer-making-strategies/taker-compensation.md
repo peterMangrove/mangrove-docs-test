@@ -2,11 +2,11 @@
 
 Since Mangrove offers do not provision liquidity, there must be a mechanism that ensures that most of the time, the orderbook does not contain 'fake offers', that is, offers that renege on their promises.
 
-Mangrove uses **bounties **as a protection mechanism.
+Mangrove uses [Offer Provisions](../offer-maker/offer-provision.md) as a protection mechanism.
 
 Consider an offer that promises 100WETH for 100DAI and requires 300k for execution. That gas will be paid for by the taker. If the 100WETH are delivered, all is well.
 
-If they are not, the taker must be compensated for the wasted gas. This is why, when creating an offer, market makers must **provision a bounty in ETH**. That bounty depends on :
+If they are not, the taker must be compensated for the wasted gas. This is why, when creating an offer, market makers must [provision](../offer-maker/offer-provision.md) for a potential [bounty](../offer-maker/offer-provision.md#computing-the-provision-and-offer-bounty) in ETH. That [bounty](../offer-maker/offer-provision.md#computing-the-provision-and-offer-bounty) depends on :
 
 * The average gas price, as estimated by the Mangrove exchange itself. Let's name it `gasprice`.
 * The amount of gas requested by the offer. Let's name it `gasreq`.
@@ -15,7 +15,7 @@ If they are not, the taker must be compensated for the wasted gas. This is why, 
 To post their offer, the maker must lock `gasprice * (gasreq + gas_overhead)` WEI in the Mangrove.
 
 * If the maker retracts their offer, the ETH will be available to the maker for withdrawal.
-* If the offer is successfully executed, the ETH stays locked inside the offer.&#x20;
+* If the offer is successfully executed, the ETH stays locked inside the offer.
 * If the offer is executed and fails, part of the ETH goes to the taker and the rest is available to the maker for withdrawal.
   * The amount of ETH that goes to the taker depends on the gas _actually used during the execution of the offer_.
 
@@ -23,7 +23,7 @@ Now, a few observations about how the mechanism is implemented.
 
 ### Encouraging early renege
 
-It is in the interest of a maker to code their contract such that, if they decide not to fill their promise, they do so as early as possible. This reduces the gas effectively spent and thus minimises their operating costs.
+It is in the interest of a maker to code their contract such that, if they decide not to fill their promise, they do so as early as possible. This reduces the gas effectively spent and thus minimizes their operating costs.
 
 ### Bounties finance fast updates
 

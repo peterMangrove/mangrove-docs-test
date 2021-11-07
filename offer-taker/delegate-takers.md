@@ -1,8 +1,12 @@
-# Delegate Takers
+---
+description: Taking offers on behalf of another address
+---
 
-## Approve or Permit&#x20;
+# Delegation
 
-A **Taker** **Order** on Mangrove can be sent on behalf of a taker, in which case the delegate taker needs to be approved or permitted to draw the required inbound tokens from the taker.&#x20;
+## Approve or Permit
+
+A **Taker** **Order** on Mangrove can be sent on behalf of a taker, in which case the delegate taker needs to be approved or permitted to draw the required inbound tokens from the taker.
 
 {% hint style="info" %}
 Approving a Delegate Taker for inbound tokens MUST be done via the standard `approve` function of the ERC20 managing the inbound token of the offer list. The approval MUST be enough to cover `takerGives` amount of inbound tokens of the `snipesFor` or `marketOrderFor` calls.
@@ -26,10 +30,6 @@ function permit(
   ) external;
 ```
 {% endtab %}
-
-{% tab title="Second Tab" %}
-
-{% endtab %}
 {% endtabs %}
 
 * `(outbound_tkn, inbound_tkn)` the outbound and inbound token of the offer list on which the Delegate Taker will be permitted to operate.
@@ -39,7 +39,7 @@ function permit(
 * `deadline` the block number beyond which the delegator's signature can no longer be used to obtain permission.
 * `(v,r,s)` the `secp256k1` [signature](https://eips.ethereum.org/EIPS/eip-2612) identifying the `owner` of the delegated funds.
 
-## Delegated Order Taking&#x20;
+## Delegated Order Taking
 
 Once a Delegate Taker is approved or permitted by a taker, she can use the delegated Taker Orders variants `marketOrderFor` and `snipesFor` which work similarly to `marketOrder` and `snipes` but require an additional `taker` address.
 
@@ -71,11 +71,6 @@ function snipesFor(
       uint takerGave
     );
     
-
 ```
-{% endtab %}
-
-{% tab title="Second Tab" %}
-
 {% endtab %}
 {% endtabs %}
