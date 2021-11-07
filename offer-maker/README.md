@@ -6,7 +6,7 @@ description: A walkthrough guide to deploying a reactive offer on the Mangrove
 
 An offer on Mangrove usually points to a contract containing the [offer logic](maker-contract.md) and specifies what it is ready to deliver and its price. Offer are stored in [offer lists](../data-structures/market.md).
 
-![](<../.gitbook/assets/basics (2).png>)
+![When a reactive Offer is matched, the contract implementing its logic is called by Mangrove](../.gitbook/assets/MakerOffer.png)
 
 ### Creating & Updating offers
 
