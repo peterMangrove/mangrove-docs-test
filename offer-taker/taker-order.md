@@ -28,7 +28,7 @@ Every Mangrove [**offer list**](../data-structures/market/) can be either [activ
 
 ## Market order
 
-A **Market Order** is Mangrove's main liquidity sourcing entrypoint. It is called on a given [offer list](broken-reference/) with its associated **outbound token** (tokens that flow out of Mangrove) and **inbound token **(tokens that flow into Mangrove). The liquidity taker specifies how many **outbound tokens** she _wants_ and how many **inbound tokens** she _gives_.
+A **Market Order** is Mangrove's main liquidity sourcing entrypoint. It is called on a given [offer list](broken-reference/) with its associated **outbound token** (tokens that flow out of Mangrove) and \*\*inbound token \*\*(tokens that flow into Mangrove). The liquidity taker specifies how many **outbound tokens** she _wants_ and how many **inbound tokens** she _gives_.
 
 When an order is processed by Mangrove's matching engine, it consumes the offers on the selected ofer list, starting from [the best one](broken-reference/). Execution works as follows, where at any point the taker's price is _give / wants._
 
@@ -261,8 +261,8 @@ Consider the DAI-USDC offer list above. If a taker calls `marketOrder`on this of
 
 Mangrove's market orders are quite configurable using the three parameters `takerWants`, `takerGives` and `fillWants`.
 
-* **Market buy: **You can run a 'classic' market **buy** order by setting `takerWants` to the amount you want to buy, `takerGives` to `type(uint160).max`, and `fillWants` to `true`.
-* **Market sell: **You can run a 'classic' market **sell** order by setting `takerWants` to `type(uint160).max`, `takerGives` to the amount you want to sell, and `fillWants` to `false`.
+* **Market buy:** You can run a 'classic' market **buy** order by setting `takerWants` to the amount you want to buy, `takerGives` to `type(uint160).max`, and `fillWants` to `true`.
+* **Market sell:** You can run a 'classic' market **sell** order by setting `takerWants` to `type(uint160).max`, `takerGives` to the amount you want to sell, and `fillWants` to `false`.
 * **Limit order**: You can run limit orders by setting `takerGives` and `takerWants` such that `takerGives`/`takerWants` is the volume-weighted price you are willing to pay and `fillWants` to `true` if you want to act as a buyer of **outbound token** or to `false` if you want to act as a seller if **inbound token**.
 
 {% hint style="warning" %}
@@ -275,12 +275,11 @@ Contrary to limit orders on regular orderbook-based exchanges, the residual of y
 
 Consider the following A-B offer list:
 
-|      ID  | Wants (B) | Gives (A) | Price (B per A) |
-| -------- | --------- | --------- | --------------- |
-| 1        | 1         | 1         | 1               |
-| 2        | 2         | 1         | 2               |
-| 3        | 6         | 2         | 3               |
-
+| ID | Wants (B) | Gives (A) | Price (B per A) |
+| -- | --------- | --------- | --------------- |
+| 1  | 1         | 1         | 1               |
+| 2  | 2         | 1         | 2               |
+| 3  | 6         | 2         | 3               |
 
 A regular limit order with `takerWants` set to 3 A and `takerGives` set to 6 B would consume offers until it hits an offer with a price above 2, so it would consume offers #1 and #2, but not offer #3.
 
@@ -505,9 +504,10 @@ await Mangrove.connect(signer).snipes(
 Offers can be updated, so if `targets` was just an array of `offerId`s, there would be no way to protect against a malicious offer update mined right before a snipe. The offer could suddenly have a worse price, or require a lot more gas.
 
 If you only want to take offers without any checks on the offer contents, you can simply:
-* Set `takerWants` to `0`, 
-* Set `takerGives` to `type(uint96).max`, 
-* Set `gasreq_permitted` to `type(uint).max`, and 
+
+* Set `takerWants` to `0`,
+* Set `takerGives` to `type(uint96).max`,
+* Set `gasreq_permitted` to `type(uint).max`, and
 * Set `fillWants` to `false`.
 {% endhint %}
 
@@ -519,10 +519,10 @@ If you only want to take offers without any checks on the offer contents, you ca
 
 #### Example
 
-|  ID  | Wants     | Gives     | Gas required |
-| ---- | --------- | --------- | ------------ |
-| 13   | 10        | 10        | 80\_000      |
-| 2    | 1         | 2         | 250\_000     |
+| ID | Wants | Gives | Gas required |
+| -- | ----- | ----- | ------------ |
+| 13 | 10    | 10    | 80\_000      |
+| 2  | 1     | 2     | 250\_000     |
 
 {% hint style="info" %}
 **Example**
