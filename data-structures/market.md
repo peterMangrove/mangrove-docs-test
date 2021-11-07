@@ -2,7 +2,7 @@
 description: Introducing Mangrove's offer lists and markets
 ---
 
-# Offer lists
+# Offer Lists
 
 ## General structure
 
@@ -49,7 +49,7 @@ The identifier of the offer in the offer list.
 Two offers may have the same ID as long as they belong to different offer lists. For instance, there may be an offer #42 on the wETH-DAI offer list with different volumes, gas required, maker contract, etc. than offer #42 in the DAI-wETH offer list shown above.
 {% endhint %}
 
-### Wants, gives
+### Wants, gives and Offer price
 
 Taken together, the **wants** and **gives** values define 1) a max volume, 2) a price. The price is p=**wants**/**gives**, and an offer promises delivery of up to **gives** outbound tokens at a price of p tokens delivered per inbound token received.
 
@@ -183,4 +183,3 @@ for (let i = 0; i < offerIds.length; i++) {
 {% endcode %}
 {% endtab %}
 {% endtabs %}
-

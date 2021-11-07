@@ -30,9 +30,9 @@ Every Mangrove[ offer list ](../data-structures/market.md)can be either [active 
 
 A **Market Order** is Mangrove's main liquidity sourcing entrypoint. It is called on a given [offer list](../data-structures/market.md) with its associated _outbound_ token (tokens that flow out of Mangrove) and _inbound_ token (tokens that flow into Mangrove). The liquidity taker specifies how many _outbound_ tokens she _wants_ and how many** **_inbound_ tokens she _gives_.
 
-When an order is processed by Mangrove's matching engine, it consumes the offers on the selected [offer list](../data-structures/market.md), starting from the [best](../data-structures/read-data.md#read-the-current-best-offer-id-of-an-offer-list) one. Execution works as follows, where at any point the taker's price is _give / wants._
+When an order is processed by Mangrove's matching engine, it consumes the offers on the selected [offer list](../data-structures/market.md), starting from the [best](../data-structures/read-data.md#read-the-current-best-offer-id-of-an-offer-list) one. Execution works as follows, where at any point the taker's price is `takerGives`_ / _`takerWants`_._
 
-1. Mangrove checks that the current offer's [price](taker-order.md#generalities) is at least as good as the taker's price. Otherwise execution stops there.
+1. Mangrove checks that the current offer's [price](../data-structures/market.md#wants-gives-and-offer-price) is at least as good as the taker's price. Otherwise execution stops there.
 2. Mangrove sends _inbound_ tokens to the current offer's associated [account](../offer-maker/maker-contract.md).
 3. Mangrove then executes the offer logic.
 4. If the call is successful, Mangrove sends _outbound_ tokens to the taker. If the call or the transfer fail, Mangrove reverts the effects of steps 2. and 3.
