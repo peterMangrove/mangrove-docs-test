@@ -1,6 +1,7 @@
 # Table of contents
 
 * [Mangrove developer documentation](README.md)
+* [Contract addresses](contract-addresses.md)
 
 ## Basic usage
 
