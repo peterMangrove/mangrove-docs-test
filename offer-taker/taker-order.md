@@ -22,7 +22,7 @@ For each function described below, we include the following tabs:
 
 ERC20 tokens transfers are initiated by Mangrove using `transferFrom`. If Mangrove's `allowance` on the taker's address (for tokens to be spent) is too low, the order will revert.
 
-### Active markets
+### Active offer lists
 
 Every Mangrove[ offer list ](../data-structures/market.md)can be either [active or inactive](../meta-topics/governance.md#de-activating-an-offer-list), and Mangrove itself can be either [alive or dead](../meta-topics/governance.md#shutting-down-mangrove). Taking offers is only possible when Mangrove is alive on offer lists that are active.
 
