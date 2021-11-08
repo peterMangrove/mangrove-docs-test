@@ -31,6 +31,12 @@ event Credit(address maker, uint amount);
 ```
 {% endtab %}
 
+{% tab title="Revert string" %}
+```solidity
+"mgv/dead" // Mangrove contract is no longer live
+```
+{% endtab %}
+
 {% tab title="Solidity" %}
 {% code title="fund.sol" %}
 ```solidity
@@ -80,7 +86,7 @@ None.
 
 #### Description
 
-The function is `payable`, so you want to call it with `mgv.fund{value:<funding amount>}()`. You can also simply do `mgv.call{value:<funding amount>}()` and Mangrove will fund the balance of `msg.sender`.
+The function is `payable`, so you want to call it with `mgv.fund{value:<funding amount>}(offer_account)`. You can also simply do `mgv.call{value:<funding amount>}()` and Mangrove will fund the balance of `msg.sender`.
 
 {% hint style="danger" %}
 **Do not use `send` or `transfer`**
@@ -258,8 +264,8 @@ const bounty = await MangroveReader.getProvision(outTkn, inbTkn, ofr_gasreq,0);
 
 ### Inputs
 
-* `outbound_tkn` the **outbound token** of the offer you want to create/update
-* `inbound_tkn` the **inbound\_tkn** of the offer you want to create/update
+* `outbound_tkn` the _outbound_ token of the offer you want to create/update
+* `inbound_tkn` the _inbound_ token of the offer you want to create/update
 * `ofr_gasreq` the `gasreq` you will use in your call to `newOffer`/`updateOffer`.
 * `ofr_gasprice` the gas price, in **gwei/gas**, that you will use when calling `newOffer`/`updateOffer`.
   * Set to 0 to use Mangrove's [gas price](../meta-topics/governance.md#gas-price-and-oracle).
