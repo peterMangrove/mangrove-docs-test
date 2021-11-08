@@ -16,7 +16,7 @@ For each function described below, we include the following tabs:
 * ethers.js - Javascript code example using [ethers.js](https://docs.ethers.io/v5/)
 {% endhint %}
 
-On Mangrove, an offer is an element of an [offer list](broken-reference/), and a promise that an account (a [contract](maker-contract.md) or an [EOA](../offer-making-strategies/basic-offer.md)) is able to deliver a certain amount of **outbound tokens**, in return for a certain amount of **inbound tokens** when given a certain amount of gas.
+On Mangrove, an offer is an element of an [offer list](../data-structures/market.md), and a promise that an account (a [contract](maker-contract.md) or an [EOA](../offer-making-strategies/basic-offer.md)) is able to deliver a certain amount of **outbound tokens**, in return for a certain amount of **inbound tokens** when given a certain amount of gas.
 
 ### Posting a new offer
 
