@@ -10,7 +10,7 @@ description: The Mangrove is an onchain, orderbook-based exchange where offers a
   * For a higher-level intro to Mangrove, check out [mangrove.exchange](https://mangrove.exchange).&#x20;
   * If you want to modify and improve Mangrove, [read the annotated code](https://giry-dev.github.io/mangrove/MgvDoc.html) and head to the [github repository](https://github.com/giry-dev/mangrove).
 
-![Liquidity takers (left) and makers (right) interacting with the Mangrove](.gitbook/assets/contactMap.png)
+![A bird eye view of the Mangrove ecosystem.](<.gitbook/assets/ContactMap (1).png>)
 
 ## Who interacts with Mangrove
 
