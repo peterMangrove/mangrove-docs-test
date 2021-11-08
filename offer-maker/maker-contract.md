@@ -9,7 +9,7 @@ description: How to write offer execution logic
 [Offers](reactive-offer.md) are [created](reactive-offer.md) with an associated account (contract or EOA) and listed on Mangrove [offer lists](../data-structures/market.md).
 
 * If the account is an EOA, no logic will be associated to the offer.
-* If the account is a contract, it should implement the offer logic through the [IMaker interface](https://github.com/giry-dev/mangrove/blob/c4446bbcb0a4dbade4777075eb3e26faebd1c218/contracts/MgvLib.sol#L161). It must at least implement the `makerExecute` function, otherwise all their offer executions will fail.
+* If the account is a contract, it should implement the offer logic through the [IMaker interface](https://github.com/giry-dev/mangrove/blob/0414196f4c30fddc0e364bd245ed0131b3362078/packages/mangrove-solidity/contracts/MgvLib.sol#L217). It must at least implement the `makerExecute` function, otherwise all their offer executions will fail.
 
 Here is the offer lifecycle, with the parts addressed in this section bolded:
 
