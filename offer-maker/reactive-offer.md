@@ -139,15 +139,15 @@ Mangrove(MGV).newOffer(
 
 Since offers can fail, Mangrove requires each offer to be [provisioned](offer-provision.md) in ETH. If an offer fails, part of that provision will be sent to the caller that executed the offer, as compensation.
 
-Make sure that your offer is [well-provisioned](offer-provision.md#provisioning-offers) before calling `newOffer`, otherwise the call will fail. The easiest way to go is to send a comfortable amount of ETH to Mangrove from your offer-posting contract. Mangrove will remember your ETH balance and use it when necessary.
+Make sure that your offer is [well-provisioned](offer-provision.md#checking-an-account-balance) before calling `newOffer`, otherwise the call will fail. The easiest way to go is to send a comfortable amount of ETH to Mangrove from your offer-posting contract. Mangrove will remember your ETH balance and use it when necessary.
 {% endhint %}
 
 {% hint style="danger" %}
 **Offer execution**
 
 * If the offer account is a contract, it should implement the [IMaker](maker-contract.md) interface. At the very least, it must have a function with signature [`makerExecute(MgvLib.SingleOrder calldata order)`](maker-contract.md#offer-execution) or it will systematically revert when called by Mangrove.
-* `gives` and `gasreq` are subject to [density](../data-structures/mangrove-configuration.md#local-parameters) constraints on the amount of **outbound token** provided per gas spent. TODO: link to utility function to get max gas for a `gives` and min gives for a `gas`.
-* The offer account will need to give Mangrove a high enough allowance in **outbound tokens** since Mangrove will use the ERC20 standard's `transferFrom` function to source your tokens.
+* `gives` and `gasreq` are subject to [density](../data-structures/mangrove-configuration.md#local-parameters) constraints on the amount of _outbound_ token provided per gas spent. TODO: link to utility function to get max gas for a `gives` and min gives for a `gas`.
+* The offer account will need to give Mangrove a high enough allowance in _outbound_ tokens since Mangrove will use the ERC20 standard's `transferFrom` function to source your tokens.
 {% endhint %}
 
 ### Updating an existing offer
@@ -282,7 +282,7 @@ After being executed or [retracted](reactive-offer.md#retracting-an-offer), an o
 
 ### Retracting an offer
 
-An offer can be withdrawn from the order book via the `retractOffer` function described below (source code is [here](https://github.com/giry-dev/mangrove/blob/ca281db629119013add03c8e8f40dbba45c5edae/packages/mangrove-solidity/contracts/MgvOfferMaking.sol#L136)).
+An offer can be withdrawn from the order book via the `retractOffer` function described below.
 
 {% tabs %}
 {% tab title="Signature" %}
