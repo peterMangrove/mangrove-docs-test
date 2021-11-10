@@ -14,6 +14,12 @@
 0x5B2F8058Df0A0b7744FDb4fD0885FbCD2394194C
 ```
 
+### MgvCleaner
+
+```
+0x3638ecc06526d8b849b06583a5a6c74f8cecff9f
+```
+
 ### MgvOracle
 
 ```
