@@ -17,7 +17,7 @@
 ### MgvCleaner
 
 ```
-0x3638ecc06526d8b849b06583a5a6c74f8cecff9f
+0x5a0Aa1142f5754785B2Fea670481B93d836b9e82
 ```
 
 ### MgvOracle
