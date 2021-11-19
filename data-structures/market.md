@@ -84,7 +84,7 @@ Several [configuration](mangrove-configuration.md) parameters determine how new 
 
 ## View functions
 
-Retrieving the state of an offer list can be easily done by a call to the Mangrove's [Reader Contract](../meta-topics/mangroves-ecosystem/reader.md) `MgvReader`(see [deployment addresses](../meta-topics/deployment-addresses.md)) that returns easy-to-parse[ data structures](offer-data-structures.md). For gas cautious interactions, when calling from a smart contract, developers may also want to use the reader's `packedOffers` getter, which return packed data that can be parsed using `MgvPack.sol` library.
+Retrieving the state of an offer list can be easily done by a call to the Mangrove's [Reader Contract](../meta-topics/mangroves-ecosystem/reader.md) `MgvReader`(see [contract addresses](../contract-addresses.md)) that returns easy-to-parse[ data structures](offer-data-structures.md). For gas cautious interactions, when calling from a smart contract, developers may also want to use the reader's `packedOffers` getter, which return packed data that can be parsed using `MgvPack.sol` library.
 
 {% tabs %}
 {% tab title="Views" %}

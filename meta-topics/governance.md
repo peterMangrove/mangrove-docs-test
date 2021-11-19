@@ -12,7 +12,7 @@ description: >-
 
 ## View functions
 
-**Global** and **local** governance parameters are respectively gathered in the [`MgvLib.global`](../data-structures/mangrove-configuration.md#mgvlib.global) and [`MgvLib.local`](../data-structures/mangrove-configuration.md#mgvlib.local) data structures. A `bytes32` packing of these data structures can be obtained via the `config` getter of Mangrove, when gas efficient access to the configuration parameters is needed. Unpacking functions are provided via the [`MgvPack`](https://github.com/giry-dev/mangrove/blob/master/packages/mangrove-solidity/contracts/MgvPack.sol) library. The [`MgvReader`](deployment-addresses.md) view contract provide a `config` getter of the unpacked structures for easy-to-parse off chain access.
+**Global** and **local** governance parameters are respectively gathered in the [`MgvLib.global`](../data-structures/mangrove-configuration.md#mgvlib.global) and [`MgvLib.local`](../data-structures/mangrove-configuration.md#mgvlib.local) data structures. A `bytes32` packing of these data structures can be obtained via the `config` getter of Mangrove, when gas efficient access to the configuration parameters is needed. Unpacking functions are provided via the [`MgvPack`](https://github.com/giry-dev/mangrove/blob/master/packages/mangrove-solidity/contracts/MgvPack.sol) library. The [`MgvReader`](../contract-addresses.md) view contract provide a `config` getter of the unpacked structures for easy-to-parse off chain access.
 
 {% hint style="warning" %}
 **Boolean packing**

@@ -28,7 +28,6 @@
   * [Reader](meta-topics/mangroves-ecosystem/reader.md)
   * [Monitor](meta-topics/mangroves-ecosystem/monitor.md)
   * [Cleaner](meta-topics/mangroves-ecosystem/cleaner.md)
-* [Deployment addresses](meta-topics/deployment-addresses.md)
 
 ## Strategies for Maker Contracts <a href="offer-making-strategies" id="offer-making-strategies"></a>
 
