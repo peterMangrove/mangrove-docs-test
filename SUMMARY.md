@@ -28,9 +28,9 @@
   * [Reader](meta-topics/mangroves-ecosystem/reader.md)
   * [Monitor](meta-topics/mangroves-ecosystem/monitor.md)
   * [Cleaner](meta-topics/mangroves-ecosystem/cleaner.md)
+* [Mangrove API](meta-topics/mangrove-api.md)
 
 ## Strategies for Maker Contracts <a href="#offer-making-strategies" id="offer-making-strategies"></a>
 
-* [Preliminaries](offer-making-strategies/preliminaries.md)
 * [Reneging on offers](offer-making-strategies/taker-compensation.md)
 * [Trivial offer](offer-making-strategies/basic-offer.md)

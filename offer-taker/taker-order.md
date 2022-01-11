@@ -122,59 +122,6 @@ event OrderComplete(
 ```
 {% endtab %}
 
-{% tab title="JS API" %}
-```typescript
-// Import the JS API
-import Mangrove from "@mangrovedao/mangrove.js";
-
-async function main() {
-  const provider = new ethers.providers.WebSocketProvider(
-    <URL_TO_NETWORK_ACCESS_POINT>
-  );
-
-  const wallet = new ethers.Wallet(
-    <WALLET_PRIVATE_KEY>,
-    provider
-  );
-  
-  // Create a Mangrove API object connected to your wallet
-  const MgvAPI = await Mangrove.connect({
-    signer: wallet 
-  });
-  
-  // Obtain a `market` object, loading a maximum of 100 bids and asks
-  const market = await MgvAPI.market({
-    base: "WETH",
-    quote: "DAI",
-    maxOffers: 100,
-  });
-  console.log(`* On market ${base},${quote}`);
-  const tx_ = await market.base.approveMangrove();
-  await tx_.wait();
-  const tx = await market.quote.approveMangrove();
-  await tx.wait();
-  const resultBuy = await market.buy({
-    wants: volume / baseInUSD,
-    gives: (volume + 10) / quoteInUSD,
-  });
-  console.log(resultBuy);
-  const resultSell = await market.sell({
-    wants: volume / quoteInUSD,
-    gives: (volume + 10) / baseInUSD,
-  });
-  console.log(resultSell);
-  }
-}
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
-
-```
-{% endtab %}
-
 {% tab title="Solidity" %}
 {% code title="marketOrder.sol" %}
 ```solidity
