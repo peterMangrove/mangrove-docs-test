@@ -28,9 +28,9 @@ Every Mangrove[ offer list ](../data-structures/market.md)can be either [active 
 
 ## Market order
 
-A **Market Order** is Mangrove's main liquidity sourcing entrypoint. It is called on a given [offer list](../data-structures/market.md) with its associated _outbound_ token (tokens that flow out of Mangrove) and _inbound_ token (tokens that flow into Mangrove). The liquidity taker specifies how many _outbound_ tokens she _wants_ and how many** **_inbound_ tokens she _gives_.
+A **Market Order** is Mangrove's main liquidity sourcing entrypoint. It is called on a given [offer list](../data-structures/market.md) with its associated _outbound_ token (tokens that flow out of Mangrove) and _inbound_ token (tokens that flow into Mangrove). The liquidity taker specifies how many _outbound_ tokens she _wants_ and how many **** _inbound_ tokens she _gives_.
 
-When an order is processed by Mangrove's matching engine, it consumes the offers on the selected [offer list](../data-structures/market.md), starting from the [best](../data-structures/read-data.md#read-the-current-best-offer-id-of-an-offer-list) one. Execution works as follows, where at any point the taker's price is `takerGives`_ / _`takerWants`_._
+When an order is processed by Mangrove's matching engine, it consumes the offers on the selected [offer list](../data-structures/market.md), starting from the [best](../data-structures/read-data.md#read-the-current-best-offer-id-of-an-offer-list) one. Execution works as follows, where at any point the taker's price is `takerGives` _/_ `takerWants`_._
 
 1. Mangrove checks that the current offer's [price](../data-structures/market.md#wants-gives-and-offer-price) is at least as good as the taker's price. Otherwise execution stops there.
 2. Mangrove sends _inbound_ tokens to the current offer's associated [account](../offer-maker/maker-contract.md).
@@ -119,6 +119,59 @@ event OrderComplete(
 "mgv/sendPenaltyReverted" // Mangrove could not send the offer bounty to taker
 "mgv/feeTransferFail" // Mangrove could not collect fees from the taker
 "mgv/MgvFailToPayTaker" // Mangrove was unable to transfer outbound_tkn to taker (Taker blacklisted?)
+```
+{% endtab %}
+
+{% tab title="JS API" %}
+```typescript
+// Import the JS API
+import Mangrove from "@mangrovedao/mangrove.js";
+
+async function main() {
+  const provider = new ethers.providers.WebSocketProvider(
+    <URL_TO_NETWORK_ACCESS_POINT>
+  );
+
+  const wallet = new ethers.Wallet(
+    <WALLET_PRIVATE_KEY>,
+    provider
+  );
+  
+  // Create a Mangrove API object connected to your wallet
+  const MgvAPI = await Mangrove.connect({
+    signer: wallet 
+  });
+  
+  // Obtain a `market` object, loading a maximum of 100 bids and asks
+  const market = await MgvAPI.market({
+    base: "WETH",
+    quote: "DAI",
+    maxOffers: 100,
+  });
+  console.log(`* On market ${base},${quote}`);
+  const tx_ = await market.base.approveMangrove();
+  await tx_.wait();
+  const tx = await market.quote.approveMangrove();
+  await tx.wait();
+  const resultBuy = await market.buy({
+    wants: volume / baseInUSD,
+    gives: (volume + 10) / quoteInUSD,
+  });
+  console.log(resultBuy);
+  const resultSell = await market.sell({
+    wants: volume / quoteInUSD,
+    gives: (volume + 10) / baseInUSD,
+  });
+  console.log(resultSell);
+  }
+}
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+
 ```
 {% endtab %}
 
@@ -247,9 +300,9 @@ At the end of a Market Order the following is guaranteed to hold:
 {% hint style="info" %}
 **Example**
 
-Consider the DAI-USDC offer list above. If a taker calls `marketOrder`on this offer list with`takerWants=2` and `takerGives = 2.2 `she is ready to give away up to 2.2 USDC in order to get 2 DAI.
+Consider the DAI-USDC offer list above. If a taker calls `marketOrder`on this offer list with`takerWants=2` and `takerGives = 2.2` she is ready to give away up to 2.2 USDC in order to get 2 DAI.
 
-* If `fillWants` is `true `the market order will provide 2 DAI for 1.97 USDC.
+* If `fillWants` is `true` the market order will provide 2 DAI for 1.97 USDC.
   1. 1 DAI for 0.98 USDC from offer #2
   2. 1 DAI for 0.99 from offer #1
 * If `fillWants` is `false` the market order will provide 2.2078 DAI for 2 USDC.
@@ -263,7 +316,7 @@ Mangrove's market orders are quite configurable using the three parameters `take
 
 * **Market buy:** You can run a 'classic' market **buy** order by setting `takerWants` to the amount you want to buy, `takerGives` to `type(uint160).max`, and `fillWants` to `true`.
 * **Market sell:** You can run a 'classic' market **sell** order by setting `takerWants` to `type(uint160).max`, `takerGives` to the amount you want to sell, and `fillWants` to `false`.
-* **Limit order**: You can run limit orders by setting `takerGives` and `takerWants` such that `takerGives`/`takerWants` is the volume-weighted price you are willing to pay and `fillWants` to `true` if you want to act as a buyer of _outbound_ token or to `false` if you want to act as a seller if _inbound _token.
+* **Limit order**: You can run limit orders by setting `takerGives` and `takerWants` such that `takerGives`/`takerWants` is the volume-weighted price you are willing to pay and `fillWants` to `true` if you want to act as a buyer of _outbound_ token or to `false` if you want to act as a seller if _inbound_ token.
 
 {% hint style="warning" %}
 **On order residuals**
@@ -492,7 +545,7 @@ await Mangrove.connect(signer).snipes(
 * `outbound_tkn` _outbound_ token address (received by the taker)
 * `inbound_tkn` _inbound_ token address (sent by the taker)
 * `targets` an array of offers to take. Each element of `targets` is a `uint[4]`'s of the form `[offerId, takerWants, takerGives, gasreq_permitted]` where:
-  * `offerId `is the ID of an [offer](../offer-maker/reactive-offer.md) that should be taken.
+  * `offerId` is the ID of an [offer](../offer-maker/reactive-offer.md) that should be taken.
   * `takerWants` the amount of outbound tokens the taker wants from that [offer](../offer-maker/reactive-offer.md). **Must fit in a `uint96`.**
   * `takerGives` the amount of inbound tokens the taker is willing to give to that [offer](../offer-maker/reactive-offer.md). **Must fit in a `uint96`.**
   * `gasreq_permitted` is the maximum `gasreq` the taker will tolerate for that [offer](../offer-maker/reactive-offer.md). If the offer's `gasreq` is higher than `gasreq_permitted`, the offer will not be sniped.
