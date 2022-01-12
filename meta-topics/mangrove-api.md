@@ -54,6 +54,8 @@ pretty prints available bids from the WETH,DAI market on Mangove
 undefined
 ```
 
+## API  classes
+
 {% hint style="info" %}
 #### Numbers
 
@@ -62,6 +64,32 @@ undefined
 
 The precision used when dividing is 20 decimal places.
 {% endhint %}
+
+### Mangrove
+
+The root class of the API. Use `Mangrove.connect` to get an instance of it.
+
+```typescript
+mgv = await Mangrove.connect(window.ethereum); // web browser
+mgv = await Mangrove.connect('http://127.0.0.1:8545'); // HTTP provider
+mgv = await Mangrove.connect(); // Uses Ethers.js fallback mainnet (for testing only)
+mgv = await Mangrove.connect('rinkeby'); // Uses Ethers.js fallback (for testing only)
+// Init with private key (server side)
+mgv = await Mangrove.connect(
+'https://mainnet.infura.io/v3/_your_project_id_', // provider
+{
+  privateKey: '0x_your_private_key_', // preferably with environment variable
+});
+// Init with HD mnemonic (server side)
+mgv = await Mangrove.connect( {
+  signer: myEthersWallet
+});
+```
+
+A mangrove object gives you access to various useful objects such as`MgvToken` (easy interactions with ERC20 contracts), `Market` (an abstraction layer to pass [market buy and sell orders](https://www.investopedia.com/terms/m/marketorder.asp) on Mangrove) and `Maker`(an abstraction layer to pass [bids](https://www.investopedia.com/terms/b/bid.asp) and [asks](https://www.investopedia.com/terms/a/ask.asp) on Mangrove).
+
+```typescript
+```
 
 ## Using the API to take offers
 
