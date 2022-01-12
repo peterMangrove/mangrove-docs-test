@@ -8,7 +8,7 @@ description: A JavaScript library for Mangrove.
 Wraps around [ethers.js](https://github.com/ethers-io/ethers.js). Works in the **web browser** and [Node.js](https://nodejs.org/en/).
 {% endhint %}
 
-## Install
+## Getting started
 
 You can install the API using \`npm\` package manager using:
 
