@@ -5,7 +5,7 @@ description: A JavaScript library for Mangrove.
 # Mangrove API
 
 {% hint style="info" %}
-Wraps around [ethers.js](https://github.com/ethers-io/ethers.js). Works in the **web browser** and **Node.js**.
+Wraps around [ethers.js](https://github.com/ethers-io/ethers.js). Works in the **web browser** and [Node.js](https://nodejs.org/en/).
 {% endhint %}
 
 ## Install
@@ -16,7 +16,7 @@ You can install the API using \`npm\` package manager using:
 sandbox_folder$> npm install @mangrovedao/mangrove.js
 ```
 
-and you may readily connecting to Mangrove with Node.js, for instance:
+and you may readily connect to Mangrove with [Node.js](https://nodejs.org/en/), for instance:
 
 ```bash
 sandbox_folder$> node
@@ -54,7 +54,14 @@ pretty prints available bids from the WETH,DAI market on Mangove
 undefined
 ```
 
+{% hint style="info" %}
+#### Numbers
 
+* Numbers returned by functions are either plain javascript `number` or `big.js`instances. Some functions with names ending in `Raw` may return`ethers.BigNumbers`.&#x20;
+* As input, numbers can be as plain javascript `numbers`, `big.js` instances, but also a`string`.
+
+The precision used when dividing is 20 decimal places.
+{% endhint %}
 
 ## Using the API to take offers
 
