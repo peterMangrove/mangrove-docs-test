@@ -60,7 +60,27 @@ Note that Mangrove's API deals with token decimals automatically (see definition
 
 ## Market
 
-The `Market` class is an abstraction layer to interact with Mangrove as a liquidity taker, using standard [market buy and sell orders](https://www.investopedia.com/terms/m/marketorder.asp).
+The `Market` class is an abstraction layer to interact with Mangrove as a liquidity taker, using standard market [buy and sell orders](sell-and-buy-orders.md). To obtain one instance use:
+
+```typescript
+//connect to a (base,quote) market with default options
+Market = await MgvT.connect({base:"<base_symbol>", quote:"<quote_symbol>"});
+
+// connect to the market, caching the first 50 best bids and asks
+Market = await MgvT.connect({base:"<base_symbol>", quote:"<quote_symbol>", maxOffers: 50});
+
+```
+
+{% hint style="info" %}
+Upon connection to a market, the API subscribes to events emanating from Mangrove in order to maintain a local state of the order book.&#x20;
+{% endhint %}
+
+For debugging purpose, the class provides a console of the current state of bids and asks posted on Mangrove. For instance to display the bid offers on Mangrove on this market:
+
+```typescript
+// Pretty prints to console the bid offers, showing offer `id`, offer `volume` and offer `price
+await Market.consoleAsks(["id", "volume", "price"]);
+```
 
 
 
