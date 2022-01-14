@@ -25,9 +25,9 @@
 
 * [Governance](meta-topics/governance.md)
 * [Mangrove's ecosystem](meta-topics/mangroves-ecosystem/README.md)
-  * [Reader](meta-topics/mangroves-ecosystem/reader.md)
-  * [Monitor](meta-topics/mangroves-ecosystem/monitor.md)
-  * [Cleaner](meta-topics/mangroves-ecosystem/cleaner.md)
+  * [🤓 Reader](meta-topics/mangroves-ecosystem/reader.md)
+  * [😎 Oracle](meta-topics/mangroves-ecosystem/monitor.md)
+  * [👾 Cleaner](meta-topics/mangroves-ecosystem/cleaner.md)
 * [Mangrove API](meta-topics/mangrove-api/README.md)
   * [API  classes](meta-topics/mangrove-api/api-classes.md)
   * [Sell and buy orders](meta-topics/mangrove-api/sell-and-buy-orders.md)
