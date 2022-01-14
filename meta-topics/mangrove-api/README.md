@@ -30,16 +30,16 @@ undefined
     "https://polygon-mumbai.g.alchemy.com/v2/<PRIVATE_KEY>"
   );
 undefined
-> let mywallet = new ethers.Wallet(
+> let myWallet = new ethers.Wallet(
     "<WALLET_PRIVATE_KEY>",
     provider
   );
 undefined
-> let MgvAPI = await Mangrove.connect({
-    signer: mywallet
+> let mgvAPI = await Mangrove.connect({
+    signer: myWallet
   });
 undefined
-> let market = await MgvAPI.market({base:"WETH", quote:"DAI"});
+> let market = await mgvAPI.market({base:"WETH", quote:"DAI"});
 undefined
 > console.log("pretty prints available bids from the WETH,DAI market on Mangove");
 pretty prints available bids from the WETH,DAI market on Mangove
