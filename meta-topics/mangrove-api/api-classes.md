@@ -30,7 +30,7 @@ MgvAPI = await Mangrove.connect( {
 });
 ```
 
-The above `MgvAPI`  object gives you access to various useful abstractions such as`MgvToken` (easy interactions with ERC20 contracts), `Market` (an abstraction layer to pass [market buy and sell orders](https://www.investopedia.com/terms/m/marketorder.asp) on Mangrove) and `Maker`(an abstraction layer to pass [bids](https://www.investopedia.com/terms/b/bid.asp) and [asks](https://www.investopedia.com/terms/a/ask.asp) on Mangrove).
+The above `MgvAPI`  object gives you access to various useful abstractions such as`MgvToken`, `Market` and `Maker`(an abstraction layer to pass [bids](https://www.investopedia.com/terms/b/bid.asp) and [asks](https://www.investopedia.com/terms/a/ask.asp) on Mangrove).
 
 {% hint style="info" %}
 `MgvAPI.contract`gives access to the standard `ethers.js` contract and allows one to interact with the deployed `Mangrove` using low level `ethers.js` calls. Hence, `await MgvAPI.contract.f(...)` will produce the ethers.js call to Mangrove (signed when needed by the `signer` provided to the `connect` function).
@@ -59,5 +59,9 @@ Note that Mangrove's API deals with token decimals automatically (see definition
 {% endhint %}
 
 ## Market
+
+The `Market` class is an abstraction layer to interact with Mangrove as a liquidity taker, using standard [market buy and sell orders](https://www.investopedia.com/terms/m/marketorder.asp).
+
+
 
 ## Maker
