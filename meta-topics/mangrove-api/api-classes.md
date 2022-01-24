@@ -30,7 +30,11 @@ mgvAPI = await Mangrove.connect( {
 });
 ```
 
-The above `mgvAPI`  object gives you access to various useful abstractions such as`MgvToken`, `Market` and `Maker`(an abstraction layer to pass [bids](https://www.investopedia.com/terms/b/bid.asp) and [asks](https://www.investopedia.com/terms/a/ask.asp) on Mangrove).
+You can test you are indeed connected to the deployed Mangrove by asking for the current global configuration of Mangrove:
+
+`config = await mgvApi.config()`
+
+The above `mgvAPI`  object gives you access to `MgvToken`, `Market` and `OfferLogic` (allowing one to connect to an onchain offer logic) and `LiquidityProvider`(an abstraction layer to pass [bids](https://www.investopedia.com/terms/b/bid.asp) and [asks](https://www.investopedia.com/terms/a/ask.asp) on Mangrove).
 
 {% hint style="info" %}
 `mgvAPI.contract`gives access to the standard `ethers.js` contract and allows one to interact with the deployed `Mangrove` using low-level `ethers.js` calls. Hence, `await mgvAPI.contract.f(...)` will produce the ethers.js call to Mangrove (signed when needed by the `signer` provided to the `connect` function).
@@ -98,4 +102,6 @@ Market events are structured objects of the following kinds:
 * &#x20;`{type:'OfferFail', ba:'asks'|'bids', taker:string, 'takerWants':Big, takerGives:Big, mgvData:string, offer:Market.Offer}` when `offer` failed to deliver. Note that `mgvData` is a bytes32 string encoding of the fail reason (according to Mangrove).
 * `{type: 'OfferSuccess', ba: 'asks'|'bids', taker: string, takerWants:Big, takerGives:Big, offer:Market.Offer}` when `offer` was successfully executed (possibly on a partial fill whenever `offer.gives`>`takerWants`).
 
-## Maker
+## OfferLogic
+
+## LiquidityProvider
