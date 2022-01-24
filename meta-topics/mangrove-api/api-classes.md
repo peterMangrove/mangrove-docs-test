@@ -82,6 +82,10 @@ For debugging purpose, the class provides a console of the current state of bids
 await Market.consoleAsks(["id", "volume", "price"]);
 ```
 
+`Market` instances provide  listeners to the following market related events:
 
+* `{type: 'OfferRetract', ba:'asks'|'bids', offer:Market.Offer}` when an ask or a bid  `offer` is removed from the book
+* &#x20;`{type: 'OfferWrite', ba:'asks'|'bids', offer:Market.Offer}` when a bid or ask `offer` is added to the book (or updated)
+* &#x20;`{type:'OfferFail', ba:'asks'|'bids', taker:string, 'takerWants':Big, takerGives:Big, mgvData:string, offer:Market.Offer}` when `offer` failed to deliver. Note that `mgvData` is a bytes32 string encoding of the fail reason (according to Mangrove).
 
 ## Maker
