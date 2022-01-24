@@ -86,10 +86,10 @@ await Market.consoleAsks(["id", "volume", "price"]);
 
 ```javascript
 const f (event) => ...; // what you want to do when receiving the event 
-market.subscribe (f);
+Market.subscribe (f);
 ```
 
-To unsubscribe `f` from market events simply use `market.unsubscribe(f)`.
+To unsubscribe `f` from market events simply use `Market.unsubscribe(f)`.
 
 Market events are structured objects of the following kinds:
 
