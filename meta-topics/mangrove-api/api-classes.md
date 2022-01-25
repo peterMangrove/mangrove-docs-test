@@ -95,12 +95,22 @@ Market.subscribe (f);
 
 To unsubscribe `f` from market events simply use `Market.unsubscribe(f)`.
 
-Market events are structured objects of the following kinds:
+Market events are records of the following kinds:
 
 * `{type: 'OfferRetract', ba:'asks'|'bids', offer:Market.Offer}` when an ask or a bid  `offer` is removed from the book
 * &#x20;`{type: 'OfferWrite', ba:'asks'|'bids', offer:Market.Offer}` when a bid or ask `offer` is added to the book (or updated)
 * &#x20;`{type:'OfferFail', ba:'asks'|'bids', taker:string, 'takerWants':Big, takerGives:Big, mgvData:string, offer:Market.Offer}` when `offer` failed to deliver. Note that `mgvData` is a bytes32 string encoding of the fail reason (according to Mangrove).
 * `{type: 'OfferSuccess', ba: 'asks'|'bids', taker: string, takerWants:Big, takerGives:Big, offer:Market.Offer}` when `offer` was successfully executed (possibly on a partial fill whenever `offer.gives`>`takerWants`).
+
+and where `Market.Offer` has the following main fields:
+
+```typescript
+id: number; // the id of the executed offer
+maker: string; // address of the maker (contract/wallet) in charge of the offer
+gasreq: number; // gas required by the offer
+volume: Big; // total volume proposed
+price: Big; // price offered
+```
 
 ## OfferLogic
 
