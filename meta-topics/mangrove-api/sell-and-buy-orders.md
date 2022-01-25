@@ -2,7 +2,7 @@
 
 
 
-Buying (base tokens) with cash (Market's quote token) or selling for cash can be done via the `buy` and `sell` functions of a [Market](api-classes-overview.md#market) instance. The code snippets below send limit buy orders on the market, with an allowed slippage of 2%:&#x20;
+Buying with cash or selling for cash can be done via the `buy` and `sell` functions of a [Market](api-classes-overview.md#market) instance. The code snippets below send limit buy (taker) orders on the market, with an allowed slippage of 2%:&#x20;
 
 ```typescript
 // buy limit order for 100 base tokens at an average price of 0.1 quote per base
