@@ -29,7 +29,7 @@
   * [😎 Oracle](meta-topics/mangroves-ecosystem/monitor.md)
   * [👾 Cleaner](meta-topics/mangroves-ecosystem/cleaner.md)
 * [Mangrove API](meta-topics/mangrove-api/README.md)
-  * [API  classes](meta-topics/mangrove-api/api-classes.md)
+  * [API  classes overview](meta-topics/mangrove-api/api-classes-overview.md)
   * [Sell and buy orders](meta-topics/mangrove-api/sell-and-buy-orders.md)
   * [Posting bids and asks](meta-topics/mangrove-api/posting-bids-and-asks.md)
 
