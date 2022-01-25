@@ -137,3 +137,5 @@ When using an offer logic that inherits from the  [`MultiUser.sol`](https://gith
 {% endhint %}
 
 ## LiquidityProvider
+
+A `LiquidityProvider` instance is the object one needs to [post Bids and Asks](posting-bids-and-asks.md) on a Mangrove market. There are two means to obtain an LiquidityProvider: either to post a direct Offer

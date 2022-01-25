@@ -36,4 +36,4 @@
 ## Strategies for Maker Contracts <a href="#offer-making-strategies" id="offer-making-strategies"></a>
 
 * [Reneging on offers](offer-making-strategies/taker-compensation.md)
-* [Trivial offer](offer-making-strategies/basic-offer.md)
+* [Direct offer](offer-making-strategies/basic-offer.md)
