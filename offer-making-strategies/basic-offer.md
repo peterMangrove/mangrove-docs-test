@@ -49,6 +49,3 @@ const { id: ofrId } = await directLP.newAsk({ wants: 105, gives: 104 });
 ```
 {% endcode %}
 
-
-
-## What advantage does it give you?
