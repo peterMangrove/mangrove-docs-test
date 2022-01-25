@@ -2,15 +2,15 @@
 
 
 
-Buying (base tokens) with cash (Market's quote token) or selling for cash can be done via the `buy` and `sell` functions. The code snippets below send limit buy orders on the market, with an allowed slippage of 2%:&#x20;
+Buying (base tokens) with cash (Market's quote token) or selling for cash can be done via the `buy` and `sell` functions of a [Market](api-classes-overview.md#market) instance. The code snippets below send limit buy orders on the market, with an allowed slippage of 2%:&#x20;
 
 ```typescript
 // buy limit order for 100 base tokens at an average price of 0.1 quote per base
-const buyResult = Market.buy({volume:100, price:0.1, slippage:2);
+const buyResult = mgvMarket.buy({volume:100, price:0.1, slippage:2);
 // limit order with a desired quantitiy
-const buyResult_ = Market.buy({wants:100, gives:1000, slippage:2});
+const buyResult_ = mgvMarket.buy({wants:100, gives:1000, slippage:2});
 // sell limit order (selling 10 base tokens).
-const sellResult = Market.sell({volume:10, price: 0.09, slippage:2});
+const sellResult = mgvMarket.sell({volume:10, price: 0.09, slippage:2});
 ```
 
 {% hint style="info" %}
