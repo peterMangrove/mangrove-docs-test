@@ -14,30 +14,30 @@ The precision used when dividing is 20 decimal places.
 The root class of the API. Use `Mangrove.connect` to get an instance of it.  Here are a few possibilities:
 
 ```typescript
-mgvAPI = await Mangrove.connect(window.ethereum); // web browser
-mgvAPI = await Mangrove.connect('http://127.0.0.1:8545'); // HTTP provider
-mgvAPI = await Mangrove.connect(); // Uses Ethers.js fallback mainnet (for testing only)
-mgvAPI = await Mangrove.connect('rinkeby'); // Uses Ethers.js fallback (for testing only)
+mgv = await Mangrove.connect(window.ethereum); // web browser
+mgv = await Mangrove.connect('http://127.0.0.1:8545'); // HTTP provider
+mgv = await Mangrove.connect(); // Uses Ethers.js fallback mainnet (for testing only)
+mgv = await Mangrove.connect('rinkeby'); // Uses Ethers.js fallback (for testing only)
 // Init with private key (server side)
-mgvAPI = await Mangrove.connect(
+mgv = await Mangrove.connect(
 'https://mainnet.infura.io/v3/_your_project_id_', // provider
 {
   privateKey: '0x_your_private_key_', // preferably with environment variable
 });
 // Init with HD mnemonic (server side)
-mgvAPI = await Mangrove.connect( {
+mgv = await Mangrove.connect( {
   signer: myEthersWallet
 });
 ```
 
 You can test you are indeed connected to the deployed Mangrove by asking for the current global configuration of Mangrove:
 
-`config = await mgvApi.config()`
+`config = await mgv.config()`
 
-The above `mgvAPI`  object gives you access to `MgvToken`, `Market` and `OfferLogic` (allowing one to connect to an onchain offer logic) and `LiquidityProvider`(an abstraction layer to pass [bids](https://www.investopedia.com/terms/b/bid.asp) and [asks](https://www.investopedia.com/terms/a/ask.asp) on Mangrove).
+The above `mgv`  object gives you access to the `MgvToken`, `Market` and `OfferLogic` (allowing one to connect to an onchain offer logic) and `LiquidityProvider`(an abstraction layer to pass [bids](https://www.investopedia.com/terms/b/bid.asp) and [asks](https://www.investopedia.com/terms/a/ask.asp) on Mangrove) objects. &#x20;
 
 {% hint style="info" %}
-`mgvAPI.contract`gives access to the standard `ethers.js` contract and allows one to interact with the deployed `Mangrove` using low-level `ethers.js` calls. Hence, `await mgvAPI.contract.f(...)` will produce the ethers.js call to Mangrove (signed when needed by the `signer` provided to the `connect` function).
+`mgv.contract`gives access to the standard `ethers.js` contract and allows one to interact with the deployed `Mangrove` using low-level `ethers.js` calls. Hence, `await mgv.contract.f(...)` will produce the ethers.js call to Mangrove (signed when needed by the `signer` provided to the `connect` function).
 {% endhint %}
 
 ## MgvToken
@@ -45,15 +45,15 @@ The above `mgvAPI`  object gives you access to `MgvToken`, `Market` and `OfferLo
 This class provides easy means to interact with a deployed contract on the standard [EIP-20](https://eips.ethereum.org/EIPS/eip-20). To obtain an instance use:
 
 ```javascript
-mgvT = mgvAPI.token("<tokenSymbol>"); // e.g "DAI", "WETH", "amDAI", etc.
+mgvTkn = mgv.token("<tokenSymbol>"); // e.g "DAI", "WETH", "amDAI", etc.
 ```
 
 with the above `MgvT` object one has access to standard calls using human readable input/outputs. For instance:
 
 ```javascript
-await mgvT.approve("<spender>"); // gives infinite approval to spender
-await mgvT.approve("<spender>",0.5); // gives allowance to spend 100 tokens to spender
-await mgvT.contract.approve("<spender>", mgvT.mgv.toUnits(0.5)); // ethers.js call
+await mgvTkn.approve("<spender>"); // gives infinite approval to spender
+await mgvTkn.approve("<spender>",0.5); // gives allowance to spend 100 tokens to spender
+await mgvTkn.contract.approve("<spender>", mgvTkn.mgv.toUnits(0.5)); // ethers.js call
 ```
 
 Note that Mangrove's API deals with token decimals automatically (see definitions in [`constants.ts`](https://github.com/mangrovedao/mangrove/blob/master/packages/mangrove.js/src/constants.ts)).
@@ -68,32 +68,32 @@ The `Market` class is an abstraction layer to interact with Mangrove as a liquid
 
 ```typescript
 //connect to a (base,quote) market with default options
-Market = await MgvT.connect({base:"<base_symbol>", quote:"<quote_symbol>"});
+mgvMarket = await mgv.connect({base:"<base_symbol>", quote:"<quote_symbol>"});
 
 // connect to the market, caching the first 50 best bids and asks
-Market = await MgvT.connect({base:"<base_symbol>", quote:"<quote_symbol>", maxOffers: 50});
+mgvMarket = await mgv.connect({base:"<base_symbol>", quote:"<quote_symbol>", maxOffers: 50});
 
 ```
 
 {% hint style="info" %}
-Upon connection to a market, the API subscribes to events emanating from Mangrove in order to maintain a local state of the order book.&#x20;
+Upon connection to a market, the API subscribes to events emanating from Mangrove in order to maintain a local cache of the order book. One may increase the size of the cache by using `mgv.connect({..., maxOffers:<size of the book>})`.
 {% endhint %}
 
 For debugging purpose, the class provides a console of the current state of bids and asks posted on Mangrove. For instance to display the bid offers on Mangrove on this market:
 
 ```typescript
 // Pretty prints to console the bid offers, showing offer `id`, offer `volume` and offer `price
-await Market.consoleAsks(["id", "volume", "price"]);
+await mgvMarket.consoleAsks(["id", "volume", "price"]);
 ```
 
 `Market` instances allow one to subscribe to markets events using:
 
 ```javascript
 const f (event) => ...; // what you want to do when receiving the event 
-Market.subscribe (f);
+mgvMarket.subscribe (f);
 ```
 
-To unsubscribe `f` from market events simply use `Market.unsubscribe(f)`.
+To unsubscribe `f` from market events simply use `mgvMarket.unsubscribe(f)`.
 
 Market events are records of the following kinds:
 
@@ -113,5 +113,27 @@ price: Big; // price offered
 ```
 
 ## OfferLogic
+
+A [reactive offer](../../data-structures/market.md) is managed by a smart contract which implements its[ logic](api-classes.md#offerlogic). One may use the API to post liquidity on Mangrove via a deployed logic that complies to the [IOfferLogic](https://github.com/mangrovedao/mangrove/blob/master/packages/mangrove-solidity/contracts/Strategies/interfaces/IOfferLogic.sol) interface. To do so, one first need an `OfferLogic` instance:
+
+```typescript
+const mgvLogic = mgv.offerLogic("<smart contractg address>");
+```
+
+The `mgvLogic` instance offers various function to query and set the underlying contract state, for instance:
+
+```javascript
+await mgvLogic.setAdmin("<new_admin_address>"); // set new admin
+await mgvLogic.redeemToken("DAI", 100); // transfer 100 DAI from contract's signer account to signer's EOA
+await mgvLogic.depositToken("WETH", 0.1); // put 0.1 WETH from signer's EOA to contract's account
+const bal = await mgvLogic.tokenBalance("USDC"); // returns signer's balance of USDC on the contract
+const mgvLogic_ = await mgvLogic.connect(newSigner); // returns a new OfferLogic instance with a new signer
+cosnt gasreq = await mgvLogic.getDefaultGasreq(); // returns the gas required (by default) for new offers of this contract
+await mgvLogic.setDefaultGasreq(200000); // default gasreq setter
+```
+
+{% hint style="danger" %}
+When using an offer logic that inherits from the  [`MultiUser.sol`](https://github.com/mangrovedao/mangrove/blob/master/packages/mangrove-solidity/contracts/Strategies/OfferLogics/MultiUsers/MultiUser.sol) solidity class, one should always use the above `depositToken` (and `tokenBalance`) instead of sending tokens (or querying balance) directly to the contract which might result in the tokens being burnt.
+{% endhint %}
 
 ## LiquidityProvider
