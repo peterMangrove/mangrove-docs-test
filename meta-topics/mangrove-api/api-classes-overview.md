@@ -117,7 +117,7 @@ price: Big; // price offered
 A [reactive offer](../../data-structures/market.md) is managed by a smart contract which implements its[ logic](api-classes-overview.md#offerlogic). One may use the API to post liquidity on Mangrove via a deployed logic that complies to the [IOfferLogic](https://github.com/mangrovedao/mangrove/blob/master/packages/mangrove-solidity/contracts/Strategies/interfaces/IOfferLogic.sol) interface. To do so, one first need an `OfferLogic` instance:
 
 ```typescript
-const mgvLogic = mgv.offerLogic("<smart contractg address>");
+const mgvLogic = mgv.offerLogic("<smart contractg address>"); // not an async call
 ```
 
 The `mgvLogic` instance offers various function to query and set the underlying contract state, for instance:
@@ -140,7 +140,7 @@ When using an offer logic that inherits from the  [`MultiUser.sol`](https://gith
 
 A `LiquidityProvider` instance is the object one needs to [post Bids and Asks](posting-bids-and-asks.md) on a Mangrove market. There are two means to obtain an LiquidityProvider: either to post a [direct Offer](../../offer-making-strategies/basic-offer.md) or to post an Offer relying on some onchain [logic](api-classes-overview.md#offerlogic).
 
-To act as a direct liquidity provider on a given [`mgvMarket`](api-classes-overview.md#market) you can obtain a `LiquidityProvider` instance from an [`mgv`](api-classes-overview.md#mangrove) object using:
+To act as a direct liquidity provider on a some [`mgvMarket`](api-classes-overview.md#market) you must obtain a `LiquidityProvider` instance from an [`mgv`](api-classes-overview.md#mangrove) object using:
 
 ```javascript
 const mgvDirectLP = await mgv.liquidityProvider(mgvMarket);
@@ -150,3 +150,22 @@ const mgvDirectLP = await mgv.liquidityProvider(mgvMarket);
 The EOA providing the liquidity for ask and bid offers emanating from a direct liquidity provider is the address of the [`mgv`](api-classes-overview.md#mangrove)'s signer provided at the creation of the Mangrove instance.
 {% endhint %}
 
+For more complete experience of the Mangrove capabilities, on may rather post bids and asks via an offer logic `mgvLogic`. To do so, one does:
+
+```javascript
+const mgvOnchainLP = await mgvLogic.liquidityProvider(mgvMarket);
+```
+
+Besides posting offers on Mangrove, a `LiquidityProvider` instance `mgvLP` gives access to various useful functions such as:
+
+```javascript
+const missingAskProvision = await mgvLP.computeAskProvision();
+const missingBidProvision = await mgvLP.computeBidProvision();
+```
+
+which return the missing provision (in native tokens) this liquidity provider needs to deposit on Mangrove if it wishes to post a new bid or ask. When provision is missing, one may fund Mangrove using:
+
+```javascript
+const ethersTx = await mgvLP.fundMangrove(missingAskProvision);
+await ethersTx.wait(); // waiting for the funding tx to be confirmed
+```
