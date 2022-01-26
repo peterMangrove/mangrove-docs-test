@@ -52,7 +52,7 @@ with the above `MgvT` object one has access to standard calls using human readab
 
 ```javascript
 await mgvTkn.approve("<spender>"); // gives infinite approval to spender
-await mgvTkn.approve("<spender>",0.5); // gives allowance to spend 100 tokens to spender
+await mgvTkn.approve("<spender>",0.5); // gives allowance to spend 0.5 token units to spender
 await mgvTkn.contract.approve("<spender>", mgvTkn.mgv.toUnits(0.5)); // ethers.js call
 ```
 
