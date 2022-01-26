@@ -117,13 +117,13 @@ price: Big; // price offered
 A [reactive offer](../../data-structures/market.md) is managed by a smart contract which implements its[ logic](api-classes-overview.md#offerlogic). One may use the API to post liquidity on Mangrove via a deployed logic that complies to the [IOfferLogic](https://github.com/mangrovedao/mangrove/blob/master/packages/mangrove-solidity/contracts/Strategies/interfaces/IOfferLogic.sol) interface. To do so, one first need an `OfferLogic` instance:
 
 ```typescript
-const mgvLogic = mgv.offerLogic("<smart contractg address>"); // not an async call
+const mgvLogic = mgv.offerLogic("0x..."); // NB not an async call
 ```
 
 The `mgvLogic` instance offers various function to query and set the underlying contract state, for instance:
 
 ```javascript
-await mgvLogic.setAdmin("<new_admin_address>"); // set new admin
+await mgvLogic.setAdmin("0x..."); // set new admin
 await mgvLogic.redeemToken("DAI", 100); // transfer 100 DAI from contract's signer account to signer's EOA
 await mgvLogic.depositToken("WETH", 0.1); // put 0.1 WETH from signer's EOA to contract's account
 const bal = await mgvLogic.tokenBalance("USDC"); // returns signer's balance of USDC on the contract
