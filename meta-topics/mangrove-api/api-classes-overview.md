@@ -133,7 +133,7 @@ await mgvLogic.setDefaultGasreq(200000); // default gasreq setter
 ```
 
 {% hint style="danger" %}
-When using an offer logic that inherits from the  [`MultiUser.sol`](https://github.com/mangrovedao/mangrove/blob/master/packages/mangrove-solidity/contracts/Strategies/OfferLogics/MultiUsers/MultiUser.sol) solidity class, one should always use the above `depositToken` (and `tokenBalance`) instead of sending tokens (or querying balance) directly to the contract which might result in the tokens being burnt.
+When using an offer logic that inherits from the  [`MultiUser.sol`](https://github.com/mangrovedao/mangrove/blob/master/packages/mangrove-solidity/contracts/Strategies/OfferLogics/MultiUsers/MultiUser.sol) solidity class, one should always use the above `depositToken` (and `tokenBalance`) instead of sending tokens (or querying balance) directly to the contract which might result in the tokens being burnt (as only `depositToken` will increase user balance on the contract).
 {% endhint %}
 
 ## LiquidityProvider
