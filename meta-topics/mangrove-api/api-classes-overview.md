@@ -7,6 +7,10 @@
 * As input, numbers can be as plain javascript `numbers`, `big.js` instances, but also a`string`.
 
 The precision used when dividing is 20 decimal places.
+
+#### Overrides
+
+All API functions that produce a signed transaction can be equipped with the usual `ethers.js` overrides as optional parameters.&#x20;
 {% endhint %}
 
 ## Mangrove
