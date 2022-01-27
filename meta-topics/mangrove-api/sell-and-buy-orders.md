@@ -10,7 +10,7 @@ Buying with cash or selling for cash can be done via the `buy` and `sell` functi
 
 ```typescript
 // buy limit order for 100 base tokens at an average price of 0.1 quote per base
-const buyResult = mgvMarket.buy({volume:100, price:0.1, slippage:2);
+const buyResult = mgvMarket.buy({volume:100, price:0.1, slippage:2});
 // limit order with a desired quantitiy
 const buyResult_ = mgvMarket.buy({wants:100, gives:1000, slippage:2});
 // sell limit order (selling 10 base tokens).
