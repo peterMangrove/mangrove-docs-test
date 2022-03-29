@@ -1,0 +1,57 @@
+name: Check and update deployment addresses
+
+# Runs upon receiving a dispatch event (to be sent from main Mangrove repo), or can be run manually.
+
+on:
+
+  repository_dispatch:
+    types: [update-addresses]
+    
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout docs
+        uses: actions/checkout@v2
+        with:
+          path: 'docs'
+
+      - name: Checkout mangrove
+        uses: actions/checkout@v2
+        with:
+          repository: mangrovedao/mangrove
+          path: 'mangrove'
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - run: npm ci
+        working-directory: docs/.github/scripts      
+
+      - name: Check and update deployment addresses in mangrove-docs
+        run: node write-addresses-md.js --deployment $GITHUB_WORKSPACE/mangrove/packages/mangrove-solidity/deployments/mumbai --template ./contract-addresses-template.md --templatePrevious ./contract-previous-addresses-template.md --output $GITHUB_WORKSPACE/docs/contract-addresses.md --debug
+        working-directory: docs/.github/scripts
+
+      - name: Create commit and PR, if there are changes
+        uses: peter-evans/create-pull-request@v4
+        with:
+          path: docs
+          branch: 'create-pull-request/docs'
+          commit-message: 'Update deployment addresses in mangrove-docs'
+          title: 'Update deployment addresses in mangrove-docs'
+          body: 'Automated changes by [create-pull-request](https://github.com/peter-evans/create-pull-request) GitHub action as a result of changes in ${{ github.sha }}.'
+          delete-branch: true
+          assignees: 'dontrolle'
+          labels: automated pr
+
+      # - name: Commit and push any changes to deployment addresses
+      #   uses: EndBug/add-and-commit@v9
+      #   with:
+      #     default_author: github_actions
+      #     message: 'Update deployment addresses in mangrove.js'
+      #     push: false # set to true instead, to simply commit and push changes directly
+      #     add: 'packages/mangrove.js/src/constants/addresses.json'
