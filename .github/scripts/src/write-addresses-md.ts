@@ -10,16 +10,15 @@ Args:
 
   Add --debug flag to get debug output.
 
-Example:
+Example (supposing mangrovedao/mangrove is checked in folder 'mangrove' alongside this repo):
 
-  node write-addresses-md.js --deployment ../../../mangrove/packages/mangrove-solidity/deployments/mumbai --template ./contract-addresses-template.md --templatePrevious ./contract-previous-addresses-template.md --output ../../contract-addresses.md
-
+  ts-node write-addresses-md --deployment ../../../../mangrove/packages/mangrove-solidity/deployments/mumbai --template ./contract-addresses-template.md --templatePrevious ./contract-previous-addresses-template.md --output ../../../contract-addresses.md
 */
 
 import fs from 'fs';
 import minimist from 'minimist';
 
-import { readContractAddresses } from "./address-handling.js";
+import * as addressHandling from "./address-handling";
 
 // define relevant contracts
 const coreContracts = [ "Mangrove", "MgvCleaner", "MgvReader", "MgvOracle" ];
@@ -64,7 +63,7 @@ const templatePreviousFile = args['templatePrevious'];
 const outputFile = args['output'];
 
 // read deployment addresses for core contracts
-const contractAddresses = readContractAddresses(deploymentFolder, coreContracts);
+const contractAddresses = addressHandling.readContractAddresses(deploymentFolder, coreContracts);
 
 if(debug){
   console.debug(`Found current addresses:`)
@@ -76,7 +75,7 @@ let oldDeploymentAddresses = [];
 
 let v = 1;
 while (true) {
-  const vAddresses = readContractAddresses(deploymentFolder, coreContracts, "-v" + v);
+  const vAddresses = addressHandling.readContractAddresses(deploymentFolder, coreContracts, "-v" + v);
 
   // did we actually find any addresses?
   // (we do it in this manner to save the undefined addresses for treatment below)
@@ -107,8 +106,8 @@ if(debug){
 }
 
 // read templates
-let template;
-let prevTemplate;
+let template: string;
+let prevTemplate: string;
 
 try {
   template = fs.readFileSync(templateFile, 'utf8');
@@ -119,7 +118,7 @@ try {
 }
 
 // helper func to replace {{ <var> }}'s with values in lookup
-function replaceVars(vars, lookup, replaceIn){
+function replaceVars(vars: string[], lookup: Record<string,string>, replaceIn: string){
   return vars.reduce(
     (prev, v) => {
       const patt = new RegExp(`{{\\s*${v}\\s*}}`);
@@ -150,7 +149,6 @@ if(debug){
 }
 
 // write to file
-
 const newContent = newAddressesSection.concat(previousSection);
 
 if(debug){
