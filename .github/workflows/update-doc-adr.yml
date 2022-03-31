@@ -30,7 +30,10 @@ jobs:
           node-version: '14'
 
       - run: npm ci
-        working-directory: docs/.github/scripts      
+        working-directory: docs/.github/scripts
+
+      - name: Install ts-node
+        run: npm install -g ts-node        
 
       - name: Check and update deployment addresses in mangrove-docs      
         run: ts-node write-addresses-md --deployment $GITHUB_WORKSPACE/mangrove/packages/mangrove-solidity/deployments/mumbai --template ./contract-addresses-template.md --templatePrevious ./contract-previous-addresses-template.md --output $GITHUB_WORKSPACE/docs/contract-addresses.md --debug
