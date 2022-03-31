@@ -12,7 +12,7 @@ Args:
 
 Example:
 
-  node write-addresses-md.js --deployment ../../packages/mangrove-solidity/deployments/mumbai --template ./contract-addresses-template.md --templatePrevious ./contract-previous-addresses-template.md --output ../../contract-addresses.md
+  node write-addresses-md.js --deployment ../../../mangrove/packages/mangrove-solidity/deployments/mumbai --template ./contract-addresses-template.md --templatePrevious ./contract-previous-addresses-template.md --output ../../contract-addresses.md
 
 */
 
