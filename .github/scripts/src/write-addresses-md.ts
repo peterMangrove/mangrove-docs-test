@@ -1,8 +1,10 @@
 /*
-  Script to a write a markdown file (at a given path), given a deployment-folder with hardhat deployment json files with addresses for Mangrove contracts, and markdown templates for rendering new and previous addresses.
+  Script to a write a markdown file (at a given path) with relevant addresses for a Mangrove deployment. Requires a deployment-folder with hardhat deployment json files with addresses for Mangrove core contracts (which is hardwired, for now), a json file + key to look under for ERC20 addresses (which is hardwired, for now), and markdown templates for rendering new and previous addresses for core contracts, and ERC20 addresses.
 
 Args:
   --deployment=<path to deployments folder for addresses>
+  --ercAddresses=<path to json file with ERC20 addresses>
+  --ercAddressesKey=<key in json file to look for ERC20 addresses>
   --template=<path to markdown template>
   --templatePrevious=<path to markdown template to render previous addresses>
   --output=<path to output markdown file>
@@ -12,7 +14,7 @@ Args:
 
 Example (supposing mangrovedao/mangrove is checked in folder 'mangrove' alongside this repo):
 
-  ts-node write-addresses-md --deployment ../../../../mangrove/packages/mangrove-solidity/deployments/mumbai --template ./contract-addresses-template.md --templatePrevious ./contract-previous-addresses-template.md --output ../../../contract-addresses.md
+  ts-node write-addresses-md --deployment ../../../../mangrove/packages/mangrove-solidity/deployments/mumbai --ercAddresses ../../../../mangrove/packages/mangrove.js/src/constants/addresses.json --ercAddressesKey maticmum --template ./contract-addresses-template.md --templatePrevious ./contract-previous-addresses-template.md --output ../../../contract-addresses.md
 */
 
 import fs from 'fs';
@@ -23,8 +25,17 @@ import * as addressHandling from "./address-handling";
 // define relevant contracts
 const coreContracts = [ "Mangrove", "MgvCleaner", "MgvReader", "MgvOracle" ];
 
+// define relevant ERC20
+const relevantERC20 = [ "WETH", "DAI", "USDC" ];
+
 // read args - and do minimal sanity checking
-const stringArgs = ['deployment', 'template', 'templatePrevious', 'output'];
+const stringArgs = [
+  'deployment', 
+  'ercAddresses', 
+  'ercAddressesKey', 
+  'template', 
+  'templatePrevious',
+  'output'];
 
 const args = minimist(
   process.argv.slice(2), {
@@ -58,12 +69,14 @@ if(error){
 }
 
 const deploymentFolder = args['deployment'];
+const ercAddressesFile = args['ercAddresses'];
+const ercAddressesKey = args['ercAddressesKey'];
 const templateFile = args['template'];
 const templatePreviousFile = args['templatePrevious'];
 const outputFile = args['output'];
 
 // read deployment addresses for core contracts
-const contractAddresses = addressHandling.readContractAddresses(deploymentFolder, coreContracts);
+let contractAddresses = addressHandling.readContractAddresses(deploymentFolder, coreContracts);
 
 if(debug){
   console.debug(`Found current addresses:`)
@@ -105,6 +118,30 @@ if(debug){
   console.dir(oldDeploymentAddresses);
 }
 
+// read ERC20 addresses
+//let ercAddresses: Record<string, string>;
+try{
+  const ercSourceJson : Record<string, string> = JSON.parse(fs.readFileSync(ercAddressesFile, 'utf8'))[ercAddressesKey];
+  
+  if(debug){
+    console.debug(`Found ERC20 addresses:`)
+  }
+
+  // extend contractAddresses with found ERC20 addresses
+  contractAddresses = relevantERC20.reduce(
+    (prev, ercName) => {
+      if(debug){
+        console.dir(`${ercName}: ${ercSourceJson[ercName]}`);
+      }
+      
+      return { ...prev, [ercName]: ercSourceJson[ercName] };
+    }
+    , contractAddresses);
+} catch (error){
+  console.error(error);
+  process.exit(1);
+}
+
 // read templates
 let template: string;
 let prevTemplate: string;
@@ -128,7 +165,7 @@ function replaceVars(vars: string[], lookup: Record<string,string>, replaceIn: s
 }
 
 // replace {{ <contractname> }}'s in template
-const newAddressesSection = replaceVars(coreContracts, contractAddresses, template);
+const newAddressesSection = replaceVars(coreContracts.concat(relevantERC20), contractAddresses, template);
 
 if(debug){
   console.debug("Constructing section for core contract addresses...");

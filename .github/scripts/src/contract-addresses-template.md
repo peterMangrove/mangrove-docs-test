@@ -26,5 +26,11 @@
 {{ MgvOracle }}
 ```
 
+### ERC20 addresses
+
+* DAI: `{{ DAI }}`
+* USDC: `{{ USDC }}`
+* WETH: `{{ WETH }}`
+
 ### Previous versions
 
