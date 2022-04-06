@@ -26,6 +26,12 @@
 0xb5Fa732eb1a6BA0E3000E5eda48fc84A0dC55cb9
 ```
 
+### ERC20 addresses
+
+* DAI: `0xc87385b5e62099f92d490750fcd6c901a524bbca`
+* USDC: `0xF61Cffd6071a8DB7cD5E8DF1D3A5450D9903cF1c`
+* WETH: `0x63e537a69b3f5b03f4f46c5765c82861bd874b6e`
+
 ### Previous versions
 
 #### v4
