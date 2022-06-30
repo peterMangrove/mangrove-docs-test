@@ -26,6 +26,19 @@
 0xd38c02425da847584eeDA72387DAAA2E8f3b90c8
 ```
 
+### MangroveOrder
+
+```
+0x1fA0d582B8aA298f634cdCDCCcB7972E913b2D8f
+```
+
+### MangroveOrderEnriched
+
+```
+0x7Ae7a1502084bB10DCb5fFfE7835D84c76aA65d7
+```
+
+
 ### ERC20 addresses
 
 * DAI: `0xc87385b5e62099f92d490750fcd6c901a524bbca`
