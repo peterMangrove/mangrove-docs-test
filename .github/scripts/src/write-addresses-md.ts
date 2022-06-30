@@ -23,7 +23,7 @@ import minimist from 'minimist';
 import * as addressHandling from "./address-handling";
 
 // define relevant contracts
-const coreContracts = [ "Mangrove", "MgvCleaner", "MgvReader", "MgvOracle" ];
+const coreContracts = [ "Mangrove", "MgvCleaner", "MgvReader", "MgvOracle", "MangroveOrder", "MangroveOrderEnriched" ];
 
 // define relevant ERC20
 const relevantERC20 = [ "WETH", "DAI", "USDC" ];
