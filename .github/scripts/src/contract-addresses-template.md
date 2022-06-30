@@ -26,6 +26,19 @@
 {{ MgvOracle }}
 ```
 
+### MangroveOrder
+
+```
+{{ MangroveOrder }}
+```
+
+### MangroveOrderEnriched
+
+```
+{{ MangroveOrderEnriched }}
+```
+
+
 ### ERC20 addresses
 
 * DAI: `{{ DAI }}`
