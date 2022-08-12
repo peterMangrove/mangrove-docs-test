@@ -7,9 +7,9 @@ description: Introducing Mangrove's offer lists and markets
 ## General structure
 
 {% hint style="info" %}
-The offer list is the basic Mangrove data structure. It contains offers (created by offer makers) that promise an **outbound token**, and request an **inbound token** in return (offer takers execute these offers by providing the **inbound token.**, and receive **outbound tokens** in return).
+The offer list is the basic Mangrove data structure. It contains offers (created by offer makers) that promise an **outbound token**, and request an **inbound token** in return (offer takers execute these offers by providing the **inbound token**, and receive **outbound tokens** in return).
 
-For example in a DAI-wETH offer list, wETH is the outbound token (i.e. sent by the offer) and DAI the inbound token (i.e. received by the offer).
+For example in a DAI-wETH offer list, DAI is the outbound token (i.e. sent or given by the offer) and wETH the inbound token (i.e. received or wanted by the offer).
 
 Relationship to markets: a full market will always feature two offer lists. For instance, a wETH/DAI **market** has one DAI-wETH offer list (where wETH is requested and DAI is offered), and a wETH-DAI offer list (where DAI is requested and wETH is offered).\
 \
@@ -26,8 +26,8 @@ We display human-readable values here, but Mangrove stores raw token values and 
 
 | Rank | Offer ID | Wants (wETH) | Gives (DAI) | Gas required | Maker Contract | Offer Gas Price |
 | ---- | -------- | ------------ | ----------- | ------------ | -------------- | --------------- |
-| #1   | 42       | 0.3          | 871.764     | 300,000      | 0x1234abc      | 200             |
-| #2   | 2        | 1            | 2 925.26    | 250,000      | 0x5678def      | 150             |
+| #1   | 77       | 1            | 2 925.26    | 250,000      | 0x5678def      | 150             |
+| #2   | 42       | 0.3          | 871.764     | 300,000      | 0x1234abc      | 200             |
 
 ## Offer list fields
 
@@ -38,7 +38,7 @@ Offers are ordered from best to worst. Offers are compared based on _price_, and
 {% hint style="info" %}
 **Example**
 
-The price of offer #42 is 0.0003441298 wETH per DAI while the price of offer #2 is 0.00034185 wETH per DAI. Offer #42 is therefore the best offer of this offer list, and is ranked first.
+The price of offer #42 is 0.0003441298 wETH per DAI while the price of offer #77 is 0.00034185 wETH per DAI. Offer #77 is therefore the best offer (lowest price) of this offer list, and is ranked first.
 {% endhint %}
 
 ### ID
@@ -59,7 +59,7 @@ Taken together, the **wants** and **gives** values define 1) a max volume, 2) a 
 **Examples**
 
 * Offer #42 _wants_ 0.3 wETH to deliver its promised 871.764 DAI.
-* If offer #2 is executed and receives 0.5 wETH, it must send back 1462.63 DAI.
+* If offer #77 is executed and receives 0.5 wETH, it must send back 1462.63 DAI.
 {% endhint %}
 
 ### Gas required
@@ -69,7 +69,7 @@ The maximum amount of gas the [Maker Contract](../offer-maker/maker-contract.md)
 {% hint style="info" %}
 **Example**
 
-Offer #2 may consume up to 250K gas units.
+Offer #77 may consume up to 250K gas units.
 {% endhint %}
 
 ### Maker Contract
