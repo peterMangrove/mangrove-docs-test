@@ -100,7 +100,9 @@ event OrderComplete(
     address indexed inbound_tkn,
     address taker,
     uint takerGot, // net amount of outbound tokens received by taker
-    uint takerGave // total amount of inbound tokens sent by taker
+    uint takerGave, // total amount of inbound tokens sent by taker
+    uint penalty, // the total penalty collected by msg.sender as bounty for failing offers
+    uint feePaid // the fee paid by the taker
  );
 ```
 {% endtab %}
