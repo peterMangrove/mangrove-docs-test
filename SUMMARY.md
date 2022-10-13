@@ -2,7 +2,7 @@
 
 * [Mangrove developer documentation](README.md)
 ## Tutorials
-* demos?
+  
 
 ## How-to guides
 * [Cleaning offers](offer-taker/cleaning-an-offer.md)
@@ -10,7 +10,7 @@
 
 
 ## Technical references
-* [Contract addresses](contract-addresses.md)
+  * [Contract addresses](contract-addresses.md)
 
   ### Taking and making offers
   * [Taking offers](offer-taker/taker-order.md)
