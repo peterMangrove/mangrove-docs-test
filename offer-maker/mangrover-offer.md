@@ -26,6 +26,8 @@ Besides having hooks while the offer is taken and after. MangroveOffer also has 
 
 **Activate** is a hook that is meant for giving correct approvals for a token. MangroveOffer has a default implementation of the hook, that approves Mangrove and maybe the router, and then calls additional approvals on the router. An example of how to use this hook would be to, use the default implementation and also do additional approvals, e.g. if an extra address is used for transfers, then this address probably needs to be approved. <!--FIXME: Should link to a more comprehensive description of routers. -->
 
+**CheckReserveApproval** is a hook that should check whether the reserve has approved the maker to use it. This is needed so that a maker don't use the reserve without the approval of the owner of the reserve. If this was allowed, it would be possible to set your reserve to the same as someone with a large amount of tokens and steal there tokens, when offers a taken. MangroveOffer has no default implementation. The hook is used, when the a maker tries to set their reserve.
+
 A **Router** is a contract that can handle more comprehensive transfers. E.g. if you want to lend the money, when the offer is taken, then a router would be able to handle this. A more comprehensive description of Routers can be found here LINK. <!--FIXME: Link to router description-->
 
 Mangrove has 2 default implementations of MangroveOffer, they can be found here, [Direct](Direct.md) and [Forwarder](Forwarder.md).
