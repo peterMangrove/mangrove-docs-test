@@ -2,7 +2,7 @@
 
 * [Mangrove developer documentation](README.md)
 ## Tutorials
-* Demoes  
+* Demos  
 
 ## How-to guides
 * [Cleaning offers](offer-taker/cleaning-an-offer.md)
@@ -35,4 +35,7 @@
 ## Explanations
 * [Taking available liquidity](offer-taker/README.md)
 * [Making liquidity available](offer-maker/README.md)
+  * [MangroveOffer](offer-maker/mangrove-offer.md)
+  * [Direct](offer-maker/Direct.md)
+  * [Forwarder](offer-maker/Forwarder.md)
 * [Reneging on offers](offer-making-strategies/taker-compensation.md)
