@@ -2,7 +2,7 @@
 
 Mangrove has a standard implementation of IOfferLogic <!-- FIXME: link to IOfferLogic description-->called MangroveOffer. This implementation is an abstract contract, that reposts the residual of the offer, if the offer was not fully taken. This is done using the hooks exposed by MangroveOffer. These hooks are separated into 3 categories. The first hooks are called doing `makerExecute`. This means that you will be able to hook into the flow of how and if Mangrove is transferring the funds from the MangroveOffer contract to the **reserve** and from the **reserve** to the MangroveOffer contract.
 
-The **reserve** is where the contract keeps its funds, it is possible to use the contract itself as the reserve or set different address as reserve.
+The **reserve** is where the outbound tokens will be fetched, and where the inbound tokens will be deposited. A reserve is associated to each offer maker. By default the reserve of an offer maker is the offer maker's address. Advanced routers may use complex protocols, such as AAVE, as reserve. It is possible to change the default reserve of an offer maker. How this is done can be read in concrete implementations of MangroveOffer like, [Direct](Direct.md) or [Forwarder](Forwarder.md).
 
 When an offer is taken, Mangrove transfers the funds from the taker to Mangrove and from Mangrove to the contract that posted the offer. It is not possible to hook in before or in between these 2 transfers. When these 2 transfers are done, MangroveOffer, has 3 hooks. **lastlook**, **put** and **get**. They are called in this order.
 
@@ -25,6 +25,16 @@ Besides having hooks while the offer is taken and after. MangroveOffer also has 
 **Checklist** is a hook that is meant for checking if a token as the correct approvals. MangroveOffer always starts by checking if Mangrove and maybe the router has correct approvals. After this check, the hook gets called. An example of how to use this hook, would be if you are using a router that tries to lend the funds. This probably needs additional approvals, this hook should then check if those approvals are made.  <!-- FIXME: would it be possible to make checklist from both the maker and taker side. -->
 
 **Activate** is a hook that is meant for giving correct approvals for a token. MangroveOffer has a default implementation of the hook, that approves Mangrove and maybe the router, and then calls additional approvals on the router. An example of how to use this hook would be to, use the default implementation and also do additional approvals, e.g. if an extra address is used for transfers, then this address probably needs to be approved. <!--FIXME: Should link to a more comprehensive description of routers. -->
+
+**Approvals:**
+Here is list of all approval needed for MangroveOffer contract:
+
+- MangroveOffer contract must approve Mangrove to transfer outbound tokens. (Done by activate)
+- Mangrove contract must approve its router (if any) to transfer inbound tokens. (Done by activate)
+
+Besides the MangroveOffer contract giving approvals, the offer makers reserve needs to give this approval:
+
+- The offer makers reserve of the MangroveOffer contract must approve the router for outbound token transfer.
 
 **CheckReserveApproval** is a hook that should check whether the reserve has approved the maker to use it. This is needed so that a maker don't use the reserve without the approval of the owner of the reserve. If this was allowed, it would be possible to set your reserve to the same as someone with a large amount of tokens and steal there tokens, when offers a taken. MangroveOffer has no default implementation. The hook is used, when the a maker tries to set their reserve.
 
