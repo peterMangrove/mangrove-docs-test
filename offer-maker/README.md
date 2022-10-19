@@ -10,7 +10,7 @@ An offer on Mangrove usually points to a contract containing the [offer logic](m
 
 ### Creating & Updating offers
 
-Any Ethereum account can offer liquidity on Mangrove. New offers are created through a `newOffer` function, and updated through `updateOffer`. The [Creating & Updating offers](reactive-offer.md) section details how to use those Mangrove functions. Mangrove has a standard implemantation off [offer logic](maker-contract.md) called [MangroveOffer](mangrover-offer.md), that automatically reposts the residual of your offer, if the offer was not fully taken.
+Any Ethereum account can offer liquidity on Mangrove. New offers are created through a `newOffer` function, and updated through `updateOffer`. The [Creating & Updating offers](reactive-offer.md) section details how to use those Mangrove functions. Mangrove has a standard implemantation off [offer logic](maker-contract.md) called [MangroveOffer](mangrove-offer.md), that automatically reposts the residual of your offer, if the offer was not fully taken.
 
 ### Executing offers
 

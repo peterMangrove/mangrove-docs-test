@@ -1,6 +1,6 @@
 # Forwarder
 
-Forwarder is an abstract implementation of [MangroveOffer](mangrover-offer.md), if you don't have a good understanding of MangroveOffer we recommend reading that page first. This page is going to compare the [Direct](Direct.md) implementation of MangroveOffer with Forwarder, we recommend reading about [Direct](Direct.md) before reading this page.
+Forwarder is an abstract implementation of [MangroveOffer](mangrove-offer.md), if you don't have a good understanding of MangroveOffer we recommend reading that page first. This page is going to compare the [Direct](Direct.md) implementation of MangroveOffer with Forwarder, we recommend reading about [Direct](Direct.md) before reading this page.
 
 Forwarder should be seen as an implementation the can be used by multiple offer makers. This means that anyone can manage offers using the contract. Because of this, Forwarder needs to keep track of who owns which offer and what the reserve is for the caller. This is the key difference between Direct and Forwarder.
 
@@ -10,7 +10,7 @@ Forwarder does many of the same things as MangroveOffer and Direct with a few ke
 
 **How outbound tokens are handled (for the taker):** Since the contract cannot be used as the reserve for a Forwarder contract, this means that is also has to transfer the funds from the reserve to the Forwarder contract. This is again because multiple users can use the contract.
 
-**Reserve:** When Forwarder checks whether the maker is allowed to set the a given address as its reserve, it first checks if the maker trying to set an empty address. This is allowed and the makers address will be used as the reserve. If the address is not empty, then it checks whether the address has approved the maker to use it as its reserve. This is different than Direct, since Forwarder has multiple makers, it has to keep track on which makers can use a reserve. The reserve can call the Forwarder contract and approve or revoke approvals for an offer maker.
+**Reserve:** When setting the reserve using a Forwarder contract it first checks if the maker is trying to set an empty address. This is allowed and the makers address will be used as the reserve. If the address is not empty, then it checks whether the address has approved the maker to use it as its reserve. This is different than Direct, since Forwarder has multiple makers, it has to keep track on which makers can use a reserve. The reserve needs to call the Forwarder contract to approve a maker. The reserve can also revoke the approval.
 
 **Provision tracking:** If the offer fails, then this means that the taker was given a bounty for using gas trying to take a failing offer. But the bounty for the taker, is not necessarily the same amount as the amount that was provisioned for the offer. If there is still some provision left on the offer, Forwarder keeps track of the remaining provision, that is no longer locked to the offer. The same way it keeps track of who owns an offer it also saves how much free provision is left on the offer.
 
