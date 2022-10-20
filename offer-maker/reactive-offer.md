@@ -16,7 +16,7 @@ For each function described below, we include the following tabs:
 * ethers.js - Javascript code example using [ethers.js](https://docs.ethers.io/v5/)
 {% endhint %}
 
-On Mangrove, an offer is an element of an [offer list](../data-structures/market.md), and a promise that an account (a [contract](maker-contract.md) or an [EOA](../offer-making-strategies/basic-offer.md)) is able to deliver a certain amount of **outbound tokens**, in return for a certain amount of **inbound tokens** when given a certain amount of gas.
+On Mangrove, an offer is an element of an [offer list](broken-reference), and a promise that an account (a [contract](maker-contract.md) or an [EOA](../offer-making-strategies/basic-offer.md)) is able to deliver a certain amount of **outbound tokens**, in return for a certain amount of **inbound tokens** when given a certain amount of gas.
 
 ### Posting a new offer
 
@@ -126,8 +126,8 @@ Mangrove(MGV).newOffer(
 * `inbound_tkn` address of the [**inbound token**](broken-reference/) (that the offer will receive).
 * `wants` amount of **inbound tokens** requested by the offer. **Must fit in a `uint96`**.
 * `gives` amount of **outbound tokens** promised by the offer. **Must fit in a `uint96` and be strictly positive**.
-* `gasreq` amount of gas that will be given to the offer's [account](maker-contract.md). **Must fit in a `uint24` and be lower than** [**gasmax**](../data-structures/mangrove-configuration.md#global-parameters). Should be sufficient to cover all calls to the [account](maker-contract.md) ([`makerExecute`](maker-contract.md#offer-execution) and [`makerPosthook`](maker-contract.md#offer-post-hook)).
-* `gasprice` gas price override used to compute the order provision (see [offer bounties](offer-provision.md)). Any value lower than Mangrove's current [gasprice](../data-structures/mangrove-configuration.md#global-parameters) will be ignored (thus 0 means "use Mangrove's current [gasprice](../data-structures/mangrove-configuration.md#mgvlib-global)"). **Must fit in a `uint16`**.
+* `gasreq` amount of gas that will be given to the offer's [account](maker-contract.md). **Must fit in a `uint24` and be lower than** [**gasmax**](broken-reference). Should be sufficient to cover all calls to the [account](maker-contract.md) ([`makerExecute`](maker-contract.md#offer-execution) and [`makerPosthook`](maker-contract.md#offer-post-hook)).
+* `gasprice` gas price override used to compute the order provision (see [offer bounties](offer-provision.md)). Any value lower than Mangrove's current [gasprice](broken-reference) will be ignored (thus 0 means "use Mangrove's current [gasprice](broken-reference)"). **Must fit in a `uint16`**.
 * `pivotId` where to start the insertion process in the offer list. If `pivotId` is not in the offer list at the time the transaction is processed, the new offer will be inserted starting from the offer list's [best](reactive-offer.md#getting-current-best-offer-of-a-market) offer. Should be the id of the existing live offer with the price closest to the price of the offer being posted.
 
 **Outputs**
@@ -146,7 +146,7 @@ Make sure that your offer is [well-provisioned](offer-provision.md#checking-an-a
 **Offer execution**
 
 * If the offer account is a contract, it should implement the [IMaker](maker-contract.md) interface. At the very least, it must have a function with signature [`makerExecute(MgvLib.SingleOrder calldata order)`](maker-contract.md#offer-execution) or it will systematically revert when called by Mangrove.
-* `gives` and `gasreq` are subject to [density](../data-structures/mangrove-configuration.md#local-parameters) constraints on the amount of _outbound_ token provided per gas spent. TODO: link to utility function to get max gas for a `gives` and min gives for a `gas`.
+* `gives` and `gasreq` are subject to [density](broken-reference) constraints on the amount of _outbound_ token provided per gas spent. TODO: link to utility function to get max gas for a `gives` and min gives for a `gas`.
 * The offer account will need to give Mangrove a high enough allowance in _outbound_ tokens since Mangrove will use the ERC20 standard's `transferFrom` function to source your tokens.
 {% endhint %}
 

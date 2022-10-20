@@ -190,10 +190,10 @@ Whenever an offer is created or updated, Mangrove applies to following formula t
 
 $$\textrm{provision} = \max(\textrm{gasprice}_{\textrm{mgv}},\textrm{gasprice}_{\textrm{ofr}}) \times (\textrm{gasreq} + \textrm{gasoverhead}) \times 10^9$$
 
-* $$\textrm{gasprice}_{\textrm{mgv}}$$ is [Mangrove's internal `gasprice` estimate](../meta-topics/governance.md#global-governance-parameters).
+* $$\textrm{gasprice}_{\textrm{mgv}}$$ is [Mangrove's internal `gasprice` estimate](broken-reference).
 * $$\textrm{gasprice}_{\textrm{ofr}}$$ is the `gasprice` argument of the function being called ([`newOffer`](reactive-offer.md#posting-a-new-offer) or [`updateOffer`](reactive-offer.md#updating-an-existing-offer)).
 * $$\textrm{gasreq}$$ is the `gasreq` argument of the function being called.
-* $$\textrm{gasoverhead}$$ is the sum of two [Mangrove-internal gas overhead estimators](../data-structures/offer-data-structures.md#mgvlib.offer)
+* $$\textrm{gasoverhead}$$ is the sum of two [Mangrove-internal gas overhead estimators](broken-reference)
 
 Mangrove will adjust the balance of the caller to ensure that $$\textrm{provision}$$ wei are available as bounty if the offer fails. If the offer was _already_ provisioned, the adjustment may be small, and the balance may actually increase -- for instance, if the `gasprice` dropped recently.
 
@@ -211,7 +211,7 @@ If you frequently update your offers, we recommend using a consistent, high `gas
 
 ## Computing the provision and offer bounty
 
-A view function of the [Mangrove Reader](../meta-topics/mangroves-ecosystem/reader.md) contract will compute offer provisions for you. This is useful for e.g. testing that your balance is large enough before posting multiple offers.
+A view function of the [Mangrove Reader](broken-reference) contract will compute offer provisions for you. This is useful for e.g. testing that your balance is large enough before posting multiple offers.
 
 {% tabs %}
 {% tab title="Signature" %}
@@ -268,7 +268,7 @@ const bounty = await MangroveReader.getProvision(outTkn, inbTkn, ofr_gasreq,0);
 * `inbound_tkn` the _inbound_ token of the offer you want to create/update
 * `ofr_gasreq` the `gasreq` you will use in your call to `newOffer`/`updateOffer`.
 * `ofr_gasprice` the gas price, in **gwei/gas**, that you will use when calling `newOffer`/`updateOffer`.
-  * Set to 0 to use Mangrove's [gas price](../meta-topics/governance.md#gas-price-and-oracle).
+  * Set to 0 to use Mangrove's [gas price](broken-reference).
 
 ### Outputs
 
@@ -277,5 +277,5 @@ const bounty = await MangroveReader.getProvision(outTkn, inbTkn, ofr_gasreq,0);
 {% hint style="warning" %}
 **Applied bounty**
 
-Suppose an offer requires $$g_{\mathsf{ofr}}$$​ gas units to execute. As explained above, Mangrove will require the offer's associated account to provision $$\beta$$ WEI. Suppose the offer is executed during a Taker Order and fails after $$g_{\mathsf{used}}$$gas units ($$g_\mathsf{used}<g_\mathsf{ofr}$$). The portion of the bounty that will be transferred to the Offer Taker's account is $$\dot G*(\dot g_0/n+\dot g_1+g_\mathsf{used})$$ where $$\dot G$$​, $$\dot g_0$$, $$n$$ and $$\dot g_1$$are respectively the [`global.gasprice`](../meta-topics/governance.md#global-parameters), [`local.overhead_gasbase`](../meta-topics/governance.md#offer-list-specific-governance-parameters), the number of offers executed during the take order, and the [`local.offer_gasbase`](../meta-topics/governance.md#offer-list-specific-governance-parameters) values _at the time the offer is taken_ (which may differ from their values at the time the offer was posted, as a consequence of some parameter changes by the governance).
+Suppose an offer requires $$g_{\mathsf{ofr}}$$​ gas units to execute. As explained above, Mangrove will require the offer's associated account to provision $$\beta$$ WEI. Suppose the offer is executed during a Taker Order and fails after $$g_{\mathsf{used}}$$gas units ($$g_\mathsf{used}<g_\mathsf{ofr}$$). The portion of the bounty that will be transferred to the Offer Taker's account is $$\dot G*(\dot g_0/n+\dot g_1+g_\mathsf{used})$$ where $$\dot G$$​, $$\dot g_0$$, $$n$$ and $$\dot g_1$$are respectively the [`global.gasprice`](broken-reference), [`local.overhead_gasbase`](broken-reference), the number of offers executed during the take order, and the [`local.offer_gasbase`](broken-reference) values _at the time the offer is taken_ (which may differ from their values at the time the offer was posted, as a consequence of some parameter changes by the governance).
 {% endhint %}

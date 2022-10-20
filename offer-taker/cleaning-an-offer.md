@@ -16,7 +16,7 @@ Mangrove has been designed such that keeping offer lists clean of failing offers
 2. Locally runs offers at regular intervals.
 3. Detects failing offers and sends a transaction to make the offer fail on-chain, with a gas price set such that the offer's bounty compensates for the spent gas.
 
-Mangrove provides a [cleaner contract ](../meta-topics/mangroves-ecosystem/cleaner.md)to help you. This contract provides the same interface as [snipes](taker-order.md#offer-sniping) but will revert if any offer in the `targets` array successfully executes.
+Mangrove provides a [cleaner contract ](broken-reference)to help you. This contract provides the same interface as [snipes](taker-order.md#offer-sniping) but will revert if any offer in the `targets` array successfully executes.
 
 {% hint style="info" %}
 **Example scenario**
@@ -29,7 +29,7 @@ Mangrove provides a [cleaner contract ](../meta-topics/mangroves-ecosystem/clean
 
 ### Delegation
 
-Cleaning can also use Mangrove's [delegation mechanism](delegate-takers.md), which means you only need Mangrove to have an allowance on any address that that has enough _inbound_ tokens of the [offer list](../data-structures/market.md) you are targeting. The cleaner contract will use those funds to execute the cleaning.
+Cleaning can also use Mangrove's [delegation mechanism](delegate-takers.md), which means you only need Mangrove to have an allowance on any address that that has enough _inbound_ tokens of the [offer list](broken-reference) you are targeting. The cleaner contract will use those funds to execute the cleaning.
 
 {% hint style="info" %}
 **Example scenario**

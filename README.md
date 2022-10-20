@@ -6,11 +6,11 @@ description: The Mangrove is an on-chain, orderbook-based exchange where offers 
 
 ## Who is this documentation for?
 
-* This documentation is targeted at readers who want to interact with the on-chain Mangrove core contracts. This can be done via the [Mangrove API](meta-topics/mangrove-api/README.md) or your own way.
+* This documentation is targeted at readers who want to interact with the on-chain Mangrove core contracts. This can be done via the [Mangrove API](meta-topics/mangrove-api/) or your own way.
 * For a higher-level intro to Mangrove, check out [mangrove.exchange](https://mangrove.exchange).
 * If you want to modify and improve Mangrove, [read the annotated code](http://code.mangrove.exchange/MgvDoc.html) and head to the [Github repository](https://github.com/mangrovedao/mangrove).
 
-![A bird eye view of the Mangrove ecosystem.](<.gitbook/assets/ContactMap.png>)
+![A bird eye view of the Mangrove ecosystem.](<.gitbook/assets/ContactMap (1).png>)
 
 ## Who interacts with Mangrove
 
