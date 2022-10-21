@@ -5,7 +5,7 @@ description: How to write offers on Mangrove
 # Creating & Updating offers
 
 {% hint style="info" %}
-**Editor's note**
+**Dev Team's note**
 
 For each function described below, we include the following tabs:
 
@@ -16,11 +16,9 @@ For each function described below, we include the following tabs:
 * ethers.js - Javascript code example using [ethers.js](https://docs.ethers.io/v5/)
 {% endhint %}
 
-On Mangrove, an offer is an element of an [offer list](broken-reference), and a promise that an account (a [contract](maker-contract.md) or an [EOA](../offer-making-strategies/basic-offer.md)) is able to deliver a certain amount of **outbound tokens**, in return for a certain amount of **inbound tokens** when given a certain amount of gas.
-
 ### Posting a new offer
 
-New offers should mostly posted by [contracts](maker-contract.md) able to source liquidity when asked to by Mangrove (although it [is possible](../offer-making-strategies/basic-offer.md) to post new offers from an EOA).
+New offers should mostly be posted by [contracts](maker-contract.md) able to source liquidity when asked to by Mangrove (although it [is possible](../offer-making-strategies/basic-offer.md) to post new offers from an EOA).
 
 The code of `newOffer` is [available here](https://github.com/giry-dev/mangrove/blob/552ab35500c34e831f40a68fac81c8b3e6be7f5b/packages/mangrove-solidity/contracts/MgvOfferMaking.sol#L49).
 
@@ -53,8 +51,10 @@ event OfferWrite(
       uint offerId, // id of the new offer
       uint prev // offer id of the closest best offer at the time of insertion 
     );
- // `maker` (who is `msg.sender`) is debited of `amount` WEIs to provision the offer
+ // `maker` balance on Mangrove (who is `msg.sender`) is debited of `amount` WEIs to provision the offer
  event DebitWei(address maker, uint amount);
+ // `maker` balance on Mangrove is credited of `amount` WEIs if `msg.value > 0`.
+ event CreditWei(address maker, uint amount); 
 ```
 {% endtab %}
 
@@ -85,8 +85,8 @@ event OfferWrite(
 {% tab title="Solidity" %}
 {% code title="newOffer.sol" %}
 ```solidity
-import "./Mangrove.sol";
-import "./ERC20.sol";
+import "src/IMangrove.sol";
+import {IERC20, MgvStructs} "src/MgvLib.sol";
 
 // context of the call
 address MGV;
@@ -95,26 +95,33 @@ address inbTkn; // address of offer's inbound token
 address admin; // admin address of this contract
 uint pivotId; // offer id whose price is the closest to this new offer (observed offchain)
 
-// the following is a snippet of the contract that will manage the new offer
-// i.e this contract SHOULD have the makerExecute() callback function somewhere.
-
 // Approve Mangrove for outbound token transfer if not done already
-ERC20(outTkn).approve(MGV, type(uint).max);
-uint outDecimals = ERC20(outTkn).decimals();
-uint inbDecimals = ERC20(inbTkn).decimals();
+IERC20(outTkn).approve(MGV, type(uint).max);
+uint outDecimals = IERC20(outTkn).decimals();
+uint inbDecimals = IERC20(inbTkn).decimals();
 
-// calling mangrove with offerId as pivot (assuming price update will not change much the position of the offer)
-Mangrove(MGV).newOffer(
+// importing global and local (pertaining to the (outTkn, inTkn) offer list) parameters.
+(MgvStructs.GlobalPacked global, MgvStructs.LocalPacked local) = IMangrove(MGV)
+.config(outTkn, inTkn);
+
+uint gasprice = global.gasprice() * 10**9; // Mangrove's gasprice is in gwei units
+uint gasbase = local.offer_gasbase() ; // gas necessary to process a market order
+uint gasreq = 30_000; // assuming this logic requires 30K units of gas to execute
+
+uint provision = (gasreq + gasbase) * gasprice; // minimal provision in wei
+
+// calling mangrove with `pivotId` for initial positioning.
+// sending `provision` amount of native tokens to 
+cover for the bounty of the offer
+IMangrove(MGV).newOffer{value: provision}(
         outTkn, // reposting on the same market
         inbTkn, 
         5.0*10**inbDecimals, // maker wants 5 inbound tokens
         7.0*10**outDecimals, // maker gives 7 outbound tokens
-        500000, // maker requires 500_000 gas units to comply 
+        30_000, // maker requires 500_000 gas units to comply 
         0, // use mangrove's gasprice oracle  
         pivotId // heuristic: tries to insert this offer after pivotId
-);
-
-    
+);  
 ```
 {% endcode %}
 {% endtab %}
