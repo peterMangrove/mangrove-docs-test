@@ -2,11 +2,11 @@
 description: Global governance parameters and Offer List specific parameters.
 ---
 
-# Configuration
+# Configuration data
 
 Ground truth for configuration can be found in the code [documentation](https://giry-dev.github.io/mangrove/MgvDoc.html). All configuration options are under the control of [governance](../meta-topics/governance.md).
 
-## MgvLib.Global
+## MgvLib.MgvStructs.GlobalUnpacked
 
 | Name        | Type      | Description                                                                                                                                                              |
 | ----------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -17,7 +17,7 @@ Ground truth for configuration can be found in the code [documentation](https://
 | `gasmax`    | `uint24`  | Maximum gas an offer can require.                                                                                                                                        |
 | `dead`      | `bool`    | If true, this Mangrove instance is dead and the only possible interactions are retracting offers and getting provisions back. Once true, it cannot be set back to false. |
 
-## MgvLib.Local
+## MgvLib.MgvStructs.LocalUnpacked
 
 For every pair of addresses, there is a set of local parameters. Note that the parameters for the A/B pair might be different from the B/A pair parameters.
 

@@ -1,15 +1,17 @@
-# View functions
+# Views on data
 
-## Read the current best offer ID of an **offer list**
+## Offer and offer list views
+
+### `best(address, address)`
 
 {% tabs %}
 {% tab title="Solidity" %}
 {% code title="bestOffer.sol" %}
 ```solidity
-import "./Mangrove.sol";
+import "src/IMangrove.sol";
 
 // context of the call
-Mangrove mgv;
+IMangrove mgv;
 address outbound_tkn;
 address inbound_tkn;
 
@@ -41,17 +43,16 @@ const best = await mgv.best(outboundTkn, inboundTkn);
 {% endtab %}
 {% endtabs %}
 
-#### Accessing offer data
+### `offers(address, address) / offerDetails(address, address, uint)`
 
-The [data structures](../data-structures/offer-data-structures.md) describing the content of an offer are accessible either using a low level access (recommended when calling from a contract) or through a high level view function (that should only be used off chain).
+The [data-structures](../technical-references/data-structures/ "mention") describing [offer data](offer-data-structures.md#mgvlib.mgvstructs.offerunpacked) are accessible using `offers(address outbound, address inbound)` or `offerDetails(address outbound, address inbound, uint offerId)`.
 
 {% tabs %}
 {% tab title="Solidity" %}
 {% code title="getOfferData.sol" %}
 ```solidity
-import "./Mangrove.sol";
-import "./MgvLib.sol";
-import "./MgvPack.sol";
+import "src/IMangrove.sol";
+import {MgvStructs} "src/MgvLib.sol";
 
 // context of the call
 address MGV;
@@ -60,17 +61,21 @@ address inbTkn;
 uint offerId; // the id of the offer one wishes to get the data of
 
 // if one wishes to read *the whole* offer data (gas costly!):
-(MgvLib.Offer memory offer, MgvLib.OfferDetail memory offerDetail) = Mangrove(MGV).offerInfo(outTkn,inbTkn,offerId);
+(MgvStructs.OfferUnpacked memory offer, MgvStructs.OfferDetailUnpacked memory offerDetail) = Mangrove(MGV)
+.offerInfo(outTkn,inbTkn,offerId);
 
 // if one wishes to access a few particular fields, say wants, gives and gasreq parameters of the offer: 
 // 1. getting packed (outTkn, inbTkn) Offer List data
-bytes32 packedOffer = Mangrove(MGV).offers(outTkn,inbTkn,offerId);
-bytes32 packedOfferDetail Mangrove(MGV).offerDetails(outTkn,inbTkn,offerId);
+MgvStructs.OfferPacked memory offer32 = Mangrove(MGV)
+.offers(outTkn, inbTkn, offerId);
+MgvStructs.OfferDetailPacked memory offerDetail32 = Mangrove(MGV)
+.offerDetails(outTkn, inbTkn, offerId);
 
-// 2. unpacking necessary fields only
-uint wants = MgvPack.offer_unpack_wants(packedOffer);
-uint gives = MgvPack.offer_unpack_gives(packedOffer);
-uint gasreq = MgvPack.offerDetail_unpack_gasreq(packedOfferDetail);
+// for all fields f of OfferUnpacked
+// offer.f == offer32.f()
+// for all fields f of OfferDetailUnpacked
+// offerDetail.f == offerDetail32.f()
+
 ```
 {% endcode %}
 {% endtab %}
@@ -103,15 +108,15 @@ const gasreq = offerDetail.gasreq;
 {% endtab %}
 {% endtabs %}
 
-#### Testing whether an offer is live
+### `isLive(address, address, uint)`
 
-An offer is **live** in a given [Offer Lists](../data-structures/market.md) if it can be matched during a market order, or sniped by a liquidity taker. One can easily verify whether `offerId` identifies a **live** offer in a (`outboundToken`,`inboundToken`) Offer List of Mangrove using the following view function.
+An offer is **live** in a given [Offer Lists](../technical-references/taking-and-making-offers/market.md) if it can be matched during a market order, or sniped by a liquidity taker. One can easily verify whether `offerId` identifies a **live** offer in a (`outboundToken`,`inboundToken`) Offer List of Mangrove using this view function.
 
 {% tabs %}
 {% tab title="Solidity" %}
 {% code title="isLive.sol" %}
 ```solidity
-import "./Mangrove.sol";
+import "src/IMangrove.sol";
 
 // context of the call
 address MGV;
@@ -120,7 +125,7 @@ address inbTkn;
 address offerId;
 
 // checking whether offerId is live in the (outTkn, inbTkn) order book.
-bool isLive = Mangrove(MGV).isLive(outTkn,inbTkn,offerId));
+bool isLive = IMangrove(MGV).isLive(outTkn,inbTkn,offerId));
 ```
 {% endcode %}
 {% endtab %}
@@ -144,6 +149,40 @@ const Mangrove = new ethers.Contract(
 
 // checking whether offerId is live on (outTkn, inbTkn) Offer List.
 const isLive = await Mangrove.isLive(outTkn,outTkn,offerId);
+```
+{% endcode %}
+{% endtab %}
+{% endtabs %}
+
+## Configuration data
+
+The data structures containing Mangrove's global and local [configuration parameters](mangrove-configuration.md) are accessible via the function `config(address outbound, address inbound)` function.
+
+{% tabs %}
+{% tab title="Solidity" %}
+{% code title="config.sol" %}
+```solidity
+import "src/IMangrove.sol";
+
+// context of the call
+address MGV;
+address outTkn;
+address inbTkn;
+
+// getting Mangrove's global configuration parameters and those that pertain to the `(outTkn, inTkn)` offer list
+// in an ABI compatible format (gas costly, use for offchain static calls)
+(MgvStructs.GlobalUnpacked global, MgvStructs.LocalUnpacked local) = IMangrove(MGV)
+.configInfo(outTkn, inTkn);
+
+// getting packed config data (gas efficient)
+(MgvStructs.GlobalPacked global32, MgvStructs.LocalPacked local32) = IMangrove(MGV)
+.config(outTkn, inTkn);
+
+// for all fields f of GlobalUnpacked
+// global.f == global32.f()
+// for all fields f of LocalUnpacked
+// local.f == local32.f()
+
 ```
 {% endcode %}
 {% endtab %}

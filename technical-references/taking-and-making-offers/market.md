@@ -1,5 +1,7 @@
 ---
-description: Introducing Mangrove's offer lists and markets
+description: >-
+  Introducing Mangrove's Offer Lists a low level representation of (half) an
+  order book.
 ---
 
 # Offer Lists
@@ -13,10 +15,10 @@ For example in a DAI-wETH offer list, DAI is the outbound token (i.e. sent or gi
 
 Relationship to markets: a full market will always feature two offer lists. For instance, a wETH/DAI **market** has one DAI-wETH offer list (where wETH is requested and DAI is offered), and a wETH-DAI offer list (where DAI is requested and wETH is offered).\
 \
-[Mangrove's API ](../meta-topics/mangrove-api/)offers Market abstractions that allows liquidity providers and takers to interact with Mangrove using standard **base &** **quote** denominations.
+[Mangrove's API ](../../meta-topics/mangrove-api/)offers Market abstractions that allows liquidity providers and takers to interact with Mangrove using standard **base &** **quote** denominations.
 {% endhint %}
 
-Here's a sample DAI-wETH offer list with two offers. Only the main characteristics of the offers are shown (see the [offer data structure](offer-data-structures.md#mgvlib-offer)).
+Here's a sample DAI-wETH offer list with two offers. Only the main characteristics of the offers are shown (see the [offer data structure](../../data-structures/offer-data-structures.md#mgvlib-offer)).
 
 {% hint style="warning" %}
 **Decimals**
@@ -64,7 +66,7 @@ Taken together, the **wants** and **gives** values define 1) a max volume, 2) a 
 
 ### Gas required
 
-The maximum amount of gas the [Maker Contract](../offer-maker/maker-contract.md) managing the offer will be allowed to spend if called by the Mangrove.
+The maximum amount of gas the [Maker Contract](../../offer-maker/maker-contract.md) managing the offer will be allowed to spend if called by the Mangrove.
 
 {% hint style="info" %}
 **Example**
@@ -74,19 +76,19 @@ Offer #77 may consume up to 250K gas units.
 
 ### Maker Contract
 
-The address of the [Maker Contract](../offer-maker/maker-contract.md) managing the offer. The `makerExecute` function of this contract will be called when one of its offers is executed.
+The address of the [Maker Contract](../../offer-maker/maker-contract.md) managing the offer. The `makerExecute` function of this contract will be called when one of its offers is executed.
 
 ### Gas Price
 
-Gas price that was used to compute the [offer provision](../offer-maker/offer-provision.md). If the offer fails to deliver the promised **outbound tokens**, it will be charged in ETH based on this gasprice.
+Gas price that was used to compute the [offer provision](../../offer-maker/offer-provision.md). If the offer fails to deliver the promised **outbound tokens**, it will be charged in ETH based on this gasprice.
 
 ## Offer list configuration
 
-Several [configuration](mangrove-configuration.md) parameters determine how new offers are inserted. Some are [global](mangrove-configuration.md#mgvlib.global) to Mangrove, some are [offer list specifics.](mangrove-configuration.md#mgvlib.local) See [Governance](../meta-topics/governance.md) section for details.
+Several [configuration](../../data-structures/mangrove-configuration.md) parameters determine how new offers are inserted. Some are [global](../../data-structures/mangrove-configuration.md#mgvlib.global) to Mangrove, some are [offer list specifics.](../../data-structures/mangrove-configuration.md#mgvlib.local) See [Governance](../../meta-topics/governance.md) section for details.
 
 ## View functions
 
-Retrieving the state of an offer list can be easily done by a call to the Mangrove's [Reader Contract](../meta-topics/mangroves-ecosystem/reader.md) `MgvReader`(see [contract addresses](../contract-addresses.md)) that returns easy-to-parse[ data structures](offer-data-structures.md). For gas cautious interactions, when calling from a smart contract, developers may also want to use the reader's `packedOffers` getter, which return packed data that can be parsed using `MgvPack.sol` library.
+Retrieving the state of an offer list can be easily done by a call to the Mangrove's [Reader Contract](../../meta-topics/mangroves-ecosystem/reader.md) `MgvReader`(see [contract addresses](../../contract-addresses.md)) that returns easy-to-parse[ data structures](../../data-structures/offer-data-structures.md). For gas cautious interactions, when calling from a smart contract, developers may also want to use the reader's `packedOffers` getter, which return packed data that can be parsed using `MgvPack.sol` library.
 
 {% tabs %}
 {% tab title="Views" %}

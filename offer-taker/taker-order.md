@@ -230,7 +230,7 @@ await tx.wait();
 * `takerGot` is the net amount of _outbound_ tokens the taker has received after applying the [taker fee](broken-reference).
 * `takerGave` is the amount of _inbound_ tokens the taker has sent.
 * `bounty` the amount of native tokens (in units of wei) the taker received in compensation for cleaning failing offers
-* fee the amount of `outbound_tkn` that was sent to Mangrove's vault in payment of the potential [fee](../meta-topics/governance.md#taker-fees) associated to the `(outbound_tkn, inbound_tkn)`[offer list](../data-structures/market.md#general-structure).
+* fee the amount of `outbound_tkn` that was sent to Mangrove's vault in payment of the potential [fee](../meta-topics/governance.md#taker-fees) associated to the `(outbound_tkn, inbound_tkn)`[offer list](../technical-references/taking-and-making-offers/market.md#general-structure).
 
 {% hint style="success" %}
 **Specification**
