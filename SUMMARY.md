@@ -28,6 +28,7 @@
 * [Around the Mangrove](technical-references/around-the-mangrove/README.md)
   * [Governance](meta-topics/governance.md)
   * [Mangrove's ecosystem](meta-topics/mangroves-ecosystem/README.md)
+    * [🧞 Advanced orders](technical-references/around-the-mangrove/mangroves-ecosystem/advanced-orders.md)
     * [🤓 Reader](meta-topics/mangroves-ecosystem/reader.md)
     * [😎 Oracle](meta-topics/mangroves-ecosystem/monitor.md)
     * [👾 Cleaner](meta-topics/mangroves-ecosystem/cleaner.md)

@@ -5,7 +5,7 @@ description: Basic taker side functions
 # Taking offers
 
 {% hint style="info" %}
-**Editor's note**
+**Dev team's note**
 
 For each function described below, we include the following tabs:
 
@@ -28,7 +28,7 @@ Every Mangrove[ offer list ](broken-reference)can be either [active or inactive]
 
 ## Market order
 
-A **Market Order** is Mangrove's main liquidity sourcing entrypoint. It is called on a given [offer list](broken-reference) with its associated _outbound_ token (tokens that flow out of Mangrove) and _inbound_ token (tokens that flow into Mangrove). The liquidity taker specifies how many _outbound_ tokens she _wants_ and how many \*\*\*\* _inbound_ tokens she _gives_.
+A **Market Order** is Mangrove's main liquidity sourcing entrypoint. It is called on a given [offer list](broken-reference) with its associated _outbound_ token (tokens that flow out of Mangrove) and _inbound_ token (tokens that flow into Mangrove). The liquidity taker specifies how many _outbound_ tokens she _wants_ and how many _inbound_ tokens she _gives_.
 
 When an order is processed by Mangrove's matching engine, it consumes the offers on the selected [offer list](broken-reference), starting from the [best](broken-reference) one. Execution works as follows, where at any point the taker's price is `takerGives` _/_ `takerWants`_._
 
@@ -50,7 +50,7 @@ function marketOrder(
     uint takerWants,
     uint takerGives,
     bool fillWants
-  ) external returns (uint takerGot, uint takerGave);
+  ) external returns (uint takerGot, uint takerGave, uint bounty, uint fee);
 ```
 {% endtab %}
 
@@ -77,10 +77,11 @@ event OfferFail(
     address taker,
     uint takerWants,
     uint takerGives,
-    // `statusCode` may only be `"mgv/makerAbort"`, `"mgv/makerRevert"`, `"mgv/makerTransferFail"` or `"mgv/makerReceiveFail"`
-    bytes32 statusCode,
-    // revert data sent by the offer's associated account
-    bytes32 makerData
+    // `mgvData` is either:
+    // * `"mgv/makerRevert"` if `makerExecute` call reverted
+    // * `"mgv/makerTransferFail"` if `outbound_tkn` transfer from the offer logic failed after `makerExecute`
+    // * `"mgv/makerReceiveFail"` if `inbound_tkn` transfer to offer logic failed (e.g. contract's address is not allowed to receive `inbound_tkn`) 
+    bytes32 mgvData
   );
   
 // For each offer whose posthook reverted during second callback:
@@ -89,9 +90,12 @@ event PosthookFail(
     address indexed outbound_tkn,
     address indexed inbound_tkn,
     uint offerId,
-    bytes32 makerData
+    // `posthookData` contains the first 32 bytes of the posthook revert reason
+    // e.g the complete reason if posthook reverted with a string small enough.
+    bytes32 posthookData
   );
- // 2. Debiting maker from Offer Bounty
+  
+// 2. Debiting maker from Offer Bounty
 event Debit(address indexed maker, uint amount);
 
 // Logging at the end of Market Order:
@@ -127,28 +131,29 @@ event OrderComplete(
 {% tab title="Solidity" %}
 {% code title="marketOrder.sol" %}
 ```solidity
-import "./Mangrove.sol";
-import "./ERC20.sol";
+import "src/IMangrove.sol";
+import {IERC20} from "src/MgvLib.sol";
 
 // context of the call
 address MGV;
 address outTkn; // address offer's outbound token
 address inbTkn; // address of offer's inbound token
 
-uint outDecimals = ERC20(outTkn).decimals();
-uint inbDecimals = ERC20(inbTkn).decimals();
+uint outDecimals = IERC20(outTkn).decimals();
+uint inbDecimals = IERC20(inbTkn).decimals();
 
 // if Mangrove is not approved yet for inbound token transfer.
-ERC20(inbTkn).approve(MGV, type(uint).max);
+IERC20(inbTkn).approve(MGV, type(uint).max);
 
-// a market order of 5 outbound tokens (takerWants) in exchange of 8 input tokens (takerGives)
-(uint takerGot, uint takerGave) = Mangrove(MGV).marketOrder(
-    outTkn,
-    inbTkn,
-    5*10**outDecimals,
-    8*10**inbDecimals,
+// a market order of 5 outbound tokens (takerWants) in exchange of 8 inbound tokens (takerGives)
+(uint takerGot, uint takerGave, uint bounty, uint fee) = IMangrove(MGV)
+.marketOrder({
+    outbound_tkn: outTkn,
+    inbound_tkn: inbTkn,
+    takerWants: 5*10**outDecimals,
+    takerGive: 8*10**inbDecimals,
     true
-);
+});
 ```
 {% endcode %}
 {% endtab %}
@@ -194,23 +199,16 @@ const inbDecimals = await InboundTkn.decimals();
 const takerGives = ethers.parseUnits("8.0", outDecimals);
 const takerWants = ethers.parseUnits("5.0", inbDecimals);
 
-// dry running market order
-const [takerGot, takerGave] = await Mangrove.callstatic.marketOrder(
+// Market order at a limit average price of 8 outbound tokens given for 5 inbound tokens received
+const tx = await Mangrove.connect(signer).marketOrder(
     outTkn,
     inbTkn,
     takerWants,
     takerGives,
     true
     );
+await tx.wait();
 
-// real market order if takerGot/takerGet is satisfying
-await Mangrove.connect(signer).marketOrder(
-    outTkn,
-    inbTkn,
-    takerWants,
-    takerGives,
-    true
-    );
 ```
 {% endcode %}
 {% endtab %}
@@ -231,6 +229,8 @@ await Mangrove.connect(signer).marketOrder(
 
 * `takerGot` is the net amount of _outbound_ tokens the taker has received after applying the [taker fee](broken-reference).
 * `takerGave` is the amount of _inbound_ tokens the taker has sent.
+* `bounty` the amount of native tokens (in units of wei) the taker received in compensation for cleaning failing offers
+* fee the amount of `outbound_tkn` that was sent to Mangrove's vault in payment of the potential [fee](../meta-topics/governance.md#taker-fees) associated to the `(outbound_tkn, inbound_tkn)`[offer list](../data-structures/market.md#general-structure).
 
 {% hint style="success" %}
 **Specification**
@@ -238,7 +238,7 @@ await Mangrove.connect(signer).marketOrder(
 At the end of a Market Order the following is guaranteed to hold:
 
 * The taker will not spend more than `takerGives`.
-* The average price paid will be maximally close to `takerGives/takerWants:`for each offer taken, the amount paid will be $$\leq$$ the expected amount + 1.
+* The average price paid `(`takerGot + fee`)/takerGave` will be maximally close to `takerGives/takerWants:`for each offer taken, the amount paid will be $$\leq$$ the expected amount + 1.
 {% endhint %}
 
 | ID | wants (USDC) | gives (DAI) |
@@ -249,7 +249,7 @@ At the end of a Market Order the following is guaranteed to hold:
 {% hint style="info" %}
 **Example**
 
-Consider the DAI-USDC offer list above. If a taker calls `marketOrder`on this offer list with`takerWants=2` and `takerGives = 2.2` she is ready to give away up to 2.2 USDC in order to get 2 DAI.
+Consider the DAI-USDC offer list (with no fee) above. If a taker calls `marketOrder`on this offer list with`takerWants=2` and `takerGives = 2.2` she is ready to give away up to 2.2 USDC in order to get 2 DAI.
 
 * If `fillWants` is `true` the market order will provide 2 DAI for 1.97 USDC.
   1. 1 DAI for 0.98 USDC from offer #2
@@ -261,16 +261,17 @@ Consider the DAI-USDC offer list above. If a taker calls `marketOrder`on this of
 
 ### More on market order behavior
 
-Mangrove's market orders are quite configurable using the three parameters `takerWants`, `takerGives` and `fillWants`.
+Mangrove's market orders are configurable using the three parameters `takerWants`, `takerGives` and `fillWants`.
 
 * **Market buy:** You can run a 'classic' market **buy** order by setting `takerWants` to the amount you want to buy, `takerGives` to `type(uint160).max`, and `fillWants` to `true`.
 * **Market sell:** You can run a 'classic' market **sell** order by setting `takerWants` to `type(uint160).max`, `takerGives` to the amount you want to sell, and `fillWants` to `false`.
 * **Limit order**: You can run limit orders by setting `takerGives` and `takerWants` such that `takerGives`/`takerWants` is the volume-weighted price you are willing to pay and `fillWants` to `true` if you want to act as a buyer of _outbound_ token or to `false` if you want to act as a seller if _inbound_ token.
+* [More advanced market orders ](../technical-references/around-the-mangrove/mangroves-ecosystem/advanced-orders.md)can be called using a \`MangroveOrder\`, a[ deployed ](../contract-addresses.md#mangroveorder)periphery contract to Mangrove.
 
 {% hint style="warning" %}
 **On order residuals**
 
-Contrary to limit orders on regular [orderbook](https://www.investopedia.com/terms/o/order-book.asp)-based exchanges, the residual of your order (i.e. the volume you were not able to buy/sell due to hitting your price limit) will _not_ be put on the market as an offer. Instead, the market order will simply end partially filled.
+Contrary to [GTC orders](https://www.investopedia.com/terms/g/gtc.asp) on regular [orderbook](https://www.investopedia.com/terms/o/order-book.asp) based exchanges, the residual of your order (i.e. the volume you were not able to buy/sell due to hitting your price limit) will _not_ be put on the market as an offer. Instead, the market order will simply end partially filled.
 {% endhint %}
 
 ### Market order prices are volume-weighted
