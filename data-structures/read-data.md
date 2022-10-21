@@ -186,4 +186,30 @@ address inbTkn;
 ```
 {% endcode %}
 {% endtab %}
+
+{% tab title="ethers.js" %}
+{% code title="config.js" %}
+```javascript
+const { ethers } = require("ethers");
+// context
+let outTkn; // address of outbound token ERC20
+let inbTkn; // address of inbound token ERC20
+let MGV_address; // address of Mangrove
+let MGV_abi; // Mangrove contract's abi
+
+const Mangrove = new ethers.Contract(
+    MGV_address, 
+    MGV_abi, 
+    ethers.provider
+    );
+
+// getting offer data in an abi compatible format
+const [global, local] = await Mangrove.configInfo(outTkn,inbTkn);
+
+// now one can access any field, say gasprice and fee of the offer list:
+const gasprice = global.gasprice; // Mangrove's current gasprice
+const fee = local.fee; // (outTkn, inTkn) offer list's fee
+```
+{% endcode %}
+{% endtab %}
 {% endtabs %}
