@@ -2,7 +2,15 @@
 
 ## Offer and offer list views
 
-### `best(address, address)`
+### `best(address outbound, address inbound)`
+
+{% hint style="info" %}
+Returns the offer identifier, in the `(outbound, inbound)`[offer list](../technical-references/taking-and-making-offers/market.md), which currently offers the highest ratio of given token amount (_outbound_) over expected token amount (_inbound_).  In case of price equality, additional sorting criteria are (in order):&#x20;
+
+* highest outbound volume
+* least gas required
+* oldest time of insertion on the list
+{% endhint %}
 
 {% tabs %}
 {% tab title="Solidity" %}

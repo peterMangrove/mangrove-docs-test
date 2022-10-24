@@ -6,23 +6,11 @@ description: How to write offer execution logic
 
 ### Offer Logic
 
-The logic associated with an offer MUST be implemented through a `makerExecute` callback functions of the following type:
+The logic associated with an offer MUST be implemented through a `makerExecute` callback function. (See [data structures](../data-structures/offer-data-structures.md#mgvlib.singleorder) for `SingleOrder` type).
 
 {% tabs %}
 {% tab title="Signature" %}
 ```solidity
-struct SingleOrder {
-    address outbound_tkn;
-    address inbound_tkn;
-    uint offerId;
-    bytes32 offer; // basic offer info
-    uint wants; // Amount to be received by the taker
-    uint gives; // Amount just received by the maker
-    bytes32 offerDetail; // extra offer info
-    bytes32 global; // packed version of mangrove global config info
-    bytes32 local; // packed version of mangrove config for the current offer list
-}
-
 function makerExecute(MgvLib.SingleOrder calldata order)
 external returns (bytes32 makerData);
 ```

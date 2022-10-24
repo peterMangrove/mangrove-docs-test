@@ -8,14 +8,16 @@ description: How taker compensation for failing offers works.
 
 When an offer fails, the caller has wasted some gas. To compensate the caller, Mangrove gives them a _bounty_ in ethers. Offers must provision enough ethers to maximize the chances that Mangrove can compensate the caller. In more details:
 
-* Every account has a balance in ethers held by Mangrove. Funds can be freely added to or withdrawn from the balance.
-* Whenever an account creates or updates an offer, their balance is adjusted so that enough ethers are locked as the offer's provision.
-  * If the offer is retracted that provision is credited back to the offer's account balance.
-  * If the offer is executed and fails, part or all of the provision is sent as compensation, to the caller. We call that the bounty. The rest of the provision is credited back to the offer's account balance.
+* Every offer logic that posted an offer has a balance in ethers held by Mangrove. Funds can be freely added to or withdrawn from the balance.
+* Whenever the logic creates or updates an offer, its balance is adjusted so that enough ethers are locked as the offer's provision.
+  * If the offer is retracted that provision is credited back to the logic's account balance.
+  * If the offer is executed and fails, part or all of the provision is sent as compensation, to the caller. We call that the bounty. The rest of the provision is credited back to the offer logic's account balance.
 
 ## Balance funding & withdrawal
 
-### Funding an account
+### Funding an offer
+
+There are two ways an offer logic can credit its balance on Mangrove. The logic may either call the `fund` function (see below) or pay on the fly when a [new offer is posted](reactive-offer.md#posting-a-new-offer).&#x20;
 
 {% tabs %}
 {% tab title="Signature" %}
@@ -78,7 +80,7 @@ await Mangrove["fund(address)"](maker_contract_address, overrides);
 
 #### Inputs
 
-* `maker` the address to credit
+* `maker` the offer logic's balance on Mangrove to credit
 
 #### Outputs
 

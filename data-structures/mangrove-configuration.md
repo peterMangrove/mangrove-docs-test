@@ -28,3 +28,45 @@ For every pair of addresses, there is a set of local parameters. Note that the p
 | `density`           | `uint32` | Minimum amount of token an offer must promise per gas required.                 |
 | `overhead_ gasbase` | `uint24` | Constant gas overhead associated with taking an any number of offers in 1 call. |
 | `offer_gasbase`     | `uint24` | Gas overhead associated with taking one offer.                                  |
+
+
+
+## Views
+
+{% hint style="info" %}
+The data structures containing Mangrove's global and local [configuration parameters](mangrove-configuration.md) are accessible via the public view function `configInfo(address outbound, address inbound)` function.
+{% endhint %}
+
+{% hint style="info" %}
+For read/write efficiency, Mangrove provides access to configuration parameters in a packed manner via the getter `config(address outbound, address inbound).`
+{% endhint %}
+
+{% tabs %}
+{% tab title="Solidity" %}
+{% code title="config.sol" %}
+```solidity
+import "src/IMangrove.sol";
+
+// context of the call
+address MGV;
+address outTkn;
+address inbTkn;
+
+// getting Mangrove's global configuration parameters and those that pertain to the `(outTkn, inTkn)` offer list
+// in an ABI compatible format (gas costly, use for offchain static calls)
+(MgvStructs.GlobalUnpacked global, MgvStructs.LocalUnpacked local) = IMangrove(MGV)
+.configInfo(outTkn, inTkn);
+
+// getting packed config data (gas efficient)
+(MgvStructs.GlobalPacked global32, MgvStructs.LocalPacked local32) = IMangrove(MGV)
+.config(outTkn, inTkn);
+
+// for all fields f of GlobalUnpacked
+// global.f == global32.f()
+// for all fields f of LocalUnpacked
+// local.f == local32.f()
+
+```
+{% endcode %}
+{% endtab %}
+{% endtabs %}

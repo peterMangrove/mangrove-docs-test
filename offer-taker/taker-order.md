@@ -7,7 +7,7 @@ description: Basic taker side functions
 {% hint style="info" %}
 **Dev team's note**
 
-For each function described below, we include the following tabs:
+For each function described onwards, we include the following tabs:
 
 * Signature - the function's Solidity signature
 * Events - possible Mangrove events emitted by calling this function

@@ -2,18 +2,8 @@
 
 * [Mangrove developer documentation](README.md)
 
-## Tutorials
-
-* [Demos](tutorials/demos.md)
-
-## How-to guides
-
-* [Cleaning offers](offer-taker/cleaning-an-offer.md)
-* [On-the-fly offer](offer-making-strategies/basic-offer.md)
-
 ## Technical references
 
-* [Contract addresses](contract-addresses.md)
 * [Taking and making offers](technical-references/taking-and-making-offers/README.md)
   * [Offer Lists](technical-references/taking-and-making-offers/market.md)
   * [Taking offers](offer-taker/taker-order.md)
@@ -33,6 +23,16 @@
     * [😎 Oracle](meta-topics/mangroves-ecosystem/monitor.md)
     * [👾 Cleaner](meta-topics/mangroves-ecosystem/cleaner.md)
   * [Mangrove API](meta-topics/mangrove-api/README.md)
+* [Contract addresses](contract-addresses.md)
+
+## How-to guides
+
+* [Cleaning offers](offer-taker/cleaning-an-offer.md)
+* [On-the-fly offer](offer-making-strategies/basic-offer.md)
+
+## Tutorials
+
+* [Demos](tutorials/demos.md)
 
 ## Explanations
 
