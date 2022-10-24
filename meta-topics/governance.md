@@ -10,67 +10,6 @@ description: >-
 **Global** governance parameters apply to all interactions with Mangrove. **Local** governance parameters are (`outboundtkn, inbound_tkn`) [Offer List](broken-reference/) specific. Both global and local parameters are under the control of Mangrove's governance.
 {% endhint %}
 
-## View functions
-
-**Global** and **local** governance parameters are respectively gathered in the [`MgvLib.global`](../data-structures/mangrove-configuration.md#mgvlib.global) and [`MgvLib.local`](../data-structures/mangrove-configuration.md#mgvlib.local) data structures. A `bytes32` packing of these data structures can be obtained via the `config` getter of Mangrove, when gas efficient access to the configuration parameters is needed. Unpacking functions are provided via the [`MgvPack`](https://github.com/giry-dev/mangrove/blob/master/packages/mangrove-solidity/contracts/MgvPack.sol) library. The [`MgvReader`](../contract-addresses.md) view contract provide a `config` getter of the unpacked structures for easy-to-parse off chain access.
-
-{% hint style="warning" %}
-**Boolean packing**
-
-**Global** and **local** boolean parameters are packed as integers. Thus for all [Global](../data-structures/mangrove-configuration.md#mgvlib.global) boolean variable `x`packed in `global_data`, use the boolean expression `MgvPack.global_unpack_x(global_data)>0` and for all [Local](../data-structures/mangrove-configuration.md#mgvlib.local) boolean packed in `local_data`, use `MgvPack.local_unpack_x(local_data)>0 `(see examples below).
-{% endhint %}
-
-{% tabs %}
-{% tab title="Calling from solidity" %}
-```solidity
-import "./Mangrove.sol"; // main contract
-import "./MgvPack.sol"; // unpacking functions
-
-// context 
-address outbound_tkn ; // address of the ERC20 managing the outbound tokens
-address inbound_tkn ; // address of the ERC20 managing the inbound tokens
-Mangrove mgv; // address of the deployed Mangrove contract
-
-// Getting packed configuration data
-(bytes32 packedGlobal, bytes32 packedLocal) = mgv.config(outbound_tkn, inbound_tkn);
-
-// Checking whether Mangrove is dead
-bool isDead = MgvPack.unpack_global_dead(packedGlobal)>0;
-
-// extracting Mangrove's gasprice form packed global parameters
-uint gasprice = MgvPack.unpack_global_gasprice(packedGlobal);
-
-// extracting (outbound_tkn, inbound_tkn) Offer List's density from packed local parameters
-uint density = MgvPack.unpack_local_density(packedLocal);
-
-// checking whether (outbound_tkn, inbound_tkn) Offer List is active
-uint isLive = MgvPack.unpack_local_active(packedLocal)>0;
-```
-{% endtab %}
-
-{% tab title="Calling from ethers.js" %}
-```javascript
-const { ethers } = require("ethers");
-// context
-let outTkn; // address of outbound token ERC20
-let inbTkn; // address of inbound token ERC20
-let MgvReader_address; // address of Mangrove reader
-let MgvReader_abi; // Mangrove reader contract's abi
-
-const MangroveReader = new ethers.Contract(
-    MgvReader_address, 
-    MgvReader_abi, 
-    ethers.provider
-    );
-// getting global and local config using the Reader contract    
-const [global, local] = await MgvReader.config(outTkn, inbTkn);
-// accessing current gasprice and density parameters (as ethers.BigNumbers)
-const gasprice = global.gasprice;
-const density = local.density; 
-```
-{% endtab %}
-{% endtabs %}
-
 ## Global parameters
 
 ### Gas price and oracle
@@ -87,10 +26,21 @@ If monitoring the **gas price** is not enabled, or if the value returned by the 
 {% tab title="Signatures" %}
 ```solidity
 // Governance lets the monitor determine gasprice
-function setUseOracle(bool useOracle) onlyGovernance public;
+function setUseOracle(bool useOracle) public;
 
 // Governance sets the fallback gasprice value (in GWEI)
-function setGasprice(uint gasprice) onlyGovernance public;
+function setGasprice(uint gasprice) public;
+
+// Governance sets a new monitor
+function setMonitor(address monitor) public;
+```
+{% endtab %}
+
+{% tab title="Events" %}
+```solidity
+event SetGasprice(uint gasprice); // emitted when gas price is updated
+event SetMonitor(address monitor); // emitted when a new monitor is set
+event SetUseOracle(bool value); // logs `true` if Mangrove is set to use an external monitor to read gasprice. Logs `false` otherwise
 ```
 {% endtab %}
 {% endtabs %}
@@ -98,21 +48,46 @@ function setGasprice(uint gasprice) onlyGovernance public;
 {% hint style="danger" %}
 **Important points**
 
-* Caller of `setUseOracle` and `setGasprice` MUST be the address of the [Governance user or contract](governance.md#setting-up-a-governance-contract) (if one has been [set](governance.md#setting-up-the-governance-address)).
-* If allowing the monitor to act as a gas price Oracle, Governance MUST have previously deployed a [Monitor Contract](mangroves-ecosystem/monitor.md) and [set its address](governance.md#setting-up-the-monitor-address) in Mangrove's configuration.
+* Caller of `setUseOracle` and `setGasprice` **must** be the address of the [Governance user or contract](governance.md#setting-up-a-governance-contract) (if one has been [set](governance.md#setting-up-the-governance-address)).
+* If allowing the monitor to act as a gas price Oracle, Governance **must** have previously deployed a [Monitor Contract](mangroves-ecosystem/monitor.md) and [set its address](governance.md#setting-up-the-monitor-address) in Mangrove's configuration.
 {% endhint %}
 
-### Maximum allowed gas
+### Other governance controlled setters
 
-Maximum allowed gas is stored in Mangrove's [`gasmax`](../data-structures/mangrove-configuration.md#mgvlib.global) Global configuration parameter.
+{% tabs %}
+{% tab title="Signature" %}
+```solidity
+// Governance sets maximum allowed gas per offer
+function setGasmax(uint gasmax) public;
+// Changing governance address
+function setGovernance(address value);
+// Changing treasury address
+function setVault(address value);
+// (de)activates sending trade notification to governance contract (e.g. for rewards programs)
+function setNotify(bool value);
+// set maximum gas amount an offer may require to execute
+function setGasmax(uint value);
+// sets a new gasprice for bounty and provision computation
+function setGasprice(uint value);
+// permanently puts mangrove into a killed state (Mangrove rejects all taker and maker orders, only retracting offer is possible)
+function kill();
 
-### Shutting down Mangrove
+```
+{% endtab %}
 
-### Setting up the Governance address
-
-### Setting up the Monitor address
-
-### Changing Mangrove's vault address
+{% tab title="events" %}
+```solidity
+event SetGasmax(uint value);
+event SetGovernance(address value);
+event SetVault(address value);
+event SetNotify(bool value);
+event SetGasmax(uint value);
+event SetDensity(address indexed outbound_tkn, address indexed inbound_tkn, uint value);
+event SetGasprice(uint value);
+event Kill();
+```
+{% endtab %}
+{% endtabs %}
 
 ## Offer List specific governance parameters
 
@@ -122,4 +97,4 @@ Maximum allowed gas is stored in Mangrove's [`gasmax`](../data-structures/mangro
 
 ### (De)activating an Offer List
 
-### Gas base
+### Offer gas base

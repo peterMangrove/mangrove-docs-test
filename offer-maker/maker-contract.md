@@ -105,18 +105,9 @@ function makerPosthook(
 ```solidity
 import {IERC20, IMaker, SingleOrder, OrderResult, MgvStructs} from "src/MgvLib.sol";
 
-contract MakerContract is IMaker {
+abstract contract MakerContract is IMaker {
     // context 
     address MGV; // address of the Mangrove contract
-    bytes32 immutable TRADE_SUCCESS = "offer/complete";
-    bytes32 immutable TRADE_FAIL = "offer/failed";
-    uint GASREQ; // gas required for offer execution
-
-    ...
-    function makerExecute(SingleOrder calldata order) external returns (bytes32){
-    ...
-    ...
-    }
     
     // Example of post-hook
     // if taker order was a success, try to repost residual offer at the same price
@@ -134,10 +125,10 @@ contract MakerContract is IMaker {
             Mangrove(MGV).updateOffer(
                 order.outbound_tkn, // same offer List
                 order.inbound_tkn,
-                order.offer.wants() - order.offer.gives(), // what the offer wanted, minus what the taker order gave 
-                offer.gives - order.wants, // what the offer was giving, minus what the taker took
-                GASREQ, // keeping with the same gasreq
-                0, // no good heuristic for the pivotId, so start with best offer
+                order.offer.wants() - order.gives, // what the offer wanted, minus what the taker order gave 
+                order.offer.gives() - order.wants, // what the offer was giving, minus what the taker took
+                order.offerDetail.gasreq(), // keeping with the same gasreq
+                order.offer.next(), // using next offer as pivot
                 order.offerId // reposting the offer that was consumed
             );
         }
