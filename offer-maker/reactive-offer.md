@@ -4,18 +4,6 @@ description: How to write Mangrovian offers
 
 # Creating & Updating offers
 
-{% hint style="info" %}
-**Dev Team's note**
-
-For each function described below, we include the following tabs:
-
-* Signature - the function's Solidity signature
-* Events - possible Mangrove events emitted by calling this function
-* Revert reasons - all possible strings returned after a revert
-* Solidity - Solidity code example
-* ethers.js - Javascript code example using [ethers.js](https://docs.ethers.io/v5/)
-{% endhint %}
-
 ### Posting a new offer
 
 New offers should mostly be posted by [contracts](maker-contract.md) able to source liquidity when asked to by Mangrove (although it [is possible](../offer-making-strategies/basic-offer.md) to post new offers from an EOA).

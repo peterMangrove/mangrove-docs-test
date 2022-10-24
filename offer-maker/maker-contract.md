@@ -52,49 +52,38 @@ contract MyOffer is IMaker {
 
 #### Inputs
 
-* `order` represents the [order](../offer-taker/taker-order.md#generalities) currently executing the offer and the current Mangrove configuration. `order.gives/order.wants` will match the price of the offer that is being executed up to a small precision. It contains the following fields:
-  * `addresss outbound_tkn` the _outbound_ token.
-  * `address inbound_tkn` the _inbound_ token.
-  * `uint offerId` id of the offer being executed.
-  * `MgvStructs.OfferPacked offer` (packed) [offer data](../data-structures/offer-data-structures.md#mgvlib.offer) as is was last posted by the offer logic.
-  * `uint wants` amount (in _outbound_ tokens) to be made available to the taker
-  * `uint gives` amount (in _inbound_ tokens) just received by the maker
-  * `bytes32 offerDetail` packed details about the offer.
-  * `bytes32 global` packed version of mangrove global config info.
-  * `bytes32 local` packed version of mangrove config for the current [offer list](../technical-references/taking-and-making-offers/market.md).
-
-{% hint style="success" %}
-**Packed fields**
-
-The fields `offer`, `offerDetail`, `global` and `local` contain packed information about the offer and Mangrove's config. In most cases you will not need those values; `wants` and `gives` should be enough. Otherwise, utility functions in [MgvLib](https://github.com/giry-dev/mangrove/blob/master/packages/mangrove-solidity/contracts/MgvLib.sol) will help you safely unpack the fields.
-{% endhint %}
+* `order` is a [data structure](../technical-references/data-structures/) containing a recap of the [taker order](../data-structures/offer-data-structures.md#mgvlib.singleorder) and Mangrove's current configuration state. The protocol guarantees that `order.gives/order.wants` will match the price of the offer that is being executed up to a small precision.&#x20;
 
 #### Outputs
 
-* `makerData` If `makerData != bytes32("")` or if the call reverts, Mangrove will consider that execution has failed. `makerData` is always sent to `makerPosthook` later, so you can use it to transfer information to `makerPosthook` after a failure.
+* `makerData` is an arbitrary `bytes32` that will be passed to `makerPosthoook` in the `makerData` field.
 
 {% hint style="danger" %}
 **Security concerns**
 
-Your contract must ensure that unauthorized callers cannot run `makerExecute`. The simplest way is to have a constant `address mgv` and add `require(msg.sender == mgv,"unauthorized")` at the top of your `makerExecute`.
+Your contract must ensure that only Mangrove can call `makerExecute` to avoid unwanted state change.&#x20;
 {% endhint %}
 
-{% hint style="info" %}
+{% hint style="success" %}
 **How to succeed**
 
-To successfully execute the offer, the call should return `bytes32("")` and the offer's owner should have `wants` _outbound_ tokens available for Mangrove to transfer to the taker.
+To successfully execute, the logic should not revert during the call to `makerExecute` and have at least `wants` _outbound_ tokens available for Mangrove to transfer by the end of the function's execution.
 
-**How to fail**
+**How to renege on trade**
 
-To renege on an offer, you may revert, but a simpler method is to return any value other than `bytes32("")`. This way your logs will be preserved. Either way, `makerData` will be [sent back](maker-contract.md#offer-post-hook) by Mangrove to your `makerPosthook` function.
+The proper way to renege on an offer is to make the execution of `makerExecute` throw with a reason that can be cast to a `bytes32`. Having a balance of _outbound_ tokens that is lower than `order.wants` will also make trade fail, but with a higher bounty to the taker.
+{% endhint %}
 
+{% hint style="warning" %}
 **Better fail early!**
 
 The [bounty](offer-provision.md#computing-the-provision-and-offer-bounty) taken from the offer maker's provision is [proportional](offer-provision.md#computing-the-provision-and-offer-bounty) to the gas consumed by `makerExecute`. To minimize costs, try to fail as early as possible.
+{% endhint %}
 
+{% hint style="danger" %}
 **Don't call Mangrove during `makerExecute`**
 
-The offer list for the _outbound_ / _inbound_ token pair is temporarily locked during calls to `makerExecute`. Its offers cannot be modified in any way. We recommend that you use `makerPosthook` to repost/update your offers, since the offer list will unlocked by then.
+The offer list for the _outbound_ / _inbound_ token pair is temporarily locked during calls to `makerExecute`. Its offers cannot be modified in any way. The offer logic must use `makerPosthook` to repost/update your offers, since the offer list will unlocked by then.
 {% endhint %}
 
 ### Offer post-hook
@@ -104,11 +93,6 @@ The logic associated with an offer may include a `makerPosthook` callback functi
 {% tabs %}
 {% tab title="Signature" %}
 ```solidity
-struct OrderResult {
-    bytes32 makerData; // data returned by `makerExecute`
-    bytes32 mgvData; // additional data sent by Mangrove, see below
-}
-
 function makerPosthook(
     MgvLib.SingleOrder calldata order,
     MgvLib.OrderResult calldata result
@@ -119,9 +103,7 @@ function makerPosthook(
 {% tab title="Offer logic" %}
 {% code title="MakerContract-1.sol" %}
 ```solidity
-import "./ERC20.sol";
-import "./MgvLib.sol";
-import "./MgvPack.sol";
+import {IERC20, IMaker, SingleOrder, OrderResult, MgvStructs} from "src/MgvLib.sol";
 
 contract MakerContract is IMaker {
     // context 
@@ -131,7 +113,7 @@ contract MakerContract is IMaker {
     uint GASREQ; // gas required for offer execution
 
     ...
-    function makerExecute(MgvLib.SingleOrder calldata order) external returns (bytes32){
+    function makerExecute(SingleOrder calldata order) external returns (bytes32){
     ...
     ...
     }
@@ -139,13 +121,12 @@ contract MakerContract is IMaker {
     // Example of post-hook
     // if taker order was a success, try to repost residual offer at the same price
     function makerPosthook(
-        MgvLib.SingleOrder calldata order,
-        MgvLib.OrderResult calldata result
+        SingleOrder calldata order,
+        OrderResult calldata result
     ) external {
         require (msg.sender == MGV, "posthook/invalid_caller");
         if (result.mgvData == "mgv/tradeSuccess") {
             // retrieving offer data
-            MgvLib.SingleOffer memory offer = MgvPack.offer_unpack(order.offer);
             // the following call to updateOffer will revert if:
             // * `this` MakerContract doesn't have enough provision on Mangrove for the offer
             // * the residual/(GASREQ+offer_gasbase) is below Mangrove's minimal density
@@ -153,7 +134,7 @@ contract MakerContract is IMaker {
             Mangrove(MGV).updateOffer(
                 order.outbound_tkn, // same offer List
                 order.inbound_tkn,
-                offer.wants - order.gives, // what the offer wanted, minus what the taker order gave 
+                order.offer.wants() - order.offer.gives(), // what the offer wanted, minus what the taker order gave 
                 offer.gives - order.wants, // what the offer was giving, minus what the taker took
                 GASREQ, // keeping with the same gasreq
                 0, // no good heuristic for the pivotId, so start with best offer

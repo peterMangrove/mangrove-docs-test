@@ -4,18 +4,6 @@ description: Basic taker side functions
 
 # Taking offers
 
-{% hint style="info" %}
-**Dev team's note**
-
-For each function described onwards, we include the following tabs:
-
-* Signature - the function's Solidity signature
-* Events - possible Mangrove events emitted by calling this function
-* Revert reasons - all possible strings returned after a revert
-* Solidity - Solidity code example
-* ethers.js - Javascript code example using [ethers.js](https://docs.ethers.io/v5/)
-{% endhint %}
-
 ## Generalities
 
 ### Token allowance
