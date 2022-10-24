@@ -61,10 +61,13 @@ address inbTkn;
 (MgvStructs.GlobalPacked global32, MgvStructs.LocalPacked local32) = IMangrove(MGV)
 .config(outTkn, inTkn);
 
-// for all fields f of GlobalUnpacked
-// global.f == global32.f()
-// for all fields f of LocalUnpacked
-// local.f == local32.f()
+// for all fields f of `GlobalUnpacked global` 
+// one may unpack a specific element of `GlobalPacked global32` using the following scheme:
+global.f == global32.f()
+
+// for all fields f of `LocalUnpacked local` 
+// a similar scheme applies to `LocalPacked local32`:
+local.f == local32.f()
 
 ```
 {% endcode %}

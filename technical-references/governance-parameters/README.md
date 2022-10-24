@@ -7,5 +7,5 @@ description: >-
 # Governance parameters
 
 {% hint style="info" %}
-**Global** governance parameters apply to all interactions with Mangrove. **Local** governance parameters are (`outboundtkn, inbound_tkn`) [Offer List](../../meta-topics/broken-reference/) specific. Both global and local parameters are under the control of Mangrove's governance.
+**Global** governance parameters apply to all interactions with Mangrove. **Local** governance parameters are (`outbound, inbound`) [Offer List](../../meta-topics/broken-reference/) specific. Both global and local parameters are under the control of Mangrove's governance.
 {% endhint %}
