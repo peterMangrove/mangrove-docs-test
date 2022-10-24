@@ -4,21 +4,9 @@ description: How to write Mangrovian offers
 
 # Creating & Updating offers
 
-{% hint style="info" %}
-**Dev Team's note**
-
-For each function described below, we include the following tabs:
-
-* Signature - the function's Solidity signature
-* Events - possible Mangrove events emitted by calling this function
-* Revert reasons - all possible strings returned after a revert
-* Solidity - Solidity code example
-* ethers.js - Javascript code example using [ethers.js](https://docs.ethers.io/v5/)
-{% endhint %}
-
 ### Posting a new offer
 
-New offers should mostly be posted by [contracts](maker-contract.md) able to source liquidity when asked to by Mangrove (although it [is possible](../offer-making-strategies/basic-offer.md) to post new offers from an EOA).
+New offers should mostly be posted by [contracts](maker-contract.md) able to source liquidity when asked to by Mangrove (although it [is possible](../../../offer-making-strategies/basic-offer.md) to post new offers from an EOA).
 
 {% hint style="info" %}
 `newOffer` is payable and can be used to credit the Offer Logic's balance on Mangrove on the fly. A non zero `msg.value` will allow Mangrove to credit Offer Logic's balance prior to locking the [provision](offer-provision.md) of the newly posted offer.&#x20;
@@ -134,14 +122,14 @@ IMangrove(MGV).newOffer{value: provision}(
 * `outbound_tkn` address of the outbound token (that the offer will provide).
 * `inbound_tkn` address of the inbound token (that the offer will receive).
 * `wants` amount of inbound tokens requested by the offer. **Must** fit in a `uint96`.
-* `gives` amount of outbound **** tokens promised by the offer. **Must** fit in a `uint96` and be strictly positive. **Must** provide enough volume w.r.t to `gasreq` and offer list's [density](../meta-topics/governance.md#density) parameter.
-* `gasreq` amount of gas that will be given to the offer's [account](maker-contract.md). **Must** fit in a `uint24` and be lower than [gasmax](../meta-topics/governance.md#maximum-allowed-gas). Should be sufficient to cover all calls to the offer logic posting the offer ([`makerExecute`](maker-contract.md#offer-execution) and [`makerPosthook`](maker-contract.md#offer-post-hook)). **Must** be compatible with the offered volume `gives` and the offer list's [density](../meta-topics/governance.md#density) parameter.
-* `gasprice` gas price override used to compute the order provision (see [offer bounties](offer-provision.md)). Any value lower than Mangrove's current [gasprice](broken-reference) will be ignored (thus 0 means "use Mangrove's current [gasprice](broken-reference)"). **Must** fit in a `uint16`.
-* `pivotId` where to start the insertion process in the offer list. If `pivotId` is not in the offer list at the time the transaction is processed, the new offer will be inserted starting from the offer list's [best](reactive-offer.md#getting-current-best-offer-of-a-market) offer. Should be the id of the existing live offer with the price closest to the price of the offer being posted.
+* `gives` amount of outbound **** tokens promised by the offer. **Must** fit in a `uint96` and be strictly positive. **Must** provide enough volume w.r.t to `gasreq` and offer list's [density](broken-reference) parameter.
+* `gasreq` amount of gas that will be given to the offer's [account](maker-contract.md). **Must** fit in a `uint24` and be lower than [gasmax](broken-reference). Should be sufficient to cover all calls to the offer logic posting the offer ([`makerExecute`](maker-contract.md#offer-execution) and [`makerPosthook`](maker-contract.md#offer-post-hook)). **Must** be compatible with the offered volume `gives` and the offer list's [density](broken-reference) parameter.
+* `gasprice` gas price override used to compute the order provision (see [offer bounties](../../../offer-maker/offer-provision.md)). Any value lower than Mangrove's current [gasprice](broken-reference) will be ignored (thus 0 means "use Mangrove's current [gasprice](broken-reference)"). **Must** fit in a `uint16`.
+* `pivotId` where to start the insertion process in the offer list. If `pivotId` is not in the offer list at the time the transaction is processed, the new offer will be inserted starting from the offer list's [best](./#getting-current-best-offer-of-a-market) offer. Should be the id of the existing live offer with the price closest to the price of the offer being posted.
 
 **Outputs**
 
-* `offerId` the id of the newly created offer. Note that offer ids are scoped to [offer lists](broken-reference/), so many offers can share the same id.
+* `offerId` the id of the newly created offer. Note that offer ids are scoped to [offer lists](../../../offer-maker/broken-reference/), so many offers can share the same id.
 
 {% hint style="danger" %}
 **Provisioning**
@@ -271,7 +259,7 @@ function myUpdateOffer(
 #### Inputs
 
 * `offerId` is the offer id of the offer to be updated.
-* For the other parameters, see [above](reactive-offer.md#posting-a-new-reactive-offer).
+* For the other parameters, see [above](./#posting-a-new-reactive-offer).
 
 #### Outputs
 
@@ -286,7 +274,7 @@ An offer can only be updated if `msg.sender` is the [account](maker-contract.md)
 {% hint style="warning" %}
 **Reusing offers**
 
-After being executed or [retracted](reactive-offer.md#retracting-an-offer), an offer is moved out of the offer list. It can still be updated and reinserted in the offer list. We recommend updating offers instead of creating new ones, as it costs much less gas.
+After being executed or [retracted](./#retracting-an-offer), an offer is moved out of the offer list. It can still be updated and reinserted in the offer list. We recommend updating offers instead of creating new ones, as it costs much less gas.
 {% endhint %}
 
 ### Retracting an offer
@@ -363,7 +351,7 @@ function myRetractOffer(uint offerId) external {
 
 * `offerId` is the offer id of the offer to be updated.
 * `deprovision` if true, will free the offer's ETH provision so that you can [withdraw](offer-provision.md#withdrawing) them. Otherwise, will leave the provision in the offer.
-* For the other parameters, see [above](reactive-offer.md#posting-a-new-reactive-offer).
+* For the other parameters, see [above](./#posting-a-new-reactive-offer).
 
 #### Outputs
 

@@ -4,18 +4,6 @@ description: Basic taker side functions
 
 # Taking offers
 
-{% hint style="info" %}
-**Dev team's note**
-
-For each function described onwards, we include the following tabs:
-
-* Signature - the function's Solidity signature
-* Events - possible Mangrove events emitted by calling this function
-* Revert reasons - all possible strings returned after a revert
-* Solidity - Solidity code example
-* ethers.js - Javascript code example using [ethers.js](https://docs.ethers.io/v5/)
-{% endhint %}
-
 ## Generalities
 
 ### Token allowance
@@ -33,13 +21,13 @@ A **Market Order** is Mangrove's main liquidity sourcing entrypoint. It is calle
 When an order is processed by Mangrove's matching engine, it consumes the offers on the selected [offer list](broken-reference), starting from the [best](broken-reference) one. Execution works as follows, where at any point the taker's price is `takerGives` _/_ `takerWants`_._
 
 1. Mangrove checks that the current offer's [price](broken-reference) is at least as good as the taker's price. Otherwise execution stops there.
-2. Mangrove sends _inbound_ tokens to the current offer's associated [account](../offer-maker/maker-contract.md).
+2. Mangrove sends _inbound_ tokens to the current offer's associated [account](../reactive-offer/maker-contract.md).
 3. Mangrove then executes the offer logic.
 4. If the call is successful, Mangrove sends _outbound_ tokens to the taker. If the call or the transfer fail, Mangrove reverts the effects of steps 2. and 3.
 5. The taker's _wants_ and _gives_ are reduced.
 6. If the taker's _wants_ has not been completely fulfilled, Mangrove moves back to step 1.
 
-Any failed [offer](../offer-maker/reactive-offer.md) execution results in a [bounty](../offer-maker/offer-provision.md#computing-the-provision-and-offer-bounty) being sent to the caller as compensation for the wasted gas.
+Any failed [offer](../reactive-offer/) execution results in a [bounty](../reactive-offer/offer-provision.md#computing-the-provision-and-offer-bounty) being sent to the caller as compensation for the wasted gas.
 
 {% tabs %}
 {% tab title="Signature" %}
@@ -230,7 +218,7 @@ await tx.wait();
 * `takerGot` is the net amount of _outbound_ tokens the taker has received after applying the [taker fee](broken-reference).
 * `takerGave` is the amount of _inbound_ tokens the taker has sent.
 * `bounty` the amount of native tokens (in units of wei) the taker received in compensation for cleaning failing offers
-* fee the amount of `outbound_tkn` that was sent to Mangrove's vault in payment of the potential [fee](../meta-topics/governance.md#taker-fees) associated to the `(outbound_tkn, inbound_tkn)`[offer list](../technical-references/taking-and-making-offers/market.md#general-structure).
+* fee the amount of `outbound_tkn` that was sent to Mangrove's vault in payment of the potential [fee](broken-reference) associated to the `(outbound_tkn, inbound_tkn)`[offer list](../market.md#general-structure).
 
 {% hint style="success" %}
 **Specification**
@@ -266,7 +254,7 @@ Mangrove's market orders are configurable using the three parameters `takerWants
 * **Market buy:** You can run a 'classic' market **buy** order by setting `takerWants` to the amount you want to buy, `takerGives` to `type(uint160).max`, and `fillWants` to `true`.
 * **Market sell:** You can run a 'classic' market **sell** order by setting `takerWants` to `type(uint160).max`, `takerGives` to the amount you want to sell, and `fillWants` to `false`.
 * **Limit order**: You can run limit orders by setting `takerGives` and `takerWants` such that `takerGives`/`takerWants` is the volume-weighted price you are willing to pay and `fillWants` to `true` if you want to act as a buyer of _outbound_ token or to `false` if you want to act as a seller if _inbound_ token.
-* [More advanced market orders ](../technical-references/around-the-mangrove/mangroves-ecosystem/advanced-orders.md)can be called using a \`MangroveOrder\`, a[ deployed ](../contract-addresses.md#mangroveorder)periphery contract to Mangrove.
+* [More advanced market orders ](../../../explanations/around-the-mangrove/mangroves-ecosystem/advanced-orders.md)can be called using a \`MangroveOrder\`, a[ deployed ](../../../contract-addresses.md#mangroveorder)periphery contract to Mangrove.
 
 {% hint style="warning" %}
 **On order residuals**
@@ -495,11 +483,11 @@ await Mangrove.connect(signer).snipes(
 * `outbound_tkn` _outbound_ token address (received by the taker)
 * `inbound_tkn` _inbound_ token address (sent by the taker)
 * `targets` an array of offers to take. Each element of `targets` is a `uint[4]`'s of the form `[offerId, takerWants, takerGives, gasreq_permitted]` where:
-  * `offerId` is the ID of an [offer](../offer-maker/reactive-offer.md) that should be taken.
-  * `takerWants` the amount of outbound tokens the taker wants from that [offer](../offer-maker/reactive-offer.md). **Must fit in a `uint96`.**
-  * `takerGives` the amount of inbound tokens the taker is willing to give to that [offer](../offer-maker/reactive-offer.md). **Must fit in a `uint96`.**
-  * `gasreq_permitted` is the maximum `gasreq` the taker will tolerate for that [offer](../offer-maker/reactive-offer.md). If the offer's `gasreq` is higher than `gasreq_permitted`, the offer will not be sniped.
-* `fillWants` specifies whether you are acting as a buyer of **outbound tokens**, in which case you will buy at most `takerWants`, or a seller of **inbound tokens**, in which case you will buy as many tokens as possible as long as you don't spend more than `takerGives`. See more extensive discussion of `fillWants` in the [market order section](offer-taker/taker-order/#input).
+  * `offerId` is the ID of an [offer](../reactive-offer/) that should be taken.
+  * `takerWants` the amount of outbound tokens the taker wants from that [offer](../reactive-offer/). **Must fit in a `uint96`.**
+  * `takerGives` the amount of inbound tokens the taker is willing to give to that [offer](../reactive-offer/). **Must fit in a `uint96`.**
+  * `gasreq_permitted` is the maximum `gasreq` the taker will tolerate for that [offer](../reactive-offer/). If the offer's `gasreq` is higher than `gasreq_permitted`, the offer will not be sniped.
+* `fillWants` specifies whether you are acting as a buyer of **outbound tokens**, in which case you will buy at most `takerWants`, or a seller of **inbound tokens**, in which case you will buy as many tokens as possible as long as you don't spend more than `takerGives`. See more extensive discussion of `fillWants` in the [market order section](../../../offer-taker/offer-taker/taker-order/#input).
 
 {% hint style="warning" %}
 **Protection against malicious offer updates**

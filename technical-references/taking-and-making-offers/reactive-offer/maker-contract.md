@@ -6,7 +6,7 @@ description: How to write offer execution logic
 
 ### Offer Logic
 
-The logic associated with an offer MUST be implemented through a `makerExecute` callback function. (See [data structures](../data-structures/offer-data-structures.md#mgvlib.singleorder) for `SingleOrder` type).
+The logic associated with an offer MUST be implemented through a `makerExecute` callback function. (See [data structures](../offer-data-structures.md#mgvlib.singleorder) for `SingleOrder` type).
 
 {% tabs %}
 {% tab title="Signature" %}
@@ -52,7 +52,7 @@ contract MyOffer is IMaker {
 
 #### Inputs
 
-* `order` is a [data structure](../technical-references/data-structures/) containing a recap of the [taker order](../data-structures/offer-data-structures.md#mgvlib.singleorder) and Mangrove's current configuration state. The protocol guarantees that `order.gives/order.wants` will match the price of the offer that is being executed up to a small precision.&#x20;
+* `order` is a [data structure](../../governance-parameters/) containing a recap of the [taker order](../offer-data-structures.md#mgvlib.singleorder) and Mangrove's current configuration state. The protocol guarantees that `order.gives/order.wants` will match the price of the offer that is being executed up to a small precision.&#x20;
 
 #### Outputs
 
@@ -88,7 +88,7 @@ The offer list for the _outbound_ / _inbound_ token pair is temporarily locked d
 
 ### Offer post-hook
 
-The logic associated with an offer may include a `makerPosthook` callback function. Its intended use is to update offers in the [offer list](../technical-references/taking-and-making-offers/market.md) containing the [offer](reactive-offer.md) that was just executed.
+The logic associated with an offer may include a `makerPosthook` callback function. Its intended use is to update offers in the [offer list](../market.md) containing the [offer](./) that was just executed.
 
 {% tabs %}
 {% tab title="Signature" %}
@@ -141,9 +141,9 @@ abstract contract MakerContract is IMaker {
 #### Inputs
 
 * `order` same as in `makerExecute`.
-* `result` A [struct](../data-structures/offer-data-structures.md#mgvlib-orderresult) containing:
+* `result` A [struct](../offer-data-structures.md#mgvlib-orderresult) containing:
   * the return value of `makerExecute`
-  * additional data sent by Mangrove, more info [available here](../data-structures/offer-data-structures.md#mgvlib.orderresult).
+  * additional data sent by Mangrove, more info [available here](../offer-data-structures.md#mgvlib.orderresult).
 
 #### Outputs
 
@@ -162,7 +162,7 @@ Posthooks are given the executed offer's `gasreq` minus the gas used by `makerEx
 
 **Updating offers during posthook**
 
-During the execution of a posthook, the executed offer's list is unlocked. This feature can be used to repost an [offer](reactive-offer.md) (even the one that was just executed), possibly at a different price (see the **Offer logic** in the above code snippet).
+During the execution of a posthook, the executed offer's list is unlocked. This feature can be used to repost an [offer](./) (even the one that was just executed), possibly at a different price (see the **Offer logic** in the above code snippet).
 {% endhint %}
 
 {% hint style="success" %}

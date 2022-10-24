@@ -2,9 +2,9 @@
 description: Global governance parameters and Offer List specific parameters.
 ---
 
-# Configuration data
+# Data structures and views
 
-Ground truth for configuration can be found in the code [documentation](https://giry-dev.github.io/mangrove/MgvDoc.html). All configuration options are under the control of [governance](../meta-topics/governance.md).
+Ground truth for configuration can be found in the code [documentation](https://giry-dev.github.io/mangrove/MgvDoc.html). All configuration options are under the control of [governance](broken-reference).
 
 ## MgvLib.MgvStructs.GlobalUnpacked
 

@@ -2,11 +2,11 @@
 
 Since Mangrove offers do not provision liquidity, there must be a mechanism that ensures that most of the time, the orderbook does not contain 'fake offers', that is, offers that renege on their promises.
 
-Mangrove uses [Offer Provisions](../offer-maker/offer-provision.md) as a protection mechanism.
+Mangrove uses [Offer Provisions](../technical-references/taking-and-making-offers/reactive-offer/offer-provision.md) as a protection mechanism.
 
 Consider an offer that promises 100WETH for 100DAI and requires 300k for execution. That gas will be paid for by the taker. If the 100WETH are delivered, all is well.
 
-If they are not, the taker must be compensated for the wasted gas. This is why, when creating an offer, market makers must [provision](../offer-maker/offer-provision.md) for a potential [bounty](../offer-maker/offer-provision.md#computing-the-provision-and-offer-bounty) in ETH. That [bounty](../offer-maker/offer-provision.md#computing-the-provision-and-offer-bounty) depends on :
+If they are not, the taker must be compensated for the wasted gas. This is why, when creating an offer, market makers must [provision](../technical-references/taking-and-making-offers/reactive-offer/offer-provision.md) for a potential [bounty](../technical-references/taking-and-making-offers/reactive-offer/offer-provision.md#computing-the-provision-and-offer-bounty) in ETH. That [bounty](../technical-references/taking-and-making-offers/reactive-offer/offer-provision.md#computing-the-provision-and-offer-bounty) depends on :
 
 * The average gas price, as estimated by the Mangrove exchange itself. Let's name it `gasprice`.
 * The amount of gas requested by the offer. Let's name it `gasreq`.

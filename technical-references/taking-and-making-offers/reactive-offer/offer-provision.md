@@ -17,7 +17,7 @@ When an offer fails, the caller has wasted some gas. To compensate the caller, M
 
 ### Funding an offer
 
-There are two ways an offer logic can credit its balance on Mangrove. The logic may either call the `fund` function (see below) or pay on the fly when a [new offer is posted](reactive-offer.md#posting-a-new-offer).&#x20;
+There are two ways an offer logic can credit its balance on Mangrove. The logic may either call the `fund` function (see below) or pay on the fly when a [new offer is posted](./#posting-a-new-offer).&#x20;
 
 {% tabs %}
 {% tab title="Signature" %}
@@ -193,7 +193,7 @@ Whenever an offer is created or updated, Mangrove applies to following formula t
 $$\textrm{provision} = \max(\textrm{gasprice}_{\textrm{mgv}},\textrm{gasprice}_{\textrm{ofr}}) \times (\textrm{gasreq} + \textrm{gasoverhead}) \times 10^9$$
 
 * $$\textrm{gasprice}_{\textrm{mgv}}$$ is [Mangrove's internal `gasprice` estimate](broken-reference).
-* $$\textrm{gasprice}_{\textrm{ofr}}$$ is the `gasprice` argument of the function being called ([`newOffer`](reactive-offer.md#posting-a-new-offer) or [`updateOffer`](reactive-offer.md#updating-an-existing-offer)).
+* $$\textrm{gasprice}_{\textrm{ofr}}$$ is the `gasprice` argument of the function being called ([`newOffer`](./#posting-a-new-offer) or [`updateOffer`](./#updating-an-existing-offer)).
 * $$\textrm{gasreq}$$ is the `gasreq` argument of the function being called.
 * $$\textrm{gasoverhead}$$ is the sum of two [Mangrove-internal gas overhead estimators](broken-reference)
 

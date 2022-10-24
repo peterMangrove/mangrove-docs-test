@@ -45,11 +45,9 @@ await tx.wait();
 
 // // querying mangrove to know the bounty for posting a new Ask on `market`
 let prov = await directLP.computeAskProvision();
-tx = await directLP.fundMangrove(prov);
-await tx.wait();
 
 // //Posting a new Ask (offering 105 DAI for 104 USDC)
-const { id: ofrId } = await directLP.newAsk({ wants: 105, gives: 104 });
+const { id: ofrId } = await directLP.newAsk({ wants: 105, gives: 104, fund:prov });
 ```
 {% endcode %}
 
