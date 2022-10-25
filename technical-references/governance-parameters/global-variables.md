@@ -1,14 +1,18 @@
+---
+description: Protocol wide governance parameters.
+---
+
 # Global variables
 
 ### Gas price and oracle
 
 {% hint style="info" %}
-**Gas price** (given is GWEI units) is a key parameter of Mangrove that [determines the remuneration](../taking-and-making-offers/reactive-offer/offer-provision.md#offer-bounty-computation) of Offer Cleaners. In order to make sure takers are consistently over-compensated for the gas used in consuming a failing offer, it should be kept by the Governance above average `tx.gasprice`.
+**Gas price** (given is GWEI units) is a key parameter of Mangrove that [determines the remuneration](../taking-and-making-offers/reactive-offer/offer-provision.md#offer-bounty-computation) of takers for removing a failing offer from a list. In order to make sure takers are consistently over-compensated for the gas used, it should be kept well above average `tx.gasprice`.
 {% endhint %}
 
-**Gas price** can be read from an outside [Monitoring Contract](../../explanations/around-the-mangrove/mangroves-ecosystem/monitor.md). When the governance wishes to do so, it MUST enable this feature by letting [Monitoring Contract](../../explanations/around-the-mangrove/mangroves-ecosystem/monitor.md) (if any) act as a gas price oracle. This can be done using the governance restricted function `setUseOracle` of Mangrove.
+**Gas price** can be read from an outside Monitoring Contract. When the governance wishes to do so, it **must** enable this feature by letting the monitor (if any) act as a gas price oracle. This can be done using the governance restricted function `setUseOracle` of Mangrove.
 
-If monitoring the **gas price** is not enabled, or if the value returned by the monitor overflows, Mangrove will use its global configuration [`gasprice`](mangrove-configuration.md#mgvlib.global) parameter as fallback. Changing Mangrove's storage [`gasprice`](mangrove-configuration.md#mgvlib.global) is done using the governance restricted function `setGasprice`.
+If monitoring the gas price is not enabled, or if the value returned by the monitor is ill formed, Mangrove will use its global [`gasprice`](mangrove-configuration.md#mgvlib.global) parameter as fallback.&#x20;
 
 {% tabs %}
 {% tab title="Signatures" %}
@@ -34,10 +38,9 @@ event SetUseOracle(bool value); // logs `true` if Mangrove is set to use an exte
 {% endtabs %}
 
 {% hint style="danger" %}
-**Important points**
+**Important point**
 
-* Caller of `setUseOracle` and `setGasprice` **must** be the address of the [Governance user or contract](global-variables.md#setting-up-a-governance-contract) (if one has been [set](global-variables.md#setting-up-the-governance-address)).
-* If allowing the monitor to act as a gas price Oracle, Governance **must** have previously deployed a [Monitor Contract](../../explanations/around-the-mangrove/mangroves-ecosystem/monitor.md) and [set its address](global-variables.md#setting-up-the-monitor-address) in Mangrove's configuration.
+If allowing the monitor to act as a gas price Oracle, Governance **must** have previously deployed a Monitor Contract and set its address in Mangrove's configuration.
 {% endhint %}
 
 ### Other governance controlled setters

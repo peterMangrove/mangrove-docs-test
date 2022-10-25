@@ -6,7 +6,7 @@ description: How to write offer execution logic
 
 ### Offer Logic
 
-The logic associated with an offer MUST be implemented through a `makerExecute` callback function. (See [data structures](../offer-data-structures.md#mgvlib.singleorder) for `SingleOrder` type).
+The logic associated with an offer MUST be implemented through a `makerExecute` callback function. (See [data structures](offer-data-structures.md#mgvlib.singleorder) for `SingleOrder` type).
 
 {% tabs %}
 {% tab title="Signature" %}
@@ -52,7 +52,7 @@ contract MyOffer is IMaker {
 
 #### Inputs
 
-* `order` is a [data structure](../../governance-parameters/) containing a recap of the [taker order](../offer-data-structures.md#mgvlib.singleorder) and Mangrove's current configuration state. The protocol guarantees that `order.gives/order.wants` will match the price of the offer that is being executed up to a small precision.&#x20;
+* `order` is a [data structure](../../governance-parameters/) containing a recap of the [taker order](offer-data-structures.md#mgvlib.singleorder) and Mangrove's current configuration state. The protocol guarantees that `order.gives/order.wants` will match the price of the offer that is being executed up to a small precision.&#x20;
 
 #### Outputs
 
@@ -141,9 +141,9 @@ abstract contract MakerContract is IMaker {
 #### Inputs
 
 * `order` same as in `makerExecute`.
-* `result` A [struct](../offer-data-structures.md#mgvlib-orderresult) containing:
+* `result` A [struct](offer-data-structures.md#mgvlib-orderresult) containing:
   * the return value of `makerExecute`
-  * additional data sent by Mangrove, more info [available here](../offer-data-structures.md#mgvlib.orderresult).
+  * additional data sent by Mangrove, more info [available here](offer-data-structures.md#mgvlib.orderresult).
 
 #### Outputs
 
