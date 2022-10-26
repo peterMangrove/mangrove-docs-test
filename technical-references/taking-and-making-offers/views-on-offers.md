@@ -58,7 +58,7 @@ const best = await mgv.best(outboundTkn, inboundTkn);
 ### `offers(address, address) / offerDetails(address, address, uint)`
 
 {% hint style="info" %}
-The data pertaining to a particular offer is stored in two structures called `OfferUnpacked` and `OfferDetailUnpacked` described below. Mangrove stores these structures in packed custom types called, respectively, `OfferPacked` and `OfferDetailUnpacked.` For on-chain calls, Mangrove provide unpacking functions to extract a particular field out of a packed structure. For off-chain calls, Mangrove also provide a getter for the unpacked structures.&#x20;
+The data pertaining to a particular offer is stored in the `OfferUnpacked` and `OfferDetailUnpacked`, which are stored as packed custom types called, respectively, `OfferPacked` and `OfferDetailUnpacked.` For on-chain calls, Mangrove provides unpacking functions to extract a particular field out of a packed structure. For off-chain calls, Mangrove also provide a getter for the unpacked structures.&#x20;
 {% endhint %}
 
 {% tabs %}
@@ -170,23 +170,28 @@ const isLive = await Mangrove.isLive(outTkn,outTkn,offerId);
 {% endtab %}
 {% endtabs %}
 
-## MgvLib.MgvStructs.OfferUnpacked
+## Custom types
 
-| Type     | Field      | Comments                                                                 |
-| -------- | ---------- | ------------------------------------------------------------------------ |
-| `uint`   | `prev`     | Predecessor offer id (better price)                                      |
-| `uint`   | `next`     | Successor offer id (worst price)                                         |
-| `uint96` | `gives`    | What the offer gives (in WEI units of base token of the offer's market)  |
-| `uint96` | `wants`    | What the offer wants (in WEI units of quote token of the offer's market) |
-| `uint16` | `gasprice` | The gas price covered by the offer bounty                                |
+{% hint style="info" %}
+Offer data is split between `OfferUnpacked` and `OfferDetailedUnPacked` for  storage read/write optimisation (as both structs can be efficiently packed on storage).
+{% endhint %}
 
-## MgvLib.OfferDetailUnpacked
+### `MgvLib.MgvStructs.OfferUnpacked`
 
-| Type      | Field              | Comments                                                                                                                                 |
-| --------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `address` | `maker`            | address of the offer's [Maker Contract](reactive-offer/maker-contract.md)                                                                |
-| `uint`    | `gasreq`           | Gas required by the offer                                                                                                                |
-| `uint`    | `overhead_gasbase` | Snapshot of the [overhead gasbase](../governance-parameters/mangrove-configuration.md#local-parameters) at the time the offer was posted |
-| `uint`    | `offer_gasbase`    | Snapshot of the offer [gasbase](../governance-parameters/mangrove-configuration.md#local-parameters) at the time the offer was posted    |
+| Type     | Field   | Comments                                                                   |
+| -------- | ------- | -------------------------------------------------------------------------- |
+| `uint32` | `prev`  | Predecessor offer id (better price)                                        |
+| `uint32` | `next`  | Successor offer id (worst price)                                           |
+| `uint96` | `gives` | What the offer gives (in _wei_ units of base token of the offer's market)  |
+| `uint96` | `wants` | What the offer wants (in _wei_ units of quote token of the offer's market) |
+
+### `MgvLib.OfferDetailUnpacked`
+
+| Type      | Field           | Comments                                                                                                                                  |
+| --------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `address` | `maker`         | address of the offer's [Maker Contract](reactive-offer/maker-contract.md)                                                                 |
+| `uint24`  | `gasreq`        | Gas required by the offer (in gas units)                                                                                                  |
+| `uint16`  | `gasprice`      | The gas price covered by the offer bounty (in _gwei_ per gas units)                                                                       |
+| `uint24`  | `offer_gasbase` | Mangrove's [gasbase](../governance-parameters/mangrove-configuration.md#local-parameters) at the time the offer was posted (in gas units) |
 
 ##
