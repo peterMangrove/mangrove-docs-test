@@ -6,7 +6,7 @@ description: How to write Mangrovian offers
 
 ### Posting a new offer
 
-New offers should mostly be posted by [contracts](maker-contract.md) able to source liquidity when asked to by Mangrove (although it [is possible](../../../offer-making-strategies/basic-offer.md) to post new offers from an EOA).
+New offers should mostly be posted by [contracts](maker-contract.md) able to source liquidity when asked to by Mangrove (although it [is possible](../../../how-to-guides/basic-offer.md) to post new offers from an EOA).
 
 {% hint style="info" %}
 `newOffer` is payable and can be used to credit the Offer Logic's balance on Mangrove on the fly. A non zero `msg.value` will allow Mangrove to credit Offer Logic's balance prior to locking the [provision](offer-provision.md) of the newly posted offer.&#x20;

@@ -5,7 +5,7 @@ description: The most simple liquidity providing strategy, no offer logic, just 
 # On-the-fly offer
 
 {% hint style="info" %}
-An **On-the-fly Offer** (OTF) can be listed on Mangrove but is not equipped with any on-chain [logic](../offer-maker/#executing-offers) that executes when the offer is taken. Whenever it is matched by a [taker order](../offer-taker/#taking-offers), the offer sources its liquidity on an Externally Owned Account (EOA).
+An **On-the-fly Offer** (OTF) can be listed on Mangrove but is not equipped with any on-chain [logic](../explanations/offer-maker/#executing-offers) that executes when the offer is taken. Whenever it is matched by a [taker order](../explanations/offer-taker.md#taking-offers), the offer sources its liquidity on an Externally Owned Account (EOA).
 {% endhint %}
 
 {% hint style="warning" %}

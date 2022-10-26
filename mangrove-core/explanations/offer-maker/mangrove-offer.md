@@ -2,11 +2,11 @@
 
 Mangrove has a standard implementation of IOfferLogic called MangroveOffer. This implementation is an abstract contract, that reposts the residual of the offer, if the offer was not fully taken. This is done using the hooks exposed by MangroveOffer. These hooks are separated into 3 categories. The first hooks are called doing `makerExecute`. This means that you will be able to hook into the flow of how and if Mangrove is transferring the funds from the MangroveOffer contract to the **reserve** and from the **reserve** to the MangroveOffer contract.
 
-The **reserve** is where the outbound tokens will be fetched, and where the inbound tokens will be deposited. A reserve is associated to each offer maker. By default the reserve of an offer maker is the offer maker's address. Advanced routers may use complex protocols, such as AAVE, as reserve. It is possible to change the default reserve of an offer maker. It is possible to change the reserve for a offer maker, but to do so, the hook `checkReserveApproval` has to be implemented. See[Direct](Direct.md) or [Forwarder](Forwarder.md).
+The **reserve** is where the outbound tokens will be fetched, and where the inbound tokens will be deposited. A reserve is associated to each offer maker. By default the reserve of an offer maker is the offer maker's address. Advanced routers may use complex protocols, such as AAVE, as reserve. It is possible to change the default reserve of an offer maker. It is possible to change the reserve for a offer maker, but to do so, the hook `checkReserveApproval` has to be implemented. See[Direct](direct.md) or [Forwarder](forwarder.md).
 
 When an offer is taken, Mangrove transfers the funds from the taker to Mangrove and from Mangrove to the contract that posted the offer. It is not possible to hook in before or in between these 2 transfers. When these 2 transfers are done, MangroveOffer, has 3 hooks. **lastlook**, **put** and **get**. They are called in this order.
 
-**Lastlook** is meant for having a lastlook before the funds are transferred to the taker. It then returns a value that `makerPosthook` can use, to get information of how e.g. the markets looked, when `makerExecute` was executed. This can be useful since, `makerPosthook` may be call several orders later. See [Executing offers](../../offer-maker/executing-offers.md) for more information.
+**Lastlook** is meant for having a lastlook before the funds are transferred to the taker. It then returns a value that `makerPosthook` can use, to get information of how e.g. the markets looked, when `makerExecute` was executed. This can be useful since, `makerPosthook` may be call several orders later. See [Executing offers](../../../offer-maker/executing-offers.md) for more information.
 
 **Put** is meant as an option for the maker to transfer the given funds from the contract to e.g. the reserve. This could be useful if you don't want to leave the funds on the contract.
 
@@ -39,6 +39,6 @@ Besides the MangroveOffer contract giving approvals, the offer makers reserve ne
 
 A **Router** is a contract that can handle more comprehensive transfers. E.g. if you want to lend the money, when the offer is taken, then a router would be able to handle this. A more comprehensive description of Routers can be found here LINK.
 
-Mangrove has 2 default implementations of MangroveOffer, they can be found here, [Direct](Direct.md) and [Forwarder](Forwarder.md).
+Mangrove has 2 default implementations of MangroveOffer, they can be found here, [Direct](direct.md) and [Forwarder](forwarder.md).
 
-![Flow of taking a offer made by MangroveOffer](../../.gitbook/assets/MangroveOffer.png)
+![Flow of taking a offer made by MangroveOffer](../../../.gitbook/assets/MangroveOffer.png)

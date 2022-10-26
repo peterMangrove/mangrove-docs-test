@@ -1,6 +1,6 @@
 # Forwarder
 
-Forwarder is an abstract implementation of [MangroveOffer](mangrove-offer.md), if you don't have a good understanding of MangroveOffer we recommend reading that page first. This page is going to compare the [Direct](Direct.md) implementation of MangroveOffer with Forwarder, we recommend reading about [Direct](Direct.md) before reading this page.
+Forwarder is an abstract implementation of [MangroveOffer](mangrove-offer.md), if you don't have a good understanding of MangroveOffer we recommend reading that page first. This page is going to compare the [Direct](direct.md) implementation of MangroveOffer with Forwarder, we recommend reading about [Direct](direct.md) before reading this page.
 
 Forwarder should be seen as an implementation the can be used by multiple offer makers. This means that anyone can manage offers using the contract. Because of this, Forwarder needs to keep track of who owns which offer and what the reserve is for the caller. This is the key difference between Direct and Forwarder.
 
@@ -20,4 +20,4 @@ Where MangroveOffer has not implementation of posting a new offer, updating offe
 
 When posting a new offer, one would usually also fund Mangrove, so that it has enough funds to cover gas and possible bounty. But since it is the Forwarder contract, that is actually doing the posting of the offers and just keeping track of who owns what internally. Then funding Mangrove directly cannot be done, because Mangrove only knows that the Forwarder contract posted the offer, but has no information about who the Forwarder posted on behalf of. Because of this when posting a new offer using Forwarder, it does not require a gasprice, but uses the amount to be funded combined with the gas requirement, to calculate a gas price, that uses all of the funds. This way the offer has enough information, that when an offer is retracted or updated, it can calculated how much provision is left on the offer.
 
-![Flow of taking a offer made by Forwarder](../../.gitbook/assets/Forwarder.png)
+![Flow of taking a offer made by Forwarder](../../../.gitbook/assets/Forwarder.png)
