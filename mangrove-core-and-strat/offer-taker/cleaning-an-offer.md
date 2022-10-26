@@ -6,7 +6,7 @@ description: Getting paid to clean Mangrove offer lists.
 
 ## Cleaning an offer
 
-Offers on Mangrove may fail. This may be done [on purpose](../explanations/taker-compensation.md), or be the result of unexpected conditions. Either way, callers are remunerated for their action by receiving a portion of the [bounty](../../offer-maker/offer-provision.md) attached to the failing offer.
+Offers on Mangrove may fail. This may be done [on purpose](../offer-making-strategies/taker-compensation.md), or be the result of unexpected conditions. Either way, callers are remunerated for their action by receiving a portion of the [bounty](../../offer-maker/offer-provision.md) attached to the failing offer.
 
 ## Cleaning bots
 

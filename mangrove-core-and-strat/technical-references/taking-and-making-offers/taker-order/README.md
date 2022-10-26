@@ -254,7 +254,7 @@ Mangrove's market orders are configurable using the three parameters `takerWants
 * **Market buy:** You can run a 'classic' market **buy** order by setting `takerWants` to the amount you want to buy, `takerGives` to `type(uint160).max`, and `fillWants` to `true`.
 * **Market sell:** You can run a 'classic' market **sell** order by setting `takerWants` to `type(uint160).max`, `takerGives` to the amount you want to sell, and `fillWants` to `false`.
 * **Limit order**: You can run limit orders by setting `takerGives` and `takerWants` such that `takerGives`/`takerWants` is the volume-weighted price you are willing to pay and `fillWants` to `true` if you want to act as a buyer of _outbound_ token or to `false` if you want to act as a seller if _inbound_ token.
-* [More advanced market orders ](../../../explanations/around-the-mangrove/mangroves-ecosystem/advanced-orders.md)can be called using a \`MangroveOrder\`, a[ deployed ](../../contract-addresses.md#mangroveorder)periphery contract to Mangrove.
+* [More advanced market orders ](../../../explanations/around-the-mangrove/mangroves-ecosystem/advanced-orders.md)can be called using a \`MangroveOrder\`, a[ deployed ](../../../contract-addresses.md#mangroveorder)periphery contract to Mangrove.
 
 {% hint style="warning" %}
 **On order residuals**

@@ -38,7 +38,6 @@
 0x7Ae7a1502084bB10DCb5fFfE7835D84c76aA65d7
 ```
 
-
 ### ERC20 addresses
 
 * DAI: `0x9A753f0F7886C9fbF63cF59D0D4423C5eFaCE95B`
@@ -81,4 +80,3 @@
 * MgvReader: `0xc00d2da52195b123d3c994aaf2eb1e8da8999d4f`
 * MgvCleaner: `none`
 * MgvOracle: `none`
-

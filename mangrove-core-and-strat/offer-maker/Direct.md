@@ -14,4 +14,4 @@ Direct does many of the same things as MangroveOffer with a few key differences.
 
 MangroveOffer has no implementations of how to post a new offer, update an offer or retract an offer. Direct offers default implementations for this. Posting a new offer and updating an offer, is very simply done by forwarding the call to Mangroves own methods for post a new offer and updating an offer. Retracting a offer using Direct, will also forward the call to Mangroves own retract offer method. But since the Direct contract is the actual address that posts the offers on Mangrove, then if one chooses to deprovision the offer, all provisions will be return to the Direct contract. The Direct contract therefore implements an option to transfer the provision back to the admin of the contract.
 
-![Flow of taking a offer made by Direct](../../../.gitbook/assets/Direct.png)
+![Flow of taking a offer made by Direct](../../.gitbook/assets/Direct.png)
