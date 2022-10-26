@@ -143,7 +143,7 @@ Make sure that your offer is [well-provisioned](offer-provision.md#checking-an-a
 **Offer execution**
 
 * If the offer account is a contract, it should implement the [IMaker](maker-contract.md) interface. At the very least, it must have a function with signature [`makerExecute(MgvLib.SingleOrder calldata order)`](maker-contract.md#offer-execution) or it will systematically revert when called by Mangrove.
-* `gives` and `gasreq` are subject to [density](broken-reference) constraints on the amount of _outbound_ token provided per gas spent. TODO: link to utility function to get max gas for a `gives` and min gives for a `gas`.
+* `gives` and `gasreq` are subject to [density](../../governance-parameters/local-variables.md#density) constraints on the amount of _outbound_ token provided per gas spent.
 * The offer account will need to give Mangrove a high enough allowance in _outbound_ tokens since Mangrove will use the ERC20 standard's `transferFrom` function to source your tokens.
 {% endhint %}
 

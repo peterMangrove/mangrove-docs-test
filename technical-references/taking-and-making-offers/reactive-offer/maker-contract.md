@@ -6,7 +6,7 @@ description: How to write offer execution logic
 
 ### Offer Logic
 
-The logic associated with an offer MUST be implemented through a `makerExecute` callback function. (See [data structures](offer-data-structures.md#mgvlib.singleorder) for `SingleOrder` type).
+The logic associated with an offer **must** be implemented through a `makerExecute` callback function. (See [data structures](offer-data-structures.md#mgvlib.singleorder) for `SingleOrder` type).
 
 {% tabs %}
 {% tab title="Signature" %}
@@ -61,17 +61,17 @@ contract MyOffer is IMaker {
 {% hint style="danger" %}
 **Security concerns**
 
-Your contract must ensure that only Mangrove can call `makerExecute` to avoid unwanted state change.&#x20;
+Your contract should ensure that only Mangrove can call `makerExecute` to avoid unwanted state change.&#x20;
 {% endhint %}
 
 {% hint style="success" %}
 **How to succeed**
 
-To successfully execute, the logic should not revert during the call to `makerExecute` and have at least `wants` _outbound_ tokens available for Mangrove to transfer by the end of the function's execution.
+To successfully execute, the logic **must** not revert during the call to `makerExecute` and have at least `wants` _outbound_ tokens available for Mangrove to transfer by the end of the function's execution.
 
 **How to renege on trade**
 
-The proper way to renege on an offer is to make the execution of `makerExecute` throw with a reason that can be cast to a `bytes32`. Having a balance of _outbound_ tokens that is lower than `order.wants` will also make trade fail, but with a higher bounty to the taker.
+The proper way to renege on an offer is to make the execution of `makerExecute` throw with a reason that can be cast to a `bytes32`. Having a balance of _outbound_ tokens that is lower than `order.wants` will also make trade fail, but with a higher incurred gas cost and thus a higher [bounty](offer-provision.md#provision-and-offer-bounty).
 {% endhint %}
 
 {% hint style="warning" %}
@@ -81,9 +81,9 @@ The [bounty](offer-provision.md#computing-the-provision-and-offer-bounty) taken 
 {% endhint %}
 
 {% hint style="danger" %}
-**Don't call Mangrove during `makerExecute`**
+**Mangrove is guarded against reentrancy during `makerExecute`**
 
-The offer list for the _outbound_ / _inbound_ token pair is temporarily locked during calls to `makerExecute`. Its offers cannot be modified in any way. The offer logic must use `makerPosthook` to repost/update your offers, since the offer list will unlocked by then.
+The offer list for the _outbound_ / _inbound_ token pair is temporarily locked during calls to `makerExecute`. Its offers cannot be modified in any way. The offer logic must use `makerPosthook` to repost/update its offers, since the offer list will unlocked by then.
 {% endhint %}
 
 ### Offer post-hook
@@ -152,21 +152,21 @@ None.
 {% hint style="danger" %}
 **Security concerns**
 
-Your contract must ensure that unauthorized callers cannot run `makerPosthook`. The simplest way is to have a constant `address mgv` and add `require(msg.sender == mgv,"unauthorized")` at the top of your `makerPosthook`.
+Your contract should ensure that only Mangrove can call `makerPosthook` to avoid unwanted state change.
 {% endhint %}
 
-{% hint style="info" %}
+{% hint style="warning" %}
 **Gas management**
 
-Posthooks are given the executed offer's `gasreq` minus the gas used by `makerExecute`. Keep that in mind when posting a new offer and setting its `gasreq`.
+`MakerPosthook` is given the executed offer's `gasreq` minus the gas used by `makerExecute`.&#x20;
 
 **Updating offers during posthook**
 
-During the execution of a posthook, the executed offer's list is unlocked. This feature can be used to repost an [offer](./) (even the one that was just executed), possibly at a different price (see the **Offer logic** in the above code snippet).
+During the execution of a posthook, the executed offer's list is unlocked. This feature can be used to repost an [offer](./) (even the one that was just executed), possibly at a different price.
 {% endhint %}
 
-{% hint style="success" %}
-**Reverting in posthooks**
+{% hint style="warning" %}
+**Reverting**
 
-Reverting in a posthook never undoes the offer execution.
+Reverting during `makerPosthook` does not renege on trade, which is settled at the end of `makerExecute`.
 {% endhint %}

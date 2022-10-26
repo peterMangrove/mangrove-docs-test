@@ -9,7 +9,7 @@ description: How taker compensation for failing offers works.
 When an offer fails, the caller has wasted some gas. To compensate the caller, Mangrove gives them a _bounty_ in native tokens. Offers must provision enough ethers to maximize the chances that Mangrove can compensate the caller. In more details:
 
 * Every offer logic that posted an offer has a balance in ethers held by Mangrove. Funds can be freely added to or withdrawn from the balance.
-* Whenever the logic creates or updates an offer, its balance is adjusted so that enough ethers are locked as the offer's provision.
+* Whenever the logic creates or updates an offer, its balance is adjusted so that enough native tokens are locked as the offer's provision.
   * If the offer is retracted that provision is credited back to the logic's account balance.
   * If the offer is executed and fails, part or all of the provision is sent as compensation, to the caller. We call that the bounty. The rest of the provision is credited back to the offer logic's account balance.
 
@@ -17,7 +17,7 @@ When an offer fails, the caller has wasted some gas. To compensate the caller, M
 
 ### Funding an offer
 
-There are three ways an offer logic can credit its balance on Mangrove. The logic may either call the `fund` function, or call the fallback function with some value (see below), or pay on the fly when a [new offer is posted](./#posting-a-new-offer).&#x20;
+There are three ways an offer logic can credit its balance on Mangrove. (1) The logic may either call the `fund` function, or (2) make a call to the fallback function with some value, or (3) pay on the fly when a [new offer is posted](./#posting-a-new-offer).&#x20;
 
 {% tabs %}
 {% tab title="Signature" %}
@@ -183,7 +183,7 @@ Provisions are calculated so that, within reasonable gas estimates, taking a fai
 If you frequently update your offers, we recommend using a consistent, high `gasprice` argument, above the actual expected gas prices. Not changing `gasprice` when you call `updateOffer` will make the call cheaper (you save one `SSTORE`).
 {% endhint %}
 
-## Computing the provision and offer bounty
+## Provision and offer bounty
 
 {% tabs %}
 {% tab title="Solidity snippet" %}
