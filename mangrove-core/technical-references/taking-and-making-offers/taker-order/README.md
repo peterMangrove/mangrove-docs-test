@@ -254,7 +254,7 @@ Mangrove's market orders are configurable using the three parameters `takerWants
 * **Market buy:** You can run a 'classic' market **buy** order by setting `takerWants` to the amount you want to buy, `takerGives` to `type(uint160).max`, and `fillWants` to `true`.
 * **Market sell:** You can run a 'classic' market **sell** order by setting `takerWants` to `type(uint160).max`, `takerGives` to the amount you want to sell, and `fillWants` to `false`.
 * **Limit order**: You can run limit orders by setting `takerGives` and `takerWants` such that `takerGives`/`takerWants` is the volume-weighted price you are willing to pay and `fillWants` to `true` if you want to act as a buyer of _outbound_ token or to `false` if you want to act as a seller if _inbound_ token.
-* [More advanced market orders ](../../../explanations/around-the-mangrove/mangroves-ecosystem/advanced-orders.md)can be called using a \`MangroveOrder\`, a[ deployed ](../../../contract-addresses.md#mangroveorder)periphery contract to Mangrove.
+* [More advanced market orders ](../../../explanations/around-the-mangrove/mangroves-ecosystem/advanced-orders.md)can be called using a \`MangroveOrder\`, a[ deployed ](../../contract-addresses.md#mangroveorder)periphery contract to Mangrove.
 
 {% hint style="warning" %}
 **On order residuals**
@@ -487,7 +487,7 @@ await Mangrove.connect(signer).snipes(
   * `takerWants` the amount of outbound tokens the taker wants from that [offer](../reactive-offer/). **Must fit in a `uint96`.**
   * `takerGives` the amount of inbound tokens the taker is willing to give to that [offer](../reactive-offer/). **Must fit in a `uint96`.**
   * `gasreq_permitted` is the maximum `gasreq` the taker will tolerate for that [offer](../reactive-offer/). If the offer's `gasreq` is higher than `gasreq_permitted`, the offer will not be sniped.
-* `fillWants` specifies whether you are acting as a buyer of **outbound tokens**, in which case you will buy at most `takerWants`, or a seller of **inbound tokens**, in which case you will buy as many tokens as possible as long as you don't spend more than `takerGives`. See more extensive discussion of `fillWants` in the [market order section](../../../offer-taker/offer-taker/taker-order/#input).
+* `fillWants` specifies whether you are acting as a buyer of **outbound tokens**, in which case you will buy at most `takerWants`, or a seller of **inbound tokens**, in which case you will buy as many tokens as possible as long as you don't spend more than `takerGives`. See more extensive discussion of `fillWants` in the [market order section](../../../../offer-taker/offer-taker/taker-order/#input).
 
 {% hint style="warning" %}
 **Protection against malicious offer updates**
