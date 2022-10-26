@@ -23,7 +23,7 @@ Here's a sample DAI-wETH offer list with two offers. Only the main characteristi
 {% hint style="warning" %}
 **Decimals**
 
-We display human-readable values here, but Mangrove stores raw token values and never uses the `decimals` field of a token.
+We display human-readable values in the examples, but Mangrove stores raw token values and never uses the `decimals` field of a token.
 {% endhint %}
 
 | Rank | Offer ID | Wants (wETH) | Gives (DAI) | Gas required | Maker Contract | Offer Gas Price |

@@ -58,7 +58,7 @@ const best = await mgv.best(outboundTkn, inboundTkn);
 ### `offers(address, address) / offerDetails(address, address, uint)`
 
 {% hint style="info" %}
-The data pertaining to a particular offer is stored in the `OfferUnpacked` and `OfferDetailUnpacked`, which are stored as packed custom types called, respectively, `OfferPacked` and `OfferDetailUnpacked.` For on-chain calls, Mangrove provides unpacking functions to extract a particular field out of a packed structure. For off-chain calls, Mangrove also provide a getter for the unpacked structures.&#x20;
+The data pertaining to a particular offer is contained in the `OfferUnpacked` and `OfferDetailUnpacked` structs, which are stored as packed custom types called, respectively, `OfferPacked` and `OfferDetailUnpacked.` For on-chain calls, Mangrove provides unpacking functions to extract a particular field out of a packed structure. For off-chain calls, Mangrove also provide direct getter for the unpacked structures.&#x20;
 {% endhint %}
 
 {% tabs %}
@@ -74,11 +74,11 @@ address outTkn;
 address inbTkn;
 uint offerId; // the id of the offer one wishes to get the data of
 
-// if one wishes to read *the whole* offer data (gas costly!):
+// if one wishes to get the totally unpacked data (gas costly!):
 (MgvStructs.OfferUnpacked memory offer, MgvStructs.OfferDetailUnpacked memory offerDetail) = Mangrove(MGV)
 .offerInfo(outTkn,inbTkn,offerId);
 
-// if one wishes to access a few particular fields, say wants, gives and gasreq parameters of the offer: 
+// if one wishes to access a few particular fields, say `wants`, `gives` and `gasreq` parameters of the offer: 
 // 1. getting packed (outTkn, inbTkn) Offer List data
 MgvStructs.OfferPacked memory offer32 = Mangrove(MGV)
 .offers(outTkn, inbTkn, offerId);
