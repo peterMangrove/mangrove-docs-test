@@ -12,16 +12,16 @@ ERC20 tokens transfers are initiated by Mangrove using `transferFrom`. If Mangro
 
 ### Active offer lists
 
-Every Mangrove[ offer list ](broken-reference)can be either [active or inactive](broken-reference), and Mangrove itself can be either [alive or dead](broken-reference). Taking offers is only possible when Mangrove is alive on offer lists that are active.
+Every Mangrove[ offer list ](../market.md#general-structure)can be either [active or inactive](../../governance-parameters/local-variables.md#de-activating-an-offer-list), and Mangrove itself can be either [alive or dead](../../governance-parameters/global-variables.md#other-governance-controlled-setters). Taking offers is only possible when Mangrove is alive on offer lists that are active.
 
 ## Market order
 
-A **Market Order** is Mangrove's main liquidity sourcing entrypoint. It is called on a given [offer list](broken-reference) with its associated _outbound_ token (tokens that flow out of Mangrove) and _inbound_ token (tokens that flow into Mangrove). The liquidity taker specifies how many _outbound_ tokens she _wants_ and how many _inbound_ tokens she _gives_.
+A **Market Order** is Mangrove's main liquidity sourcing entrypoint. It is called on a given [offer list](../market.md#general-structure) with its associated _outbound_ token (tokens that flow out of Mangrove) and _inbound_ token (tokens that flow into Mangrove). The liquidity taker specifies how many _outbound_ tokens she _wants_ and how many _inbound_ tokens she _gives_.
 
-When an order is processed by Mangrove's matching engine, it consumes the offers on the selected [offer list](broken-reference), starting from the [best](broken-reference) one. Execution works as follows, where at any point the taker's price is `takerGives` _/_ `takerWants`_._
+When an order is processed by Mangrove's matching engine, it consumes the offers on the selected [offer list](../market.md), starting from the [best](../market.md#offer-rank) one. Execution works as follows, where at any point the taker's price is `takerGives` _/_ `takerWants`_._
 
-1. Mangrove checks that the current offer's [price](broken-reference) is at least as good as the taker's price. Otherwise execution stops there.
-2. Mangrove sends _inbound_ tokens to the current offer's associated [account](../reactive-offer/maker-contract.md).
+1. Mangrove checks that the current offer's entailed [price](../market.md#some-terminology) is at least as good as the taker's price. Otherwise execution stops there.
+2. Mangrove sends _inbound_ tokens to the current offer's associated [logic](../reactive-offer/maker-contract.md).
 3. Mangrove then executes the offer logic.
 4. If the call is successful, Mangrove sends _outbound_ tokens to the taker. If the call or the transfer fail, Mangrove reverts the effects of steps 2. and 3.
 5. The taker's _wants_ and _gives_ are reduced.
@@ -196,7 +196,6 @@ const tx = await Mangrove.connect(signer).marketOrder(
     true
     );
 await tx.wait();
-
 ```
 {% endcode %}
 {% endtab %}
@@ -215,10 +214,10 @@ await tx.wait();
 
 ### Outputs
 
-* `takerGot` is the net amount of _outbound_ tokens the taker has received after applying the [taker fee](broken-reference).
+* `takerGot` is the net amount of _outbound_ tokens the taker has received after applying the [taker fee](broken-reference/).
 * `takerGave` is the amount of _inbound_ tokens the taker has sent.
 * `bounty` the amount of native tokens (in units of wei) the taker received in compensation for cleaning failing offers
-* fee the amount of `outbound_tkn` that was sent to Mangrove's vault in payment of the potential [fee](broken-reference) associated to the `(outbound_tkn, inbound_tkn)`[offer list](../market.md#general-structure).
+* fee the amount of `outbound_tkn` that was sent to Mangrove's vault in payment of the potential [fee](broken-reference/) associated to the `(outbound_tkn, inbound_tkn)`[offer list](../market.md#general-structure).
 
 {% hint style="success" %}
 **Specification**
@@ -278,7 +277,7 @@ In Mangrove, a "market order" with the same parameters will however consume offe
 
 ## Offer sniping
 
-It is also possible to target specific offer IDs in the [offer list](broken-reference). This is called **Offer Sniping**.
+It is also possible to target specific offer IDs in the [offer list](broken-reference/). This is called **Offer Sniping**.
 
 {% hint style="info" %}
 Offer sniping can be used by off-chain bots and price aggregators to build their own optimized market order, targeting for instance offers with a higher volume or less gas requirements in order to optimize the gas cost of filling the order.
@@ -505,7 +504,7 @@ If you only want to take offers without any checks on the offer contents, you ca
 ### Outputs
 
 * `successes` is the number of successfully sniped offers.
-* `takerGot` is the [total](broken-reference) amount of _outbound_ tokens that were collected by the order.
+* `takerGot` is the [total](broken-reference/) amount of _outbound_ tokens that were collected by the order.
 * `takerGave` is the total amount of _inbound_ tokens spent by the taker during the snipe.
 
 #### Example

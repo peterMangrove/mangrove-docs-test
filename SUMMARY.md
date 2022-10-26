@@ -38,10 +38,10 @@
         * [👾 Cleaner](mangrove-core/explanations/around-the-mangrove/mangroves-ecosystem/cleaner.md)
       * [Mangrove API](mangrove-core/explanations/around-the-mangrove/mangrove-api.md)
 * [Mangrove.js](mangrove-js/README.md)
-  * [mangrove.js documentation](mangrove-js/README.md)
+  *
   * [API classes overview](mangrove-js/api-classes-overview.md)
   * [Sell and buy orders](mangrove-js/sell-and-buy-orders.md)
   * [Posting bids and asks](mangrove-js/posting-bids-and-asks.md)
-  * Technical references
+  * [Technical references](mangrove-js/technical-references/README.md)
     * [Mangrove.js API reference](mangrove-js/technical-references/api.md)
     * [Bots](mangrove-js/technical-references/bots.md)
