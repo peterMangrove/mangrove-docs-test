@@ -6,10 +6,10 @@ description: How to write Mangrovian offers
 
 ### Posting a new offer
 
-New offers should mostly be posted by [contracts](maker-contract.md) able to source liquidity when asked to by Mangrove (although it [is possible](../../../how-to-guides/basic-offer.md) to post new offers from an EOA).
+New offers should mostly be posted by [contracts](maker-contract.md) able to source liquidity when asked by Mangrove.&#x20;
 
 {% hint style="info" %}
-`newOffer` is payable and can be used to credit the Offer Logic's balance on Mangrove on the fly. A non zero `msg.value` will allow Mangrove to credit Offer Logic's balance prior to locking the [provision](offer-provision.md) of the newly posted offer.&#x20;
+`newOffer` is payable and can be used to credit the Offer Logic's balance on Mangrove on the fly. A non zero `msg.value` will allow Mangrove to credit Offer Logic's balance prior to locking the [provision](offer-provision.md) of the newly posted offer.
 {% endhint %}
 
 {% tabs %}
@@ -101,8 +101,7 @@ uint gasreq = 30_000; // assuming this logic requires 30K units of gas to execut
 uint provision = (gasreq + gasbase) * gasprice; // minimal provision in wei
 
 // calling mangrove with `pivotId` for initial positioning.
-// sending `provision` amount of native tokens to 
-cover for the bounty of the offer
+// sending `provision` amount of native tokens to cover for the bounty of the offer
 IMangrove(MGV).newOffer{value: provision}(
         outTkn, // reposting on the same market
         inbTkn, 
@@ -115,6 +114,63 @@ IMangrove(MGV).newOffer{value: provision}(
 ```
 {% endcode %}
 {% endtab %}
+
+{% tab title="ethers.js" %}
+```typescript
+const {ethers} = require("ethers");
+// context 
+// outTkn_address: address of outbound token ERC20
+// inbTkn_address: address of inbound token ERC20
+// ERC20_abi: ERC20 abi
+// MGV_address: address of Mangrove
+// MGV_abi: Mangrove contract's abi
+// signer: ethers.js transaction signer 
+
+// loading ether.js contracts
+const Mangrove = new ethers.Contract(
+    MGV_address, 
+    MGV_abi, 
+    ethers.provider
+    );
+
+const InboundTkn = new ethers.Contract(
+    inbTkn_address, 
+    ERC20_abi, 
+    ethers.provider
+    );
+    
+const OutboundTkn = new ethers.Contract(
+    outTkn_address, 
+    ERC20_abi, 
+    ethers.provider
+    );
+    
+// if Mangrove is not approved yet for outbound token transfer.
+await OutboundTkn.connect(signer).approve(MGV_address, ethers.constant.MaxUint256);
+
+const outDecimals = await OutboundTkn.decimals();
+const inbDecimals = await InboundTkn.decimals();
+
+// putting takerGives/Wants in the correct format
+const gives:ethers.BigNumber = ethers.parseUnits("8.0", outDecimals);
+const wants:ethers.BigNumber = ethers.parseUnits("5.0", inbDecimals);
+
+const {global, local} = await Mangrove.configInfo(outTkn_address,inbTkn_address);
+// Market order at a limit average price of 8 outbound tokens given for 5 inbound tokens received
+tx = await Mangrove.connect(signer).newOffer(
+    outTkn_address,
+    inbTkn_address,
+    wants,
+    gives,
+    0, // offer with no logic do not require additional gas to execute
+    global.gasprice, // using mangrove's gasprice
+    0,  // using best offer as pivot
+    {value: (local.offer_gasbase.mul(global.gasprice).mul(10**9))} // putting funds on Mangrove to cover for offer bounty
+    );
+await tx.wait();
+
+```
+{% endtab %}
 {% endtabs %}
 
 **Inputs**
@@ -122,9 +178,9 @@ IMangrove(MGV).newOffer{value: provision}(
 * `outbound_tkn` address of the outbound token (that the offer will provide).
 * `inbound_tkn` address of the inbound token (that the offer will receive).
 * `wants` amount of inbound tokens requested by the offer. **Must** fit in a `uint96`.
-* `gives` amount of outbound **** tokens promised by the offer. **Must** fit in a `uint96` and be strictly positive. **Must** provide enough volume w.r.t to `gasreq` and offer list's [density](broken-reference) parameter.
-* `gasreq` amount of gas that will be given to the offer's [account](maker-contract.md). **Must** fit in a `uint24` and be lower than [gasmax](broken-reference). Should be sufficient to cover all calls to the offer logic posting the offer ([`makerExecute`](maker-contract.md#offer-execution) and [`makerPosthook`](maker-contract.md#offer-post-hook)). **Must** be compatible with the offered volume `gives` and the offer list's [density](broken-reference) parameter.
-* `gasprice` gas price override used to compute the order provision (see [offer bounties](../../../../offer-maker/offer-provision.md)). Any value lower than Mangrove's current [gasprice](broken-reference) will be ignored (thus 0 means "use Mangrove's current [gasprice](broken-reference)"). **Must** fit in a `uint16`.
+* `gives` amount of outbound \*\*\*\* tokens promised by the offer. **Must** fit in a `uint96` and be strictly positive. **Must** provide enough volume w.r.t to `gasreq` and offer list's [density](broken-reference/) parameter.
+* `gasreq` amount of gas that will be given to the offer's [account](maker-contract.md). **Must** fit in a `uint24` and be lower than [gasmax](broken-reference/). Should be sufficient to cover all calls to the offer logic posting the offer ([`makerExecute`](maker-contract.md#offer-execution) and [`makerPosthook`](maker-contract.md#offer-post-hook)). **Must** be compatible with the offered volume `gives` and the offer list's [density](broken-reference/) parameter.
+* `gasprice` gas price override used to compute the order provision (see [offer bounties](../../../../offer-maker/offer-provision.md)). Any value lower than Mangrove's current [gasprice](broken-reference/) will be ignored (thus 0 means "use Mangrove's current [gasprice](broken-reference/)"). **Must** fit in a `uint16`.
 * `pivotId` where to start the insertion process in the offer list. If `pivotId` is not in the offer list at the time the transaction is processed, the new offer will be inserted starting from the offer list's [best](./#getting-current-best-offer-of-a-market) offer. Should be the id of the existing live offer with the price closest to the price of the offer being posted.
 
 **Outputs**

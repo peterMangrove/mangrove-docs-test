@@ -151,12 +151,12 @@ IERC20(inbTkn).approve(MGV, type(uint).max);
 ```javascript
 const { ethers } = require("ethers");
 // context
-let outTkn; // address of outbound token ERC20
-let inbTkn; // address of inbound token ERC20
-let ERC20_abi; // ERC20 abi
-let MGV_address; // address of Mangrove
-let MGV_abi; // Mangrove contract's abi
-let signer; // ethers.js transaction signer 
+// outTkn: address of outbound token ERC20
+// inbTkn: address of inbound token ERC20
+// ERC20_abi: ERC20 abi
+// MGV_address: address of Mangrove
+// MGV_abi: Mangrove contract's abi
+// signer: ethers.js transaction signer 
 
 // loading ether.js contracts
 const Mangrove = new ethers.Contract(
@@ -386,7 +386,7 @@ uint offer2; // second offer one wishes to snipe
 IERC20(inbTkn).approve(MGV, type(uint).max);
 
 // sniping the offers to check whether they fail
-(uint successes, /*uint takerGot*/, /*uint takerGave*/, uint bounty, /*uint fee*/) = Mangrove(MGV).snipes(
+(uint successes, uint takerGot, uint takerGave, uint bounty, uint fee) = Mangrove(MGV).snipes(
     outTkn,
     inbTkn,
     [
@@ -395,11 +395,7 @@ IERC20(inbTkn).approve(MGV, type(uint).max);
     ],
     true // fillwants
 );
-// checking that none of the sniped offers resulted in a successful trade.
-require(success == 0, "at least one offer succeeded");
-// transfering bounty to `msg.sender`
-(noRevert,) = msg.sender.call{value: bounty}("");
-require(noRevert, "failed to send to caller");
+//we have: `successes < 2 <=> bounty > 0`
 ```
 {% endcode %}
 {% endtab %}
@@ -488,7 +484,7 @@ await Mangrove.connect(signer).snipes(
   * `takerWants` the amount of outbound tokens the taker wants from that [offer](../reactive-offer/). **Must fit in a `uint96`.**
   * `takerGives` the amount of inbound tokens the taker is willing to give to that [offer](../reactive-offer/). **Must fit in a `uint96`.**
   * `gasreq_permitted` is the maximum `gasreq` the taker will tolerate for that [offer](../reactive-offer/). If the offer's `gasreq` is higher than `gasreq_permitted`, the offer will not be sniped.
-* `fillWants` specifies whether you are acting as a buyer of **outbound tokens**, in which case you will buy at most `takerWants`, or a seller of **inbound tokens**, in which case you will buy as many tokens as possible as long as you don't spend more than `takerGives`. See more extensive discussion of `fillWants` in the [market order section](../../../../offer-taker/offer-taker/taker-order/#input).
+* `fillWants` specifies whether you are acting as a buyer of **outbound tokens**, in which case you will buy at most `takerWants`, or a seller of **inbound tokens**, in which case you will buy as many tokens as possible as long as you don't spend more than `takerGives`.&#x20;
 
 {% hint style="warning" %}
 **Protection against malicious offer updates**
