@@ -279,23 +279,20 @@ import "src/IMangrove.sol";
 import {MgvStructs} form "src/MgvLib.sol";
 
 // context of the call
-// address MGV: address of Mangrove's deployment 
-// address outTkn: address of market's base token
-// address inbTkn: address of market's quote token
-// address admin: admin address of this contract
-// uint gasreq:  gas required to execute the offer
+// MGV: address of Mangrove's deployment 
+// outTkn, inbTkn: addresses of the offer list in which the updated offer is
+// offerId: offer identifier in the (outTkn, inbTkn) offer list
 
 MgvStruct.OfferPacked memory offer32 = IMangrove(MGV).offers(outTkn, inbTkn, offerId);
 MgvStruct.OfferPacked memory offerDetail32 = IMangrove(MGV).offerDetails(outTkn, inbTkn, offerId);
 
-
 IMangrove(MGV).updateOffer(
-   outTkn, // reposting on the same market
+   outTkn, 
    inbTkn, 
    offer32.wants(), // do not update what the offer wants
    offer32.gives() * 0.9, // decrease what offer gives by 10%
-   offerDetail32.gasreq(), // keep offer's current gasprice 
-   offerDetail32.gasprice(), // keep offer gasprice
+   offerDetail32.gasreq(), // keep offer's current gasreq 
+   offerDetail32.gasprice(), // keep offer's current gasprice
    offer32.next(), // heuristic: use next offer as pivot since offerId might be off the book
    offerId // id of the offer to be updated
 );
