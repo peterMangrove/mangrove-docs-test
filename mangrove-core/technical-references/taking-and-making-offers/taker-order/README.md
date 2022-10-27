@@ -296,7 +296,9 @@ function snipes(
     returns (
       uint successes, 
       uint takerGot,
-      uint takerGave
+      uint takerGave,
+      uint bounty,
+      uint fee
     );
 ```
 {% endtab %}
@@ -372,8 +374,8 @@ event OrderComplete(
 {% tab title="Solidity" %}
 {% code title="snipes.sol" %}
 ```solidity
-import "./Mangrove.sol";
-import "./ERC20.sol";
+import "src/IMangrove.sol";
+import {IERC20} from "src/MgvLib.sol";
 
 // context of the call
 address MGV;
@@ -382,22 +384,24 @@ address inbTkn; // address of offer's inbound token
 uint offer1; // first offer one wishes to snipe
 uint offer2; // second offer one wishes to snipe
 
-uint outDecimals = ERC20(outTkn).decimals();
-uint inbDecimals = ERC20(inbTkn).decimals();
-
 // if Mangrove is not approved yet for inbound token transfer.
-ERC20(inbTkn).approve(MGV, type(uint).max);
+IERC20(inbTkn).approve(MGV, type(uint).max);
 
-// a market order of 5 outbound tokens (takerWants) in exchange of 8 input tokens (takerGives)
-(uint successes, uint takerGot, uint takerGave) = Mangrove(MGV).snipes(
+// sniping the offers to check whether they fail
+(uint successes, /*uint takerGot*/, /*uint takerGave*/, uint bounty, /*uint fee*/) = Mangrove(MGV).snipes(
     outTkn,
     inbTkn,
     [
-        [offer1, 1.5*10**outDecimals, 2*10**inbDecimals, 100000], // first snipe
-        [offer2, 1.5*10**outDecimals, 2.2*10**inbDecimals, 50000] // second snipe
+        [offer1, 1 ether, 1 ether, 100000], // first snipe (price of 1 / 1 )
+        [offer2, 1.5 ether, 1 ether, 50000] // second snipe (price of 1.5 / 1)
     ],
     true // fillwants
 );
+// checking that none of the sniped offers resulted in a successful trade.
+require(success == 0, "at least one offer succeeded");
+// transfering bounty to `msg.sender`
+(noRevert,) = msg.sender.call{value: bounty}("");
+require(noRevert, "failed to send to caller");
 ```
 {% endcode %}
 {% endtab %}
@@ -503,9 +507,8 @@ If you only want to take offers without any checks on the offer contents, you ca
 
 ### Outputs
 
-* `successes` is the number of successfully sniped offers.
-* `takerGot` is the [total](broken-reference/) amount of _outbound_ tokens that were collected by the order.
-* `takerGave` is the total amount of _inbound_ tokens spent by the taker during the snipe.
+* `successes` is the number of sniped offers that transferred the expected volume to the taker (in particular `successes < target.length` if and only if some of the sniped offers reneged on their trade and `bounty > 0`).
+* `takerGot, takerGet, bounty, fee` as in `marketOrder`.
 
 #### Example
 
