@@ -16,11 +16,11 @@ Every Mangrove[ offer list ](../market.md#general-structure)can be either [activ
 
 ## Market order
 
-A **Market Order** is Mangrove's main liquidity sourcing entrypoint. It is called on a given [offer list](../market.md#general-structure) with its associated _outbound_ token (tokens that flow out of Mangrove) and _inbound_ token (tokens that flow into Mangrove). The liquidity taker specifies how many _outbound_ tokens she _wants_ and how many _inbound_ tokens she _gives_.
+A **Market Order** is Mangrove's simplest way of buying or selling assets. Such (taker) orders are run against a specific [offer list](../market.md#general-structure) with its associated _outbound_ token (tokens that flow out of Mangrove) and _inbound_ token (tokens that flow into Mangrove). The liquidity taker specifies how many _outbound_ tokens she [wants](../market.md#wants-gives-and-entailed-price) and how many _inbound_ tokens she [gives](../market.md#wants-gives-and-entailed-price).
 
-When an order is processed by Mangrove's matching engine, it consumes the offers on the selected [offer list](../market.md), starting from the [best](../market.md#offer-rank) one. Execution works as follows, where at any point the taker's price is `takerGives` _/_ `takerWants`_._
+When an order is processed by Mangrove's matching engine, it consumes the offers on the selected [offer list](../market.md), starting from the one which as the best [rank](../market.md#offer-rank). Execution works as follows:
 
-1. Mangrove checks that the current offer's entailed [price](../market.md#some-terminology) is at least as good as the taker's price. Otherwise execution stops there.
+1. Mangrove checks that the current offer's [entailed price](../market.md#wants-gives-and-entailed-price) is at least as good as the taker's price. Otherwise execution stops there.
 2. Mangrove sends _inbound_ tokens to the current offer's associated [logic](../reactive-offer/maker-contract.md).
 3. Mangrove then executes the offer logic.
 4. If the call is successful, Mangrove sends _outbound_ tokens to the taker. If the call or the transfer fail, Mangrove reverts the effects of steps 2. and 3.
@@ -214,10 +214,10 @@ await tx.wait();
 
 ### Outputs
 
-* `takerGot` is the net amount of _outbound_ tokens the taker has received after applying the [taker fee](broken-reference/).
+* `takerGot` is the net amount of _outbound_ tokens the taker has received (i.e after applying the offer list [fee](../../governance-parameters/local-variables.md#taker-fees) if any).
 * `takerGave` is the amount of _inbound_ tokens the taker has sent.
-* `bounty` the amount of native tokens (in units of wei) the taker received in compensation for cleaning failing offers
-* fee the amount of `outbound_tkn` that was sent to Mangrove's vault in payment of the potential [fee](broken-reference/) associated to the `(outbound_tkn, inbound_tkn)`[offer list](../market.md#general-structure).
+* `bounty` is the amount of native tokens (in units of wei) the taker received in compensation for cleaning failing offers
+* `fee` is the amount of `outbound_tkn` that was sent to Mangrove's vault in payment of the potential [fee](broken-reference/) associated to the `(outbound_tkn, inbound_tkn)`[offer list](../market.md#general-structure).&#x20;
 
 {% hint style="success" %}
 **Specification**
@@ -225,7 +225,7 @@ await tx.wait();
 At the end of a Market Order the following is guaranteed to hold:
 
 * The taker will not spend more than `takerGives`.
-* The average price paid `(`takerGot + fee`)/takerGave` will be maximally close to `takerGives/takerWants:`for each offer taken, the amount paid will be $$\leq$$ the expected amount + 1.
+* The average price paid `takerGave/(`takerGot + fee`)` will be maximally close to `takerGives/takerWants:`for each offer taken, the amount paid will be $$\leq$$ the expected amount + 1.
 {% endhint %}
 
 | ID | wants (USDC) | gives (DAI) |
@@ -246,14 +246,12 @@ Consider the DAI-USDC offer list (with no fee) above. If a taker calls `marketOr
   2. 1.2078 DAI for the remaining 1.22 USDC from offer #2
 {% endhint %}
 
-### More on market order behavior
+### More on market order behaviour
 
-Mangrove's market orders are configurable using the three parameters `takerWants`, `takerGives` and `fillWants`.
+Mangrove's market orders are configurable using the three parameters `takerWants`, `takerGives` and `fillWants.` Suppose one wants to buy or sell some token `B` (base), using token `Q` (quote) as payment.
 
-* **Market buy:** You can run a 'classic' market **buy** order by setting `takerWants` to the amount you want to buy, `takerGives` to `type(uint160).max`, and `fillWants` to `true`.
-* **Market sell:** You can run a 'classic' market **sell** order by setting `takerWants` to `type(uint160).max`, `takerGives` to the amount you want to sell, and `fillWants` to `false`.
-* **Limit order**: You can run limit orders by setting `takerGives` and `takerWants` such that `takerGives`/`takerWants` is the volume-weighted price you are willing to pay and `fillWants` to `true` if you want to act as a buyer of _outbound_ token or to `false` if you want to act as a seller if _inbound_ token.
-* [More advanced market orders ](../../../explanations/around-the-mangrove/mangroves-ecosystem/advanced-orders.md)can be called using a \`MangroveOrder\`, a[ deployed ](../../contract-addresses.md#mangroveorder)periphery contract to Mangrove.
+* **Market buy:** A limit **buy** order for x tokens B, corresponds to a `marketOrder` on the (`B`,`Q`) offer list with `takerWants=x` (the volume one wishes to buy) and with `takerGives` such that `takerGives/x` is the limit price cap, and setting `fillWants` to `true`.
+* **Market sell:** A limit **sell** order for x tokens B, corresponds to a `marketOrder` on the (`Q`, `B`) offer list with `takerGives=x` (the volume one wishes to sell) and with `takerWants` such that `takerGives/x` is the limit price cap, and setting `fillWants` to `false`.
 
 {% hint style="warning" %}
 **On order residuals**

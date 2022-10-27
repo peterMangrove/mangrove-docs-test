@@ -55,7 +55,7 @@ Two offers may have the same ID as long as they belong to different offer lists.
 
 ### Wants, gives and entailed price
 
-Taken together, the **wants** and **gives** values define 1) a max volume, 2) a price. The entailed price is p=**wants**/**gives**, and an offer promises delivery of up to **gives** outbound tokens at a price of p tokens delivered per inbound token received.
+Taken together, the **wants** and **gives** values define 1) a max volume, 2) a price. The **entailed price** is p=**wants**/**gives**, and an offer promises delivery of up to **gives** outbound tokens at a price of p tokens delivered per inbound token received.
 
 {% hint style="info" %}
 **Examples**
