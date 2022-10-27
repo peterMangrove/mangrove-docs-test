@@ -275,38 +275,30 @@ event CreditWei(address maker, uint amount);
 {% tab title="Solidity" %}
 {% code title="updateOffer.sol" %}
 ```solidity
-import "./Mangrove.sol";
+import "src/IMangrove.sol";
+import {MgvStructs} form "src/MgvLib.sol";
 
 // context of the call
-address MGV;
-address outTkn; // address of market's base token
-address inbTkn; // address of market's quote token
-address admin; // admin address of this contract
-uint gasreq; // gas required to execute the offer
-...
-...
-// external function to update an offer
-// assuming this contract has enough provision on Mangrove to repost the offer if need be 
-function myUpdateOffer(
-        uint wants, // new wants (raw amount in quote) 
-        uint gives,  // new gives (raw amount in base)
-        uint offerId // id of the the offer to be updated
-) external {
-        require(msg.sender == admin, "Invalid caller");
-        // calling mangrove with offerId as pivot (assuming price update will not change much the position of the offer)
-        Mangrove(MGV).updateOffer(
-                outTkn, // reposting on the same market
-                inbTkn, 
-                wants, // new price 
-                gives, 
-                gasreq, 
-                0, // use mangrove's gasprice oracle  
-                offerId, // heuristic: use offer id as pivot. If offer is off the book, Mangrove will use best offer as pivot
-                offerId // id of the offer to be updated
-        );
-}
-...
-...
+// address MGV: address of Mangrove's deployment 
+// address outTkn: address of market's base token
+// address inbTkn: address of market's quote token
+// address admin: admin address of this contract
+// uint gasreq:  gas required to execute the offer
+
+MgvStruct.OfferPacked memory offer32 = IMangrove(MGV).offers(outTkn, inbTkn, offerId);
+MgvStruct.OfferPacked memory offerDetail32 = IMangrove(MGV).offerDetails(outTkn, inbTkn, offerId);
+
+
+IMangrove(MGV).updateOffer(
+   outTkn, // reposting on the same market
+   inbTkn, 
+   offer32.wants(), // do not update what the offer wants
+   offer32.gives() * 0.9, // decrease what offer gives by 10%
+   offerDetail32.gasreq(), // keep offer's current gasprice 
+   offerDetail32.gasprice(), // keep offer gasprice
+   offer32.next(), // heuristic: use next offer as pivot since offerId might be off the book
+   offerId // id of the offer to be updated
+);
 ```
 {% endcode %}
 {% endtab %}
