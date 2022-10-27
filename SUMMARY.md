@@ -44,4 +44,4 @@
   * [Technical references](mangrove-js/technical-references/README.md)
     * [Mangrove.js API reference](mangrove-js/technical-references/api.md)
     * [Bots](mangrove-js/technical-references/bots.md)
-* [Glossary](generalterminology.md)
+* [Glossary](glossary.md)
