@@ -96,7 +96,7 @@ uint inbDecimals = IERC20(inbTkn).decimals();
 
 uint gasprice = global.gasprice() * 10**9; // Mangrove's gasprice is in gwei units
 uint gasbase = local.offer_gasbase() ; // gas necessary to process a market order
-uint gasreq = 30_000; // assuming this logic requires 30K units of gas to execute
+uint gasreq = 500_000; // assuming this logic requires 30K units of gas to execute
 
 uint provision = (gasreq + gasbase) * gasprice; // minimal provision in wei
 
