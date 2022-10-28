@@ -401,16 +401,14 @@ IERC20(inbTkn).approve(MGV, type(uint).max);
 {% endtab %}
 
 {% tab title="ethers.js" %}
-{% code title="snipes.js" %}
-```javascript
-const { ethers } = require("ethers");
+<pre class="language-javascript" data-title="snipes.js"><code class="lang-javascript">const { ethers } = require("ethers");
 // context
-let outTkn; // address of outbound token ERC20
-let inbTkn; // address of inbound token ERC20
-let ERC20_abi; // ERC20 abi
-let MGV_address; // address of Mangrove
-let MGV_abi; // Mangrove contract's abi
-let signer; // ethers.j . s transaction signer 
+<strong>// outTkn: address of outbound token ERC20
+</strong>// inbTkn: address of inbound token ERC20
+// ERC20_abi: ERC20 abi
+// MGV_address: address of Mangrove
+// MGV_abi: Mangrove contract's abi
+// signer: transaction signer 
 
 // loading ether.js contracts
 const Mangrove = new ethers.Contract(
@@ -442,36 +440,22 @@ const snipe1 = [ // first snipe spec
          offer1, //offer id
          ethers.parseUnits("1.5",outDecimals), //takerWants from offer1
          ethers.parseUnits("2.0",inbDecimals), //takerGives to offer1
-         ethers.utils.parseUnits("1.0",5) // 100,000 gas units to execute
+         100000 // 100,000 gas units to execute
      ];
 const snipe2 = [ // second snipe spec
          offer2, //offer id
          ethers.parseUnits("1.5",outDecimals), //takerWants from offer1
          ethers.parseUnits("2.2",inbDecimals), //takerGives to offer1
-         ethers.utils.parseUnits("1.0",4) // 50,000 gas units to execute
+         50000
      ];
      
-// dry running snipes
-const [successes, takerGot, takerGave] = Mangrove.callstatic.snipes(
-    outTkn,
-    inbTkn,
-    [snipe1, snipe2],
-    true // fillwants
-    );
-
-successes; // = 2 if both snipes were a success
-takerGot; // how much taker received after both snipes;
-takerGave; // how much taker sent after both snipes;
-
-// triggering snipes for real
+// triggering snipes
 await Mangrove.connect(signer).snipes(
     outTkn,
     inbTkn,
     [snipe1, snipe2],
     true // fillwants
-    );
-```
-{% endcode %}
+    );</code></pre>
 {% endtab %}
 {% endtabs %}
 
