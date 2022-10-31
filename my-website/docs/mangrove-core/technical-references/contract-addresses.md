@@ -1,0 +1,87 @@
+---
+sidebar_position: 1
+---
+# Contract addresses
+
+## Polygon Testnet - Mumbai
+
+### Mangrove
+
+```
+0xF3e339d8a0B989114412fa157Cc846ebaf4BCbd8
+```
+
+### MgvReader
+
+```
+0xfAB31d37f8DF5bff07Bb3c16B33416eCd4Aab76F
+```
+
+### MgvCleaner
+
+```
+0xEb05Ace3574B0a6f4696c5CcD09e730d6d5ED3b0
+```
+
+### MgvOracle
+
+```
+0xd38c02425da847584eeDA72387DAAA2E8f3b90c8
+```
+
+### MangroveOrder
+
+```
+0x1fA0d582B8aA298f634cdCDCCcB7972E913b2D8f
+```
+
+### MangroveOrderEnriched
+
+```
+0x7Ae7a1502084bB10DCb5fFfE7835D84c76aA65d7
+```
+
+
+### ERC20 addresses
+
+* DAI: `0x9A753f0F7886C9fbF63cF59D0D4423C5eFaCE95B`
+* USDC: `0x9aa7fEc87CA69695Dd1f879567CcF49F3ba417E2`
+* WETH: `0xd575d4047f8c667e064a4ad433d04e25187f40bb`
+
+### Previous versions
+
+#### v5
+
+* Mangrove: `0xa34b6ADdf822177258Cbd0A9c3a80600C1028Ca8`
+* MgvReader: `0x72c7f3144ccb0D76D2c7B8D4f996F0f7D0511358`
+* MgvCleaner: `0x8d8daA2Ee56712b25f0c616AC374Fe98B84A99Be`
+* MgvOracle: `0xb5Fa732eb1a6BA0E3000E5eda48fc84A0dC55cb9`
+
+#### v4
+
+* Mangrove: `0x6f531931A7EaefB95307CcD93a348e4C27F62DCF`
+* MgvReader: `0x2f9bb88571E9B27e8291B1a9dBD376C755C87d49`
+* MgvCleaner: `0x44deC8A22DAea93D3F2519702954000B459B4F1B`
+* MgvOracle: `0x6735091776a7dEf7058b2ec8Bea721F7cc503f50`
+
+#### v3
+
+* Mangrove: `0xD27139C60ED051b65c3AEe193BCABFfa1067D243`
+* MgvReader: `0xa1e2f6EEe41799d44e365135F70fD23b0d0505D6`
+* MgvCleaner: `0x9C0AC5b8F47c912b33Bdd0a21273A673e2A47D32`
+* MgvOracle: `0xA7F318d18d163E4677A4eAc2ffd820bA0c605EB7`
+
+#### v2
+
+* Mangrove: `0x493Bd4Ae961B3C50e1a1C86CC0D433aDa66870D0`
+* MgvReader: `0x69dE7df175444cd44667DdfA74FbEb5095C3dB34`
+* MgvCleaner: `0xad53eB62d210DeeB30854e1b73dD4Ee88E612cc9`
+* MgvOracle: `0xb4C0B66F158C314FfBDF1b64d9B517B8aaB46773`
+
+#### v1
+
+* Mangrove: `0xE44FfC50ED6673d6A1C385B76152E1551a6c14a3`
+* MgvReader: `0xc00d2da52195b123d3c994aaf2eb1e8da8999d4f`
+* MgvCleaner: `none`
+* MgvOracle: `none`
+
