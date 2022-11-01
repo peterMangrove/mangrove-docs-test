@@ -20,4 +20,4 @@ Where MangroveOffer has not implementation of posting a new offer, updating offe
 
 When posting a new offer, one would usually also fund Mangrove, so that it has enough funds to cover gas and possible bounty. But since it is the Forwarder contract, that is actually doing the posting of the offers and just keeping track of who owns what internally. Then funding Mangrove directly cannot be done, because Mangrove only knows that the Forwarder contract posted the offer, but has no information about who the Forwarder posted on behalf of. Because of this when posting a new offer using Forwarder, it does not require a gasprice, but uses the amount to be funded combined with the gas requirement, to calculate a gas price, that uses all of the funds. This way the offer has enough information, that when an offer is retracted or updated, it can calculated how much provision is left on the offer.
 
-![Flow of taking a offer made by Forwarder](../../../static/img/assets/Forwarder.png)
+![Flow of taking a offer made by Forwarder](../../../../static/img/assets/Forwarder.png)

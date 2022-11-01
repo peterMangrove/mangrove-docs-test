@@ -27,6 +27,10 @@ const config = {
     locales: ['en'],
   },
   onBrokenLinks: 'ignore',
+  plugins: [
+    '@docusaurus-terminology/parser',
+    require.resolve('docusaurus-lunr-search')
+  ],
 
   presets: [
     [
