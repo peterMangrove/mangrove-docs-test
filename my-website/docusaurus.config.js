@@ -3,14 +3,16 @@
 
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+const simplePlantUML = require("@akebifiky/remark-simple-plantuml");
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
+  
   title: 'Mangrove docs',
   tagline: 'Mangrove documentation',
   url: 'https://testnet.mangrove.exchange',
   baseUrl: '/',
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
 
@@ -26,12 +28,14 @@ const config = {
     defaultLocale: 'en',
     locales: ['en'],
   },
-  onBrokenLinks: 'ignore',
+
   plugins: [
     '@docusaurus-terminology/parser',
     require.resolve('docusaurus-lunr-search'),
-    '@vegaprotocol/docusaurus-theme-github-codeblock'
+    '@vegaprotocol/docusaurus-theme-github-codeblock',
+    
   ],
+  
 
   presets: [
     [
@@ -40,6 +44,7 @@ const config = {
       ({
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
+          remarkPlugins: [simplePlantUML]
         },
         blog: {
           showReadingTime: true,
@@ -66,7 +71,7 @@ const config = {
           {
             to: '/docs/mangrove-core/core',
             position: 'left',
-            label: 'Core and Strats',
+            label: 'Contracts',
           },
           {
             to: '/docs/mangrove-js/sdk',
