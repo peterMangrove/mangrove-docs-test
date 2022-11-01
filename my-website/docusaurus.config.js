@@ -87,8 +87,12 @@ const config = {
             title: 'Docs',
             items: [
               {
-                label: 'Core and Strats',
+                label: 'Contracts',
                 to: '/docs/mangrove-core/README.md',
+              },
+              {
+                label: 'SDK',
+                to: '/docs/mangrove-js/README.md',
               },
             ],
           },
@@ -96,16 +100,16 @@ const config = {
             title: 'Community',
             items: [
               {
-                label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+                label: 'Telegram',
+                href: 'https://t.me/MangroveDAO',
               },
               {
                 label: 'Discord',
-                href: 'https://discordapp.com/invite/docusaurus',
+                href: 'https://discord.gg/fuSuPC2G',
               },
               {
                 label: 'Twitter',
-                href: 'https://twitter.com/docusaurus',
+                href: 'https://twitter.com/mangrovedao',
               },
             ],
           },
@@ -114,12 +118,12 @@ const config = {
             items: [
               {
                 label: 'GitHub',
-                href: 'https://github.com/facebook/docusaurus',
+                href: 'https://github.com/mangrovedao',
               },
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Mangrove, Inc. Built with Docusaurus.`,
       },
       
     }),
