@@ -58,6 +58,11 @@ const config = {
 
   themeConfig:
     ({
+      docs: {
+        sidebar: {
+          hideable: true,
+        },
+      },
       prism: {
         additionalLanguages: ['solidity'],
       },
