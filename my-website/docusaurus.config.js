@@ -29,7 +29,8 @@ const config = {
   onBrokenLinks: 'ignore',
   plugins: [
     '@docusaurus-terminology/parser',
-    require.resolve('docusaurus-lunr-search')
+    require.resolve('docusaurus-lunr-search'),
+    '@vegaprotocol/docusaurus-theme-github-codeblock'
   ],
 
   presets: [

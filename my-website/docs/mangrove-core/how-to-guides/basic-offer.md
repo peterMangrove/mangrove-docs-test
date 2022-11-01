@@ -51,3 +51,6 @@ const { id: ofrId } = await directLP.newAsk({ wants: 105, gives: 104, fund:prov 
 ```
 {% endcode %}
 
+```solidity reference
+https://github.com/mangrovedao/mangrove-core/blob/2cf6d153ee65f7a67b073cf4102343a86183bbe9/src/toy_strategies/offer_maker/Ghost.sol#L62-L114
+```
