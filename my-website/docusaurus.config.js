@@ -55,7 +55,7 @@ const config = {
         title: 'Mangrove docs',
         logo: {
           alt: 'My Site Logo',
-          src: 'img/logo.svg',
+          src: 'img/assets/mangrove_logo.png',
         },
         items: [
           {
