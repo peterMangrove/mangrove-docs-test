@@ -35,7 +35,7 @@ const config = {
     '@vegaprotocol/docusaurus-theme-github-codeblock',
     
   ],
-  
+  staticDirectories: ['static'],
 
   presets: [
     [
