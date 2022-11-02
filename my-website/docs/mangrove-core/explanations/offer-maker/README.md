@@ -21,4 +21,4 @@ After an offer has been created or updated, it can be executed by anyone. Upon e
 
 ### Offer bounties
 
-Since offers on Mangrove can fail, an ETH bounty is given to those who trigger failing offers, as compensation for the gas spent. This <Term popup="This hover text will appear in the documentation page that you reference this term" reference="/docs/terms/bounty">bounty</Term> is extracted from the offer's account deposit at Mangrove. The [Offer bounties](./#offer-bounties) section details how bounties work and how they are calculated.
+Since offers on Mangrove can fail, an ETH bounty is given to those who trigger failing offers, as compensation for the gas spent. This %%bounties|bounty%% is extracted from the offer's account deposit at Mangrove. The [Offer bounties](./#offer-bounties) section details how bounties work and how they are calculated.
